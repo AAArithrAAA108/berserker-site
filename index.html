@@ -848,11 +848,6 @@
     flex-shrink: 0;
     display: block;
   }
-  .voidtech-track img {
-    width: 33.333% !important;
-    object-fit: cover !important;
-    object-position: center 30% !important;
-  }
   /* On hover: slide to each image, pause 2s, then slide to next */
   /* Total: 8 images × (0.3s slide + 2s pause) = ~18.4s, hold at last */
   #gymshark-card:hover .slider-track {
@@ -891,14 +886,25 @@
     transform: translateX(0);
     transition: transform 0.4s ease;
   }
+  #voidtech-card:hover
+  @keyframes slide3 {
+    0%      { transform: translateX(0); }
+    6.52%   { transform: translateX(-33.333%); }
+    56.52%  { transform: translateX(-33.333%); }
+    63.04%  { transform: translateX(-66.666%); }
+    100%    { transform: translateX(-66.666%); }
+  }
+  #voidtech-card
 
 
   /* ── VOIDTECH SLIDER (3 images) ── */
   .voidtech-track {
-    width: 300%;
+    width: 300% !important;
   }
   .voidtech-track img {
     width: 33.333% !important;
+    object-fit: cover !important;
+    object-position: center 30% !important;
   }
   #voidtech-card:hover .voidtech-track {
     animation: slide3 4.6s ease forwards;
@@ -924,10 +930,8 @@
   <div class="announce-track">
     <span>🔥 India's #1 Community-Driven Premium Activewear Marketplace</span>
     <span>✦ Every item quality-checked &amp; verified before dispatch</span>
-    <span>🚚 Free shipping on orders above ₹1,999</span>
     <span>🔥 India's #1 Community-Driven Premium Activewear Marketplace</span>
     <span>✦ Every item quality-checked &amp; verified before dispatch</span>
-    <span>🚚 Free shipping on orders above ₹1,999</span>
   </div>
 </div>
 
@@ -965,8 +969,8 @@
     </div>
     <div class="hero-stats">
       <div>
-        <div class="stat-num">12K+</div>
-        <div class="stat-label">Sorted Fam</div>
+        <div class="stat-num">1K+</div>
+        <div class="stat-label">Berserker Army</div>
       </div>
       <div>
         <div class="stat-num">500+</div>
@@ -1066,7 +1070,7 @@
       <button class="product-add">Add to Cart</button>
     </div>
 
-    <!-- Card 4 -->
+        <!-- Card 4 -->
     <div class="product-card fade-in">
       <div class="product-img" style="background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);">
         <span class="product-badge pre">COLLAB</span>
