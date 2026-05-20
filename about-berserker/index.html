@@ -1277,7 +1277,7 @@
   <button onclick="closeSizePicker()" style="width:100%;background:none;border:none;color:#555;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer;margin-top:12px;padding:4px;">CANCEL</button>
 </div>
 <div id="cart-overlay" onclick="closeCart()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;"></div>
-<div id="cart-sidebar" style="position:fixed;top:0;right:-35%;width:35%;height:100%;background:#141414;border-left:1px solid #2a2a2a;z-index:201;transition:right .35s ease;display:flex;flex-direction:column;">
+<div id="cart-sidebar" style="position:fixed;top:0;right:-72%;width:72%;height:100%;background:#141414;border-left:1px solid #2a2a2a;z-index:201;transition:right .35s ease;display:flex;flex-direction:column;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 28px;border-bottom:1px solid #2a2a2a;">
     <span style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.1em;color:#f5f2ee;">CART</span>
     <button onclick="closeCart()" style="background:none;border:none;color:#888;font-size:24px;cursor:pointer;line-height:1;">✕</button>
@@ -1303,7 +1303,7 @@
     document.getElementById('cart-overlay').style.display = 'block';
   }
   function closeCart() {
-    document.getElementById('cart-sidebar').style.right = '-35%';
+    document.getElementById('cart-sidebar').style.right = '-72%';
     document.getElementById('cart-overlay').style.display = 'none';
   }
 
@@ -1410,7 +1410,8 @@
   }
 
   // Wire up cart icon
-  document.querySelector('.cart-icon').addEventListener('click', openCart);
+  const cartIcon = document.querySelector('.cart-icon');
+  if (cartIcon) cartIcon.addEventListener('click', openCart);
 
   // Size picker state
   let pendingItem = null;
@@ -1476,7 +1477,7 @@
   }
 
   // Size button clicks
-  document.querySelectorAll('.size-btn').forEach(btn => {
+  if (document.querySelector('.size-btn')) document.querySelectorAll('.size-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
