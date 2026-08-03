@@ -1295,8 +1295,13 @@
 </div>
 
 <script>
-  // Cart state
+  // Cart state — persisted across pages via localStorage (shared key, same origin)
+  const CART_STORAGE_KEY = 'berserkerCart';
   const cartItems = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+    if (Array.isArray(stored)) cartItems.push(...stored);
+  } catch (e) {}
 
   function openCart() {
     document.getElementById('cart-sidebar').style.right = '0';
@@ -1323,6 +1328,7 @@
   }
 
   function updateCart() {
+    try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems)); } catch (e) {}
     const count = cartItems.reduce((a, i) => a + i.qty, 0);
     document.getElementById('cart-count').textContent = count;
 

@@ -1256,7 +1256,7 @@
         <li><a href="/about-berserker/">About Us</a></li>
         <li><a href="/contact-berserker/">Contact Us</a></li>
         <li><a href="/returns-and-refunds/">Returns and Refunds</a></li>
-        <li><a href="/shipping-info/">Shipping Info</a></li>
+        <li><a href="#">Shipping Info</a></li>
         <li><a href="https://instagram.com/berserker.in" target="_blank">DM on Instagram</a></li>
       </ul>
     </div>
@@ -1303,13 +1303,18 @@
       <span style="font-family:'DM Sans',sans-serif;font-size:14px;color:#aaa;letter-spacing:.06em;text-transform:uppercase;">Total</span>
       <span id="cart-total" style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#f5f2ee;"></span>
     </div>
-    <button style="width:100%;background:#e8f000;color:#0a0a0a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;padding:16px;cursor:pointer;">CHECKOUT</button>
+    <button style="width:100%;background:#e8f000;color:#0a0a0a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;padding:16px;cursor:pointer;" onclick="window.location.href='/checkout/'">CHECKOUT</button>
   </div>
 </div>
 
 <script>
-  // Cart state
+  // Cart state — persisted across pages via localStorage (shared key, same origin)
+  const CART_STORAGE_KEY = 'berserkerCart';
   const cartItems = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+    if (Array.isArray(stored)) cartItems.push(...stored);
+  } catch (e) {}
 
   function openCart() {
     document.getElementById('cart-sidebar').style.right = '0';
@@ -1336,6 +1341,7 @@
   }
 
   function updateCart() {
+    try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems)); } catch (e) {}
     const count = cartItems.reduce((a, i) => a + i.qty, 0);
     document.getElementById('cart-count').textContent = count;
 
