@@ -1234,6 +1234,7 @@
       <div class="pdp-main-img">
         <img id="pdp-main-image" src="images/img-0003.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve — Forest Green" />
       </div>
+      <div class="pdp-image-label" id="pdp-image-label">Forest Green</div>
       <div class="pdp-thumbs" id="pdp-thumbs">
         <img class="pdp-thumb active" data-index="0" src="images/img-0003.jpg" alt="View 1" />
         <img class="pdp-thumb" data-index="1" src="images/img-0004.jpg" alt="View 2" />
@@ -1292,6 +1293,7 @@
   .pdp-thumb { width:64px; height:80px; object-fit:contain; background:var(--mid); cursor:pointer; border:1px solid var(--border); opacity:.55; transition:opacity .2s, border-color .2s; }
   .pdp-thumb:hover { opacity:.85; }
   .pdp-thumb.active { opacity:1; border-color:var(--accent); }
+  .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:14px; }
   .pdp-insta-note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; max-width:420px; }
   .pdp-title { font-family:var(--font-display); font-size:clamp(32px,3.5vw,48px); letter-spacing:.02em; line-height:1.05; color:var(--white); margin:10px 0 16px; }
   .pdp-price { font-family:var(--font-display); font-size:36px; color:var(--white); letter-spacing:.03em; }
@@ -1667,7 +1669,14 @@
 <script>
   (function() {
     var images = ['images/img-0003.jpg','images/img-0004.jpg','images/img-0005.jpg','images/img-0006.jpg','images/img-0007.jpg','images/img-0008.jpg','images/img-0009.jpg','images/img-0010.jpg'];
+    var swatchList = [
+      { label: 'Forest Green', imgIndex: 0 },
+      { label: 'Deep Purple', imgIndex: 2 },
+      { label: 'Stealth Black', imgIndex: 4 },
+      { label: 'Dark Red', imgIndex: 6 }
+    ];
     var mainImg = document.getElementById('pdp-main-image');
+    var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
     var colorSwatches = document.querySelectorAll('#pdp-color-swatches .modal-swatch');
     var colorLabel = document.getElementById('pdp-color-label');
@@ -1677,9 +1686,21 @@
     var selectedColor = { label: 'Forest Green', imgIndex: 0 };
     var selectedSizeLocal = null;
 
-    function setMainImage(index) {
+    function swatchForIndex(idx) {
+      var best = null;
+      for (var i = 0; i < swatchList.length; i++) {
+        if (swatchList[i].imgIndex <= idx) best = swatchList[i];
+      }
+      return best;
+    }
+
+    function setMainImage(index, label) {
       mainImg.src = images[index];
       thumbs.forEach(function(t) { t.classList.toggle('active', parseInt(t.dataset.index, 10) === index); });
+      if (imageLabel) {
+        var lbl = label || (swatchForIndex(index) ? swatchForIndex(index).label : '');
+        imageLabel.textContent = lbl;
+      }
     }
 
     thumbs.forEach(function(t) {
@@ -1693,7 +1714,7 @@
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         selectedColor = { label: sw.title, imgIndex: imgIndex };
         colorLabel.textContent = sw.title;
-        setMainImage(imgIndex);
+        setMainImage(imgIndex, sw.title);
       });
     });
 

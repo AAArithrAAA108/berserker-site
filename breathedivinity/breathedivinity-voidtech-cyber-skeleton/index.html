@@ -1402,6 +1402,7 @@
       <div class="pdp-main-img">
         <img id="pdp-main-image" src="images/img-0093.jpg" alt="VoidTech Cyber Skeleton Compression — Black" />
       </div>
+      <div class="pdp-image-label" id="pdp-image-label">Black</div>
       <div class="pdp-thumbs" id="pdp-thumbs">
         <img class="pdp-thumb active" data-index="0" src="images/img-0093.jpg" alt="View 1" />
         <img class="pdp-thumb" data-index="1" src="images/img-0094.jpg" alt="View 2" />
@@ -1449,6 +1450,7 @@
   .pdp-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:start; }
   .pdp-main-img { overflow:hidden; background:var(--mid); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; max-height:80vh; }
   .pdp-main-img img { width:100%; height:auto; max-height:80vh; object-fit:contain; display:block; }
+  .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:14px; }
   .pdp-thumbs { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
   .pdp-thumb { width:64px; height:80px; object-fit:contain; background:var(--mid); cursor:pointer; border:1px solid var(--border); opacity:.55; transition:opacity .2s, border-color .2s; }
   .pdp-thumb:hover { opacity:.85; }
@@ -1837,7 +1839,9 @@
 <script>
   (function() {
     var images = ["images/img-0093.jpg","images/img-0094.jpg","images/img-0095.jpg","images/img-0096.jpg"];
+    var swatchList = [{"label":"Black","imgIndex":0},{"label":"Purple","imgIndex":2}];
     var mainImg = document.getElementById('pdp-main-image');
+    var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
     var colorSwatches = document.querySelectorAll('#pdp-color-swatches .modal-swatch');
     var colorLabel = document.getElementById('pdp-color-label');
@@ -1847,9 +1851,21 @@
     var selectedColor = { label: "Black", imgIndex: 0 };
     var selectedSizeLocal = null;
 
-    function setMainImage(index) {
+    function swatchForIndex(idx) {
+      var best = null;
+      for (var i = 0; i < swatchList.length; i++) {
+        if (swatchList[i].imgIndex <= idx) best = swatchList[i];
+      }
+      return best;
+    }
+
+    function setMainImage(index, label) {
       mainImg.src = images[index];
       thumbs.forEach(function(t) { t.classList.toggle('active', parseInt(t.dataset.index, 10) === index); });
+      if (imageLabel) {
+        var lbl = label || (swatchForIndex(index) ? swatchForIndex(index).label : '');
+        imageLabel.textContent = lbl;
+      }
     }
 
     thumbs.forEach(function(t) {
@@ -1863,7 +1879,7 @@
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         selectedColor = { label: sw.title, imgIndex: imgIndex };
         colorLabel.textContent = sw.title;
-        setMainImage(imgIndex);
+        setMainImage(imgIndex, sw.title);
       });
     });
 

@@ -1402,6 +1402,7 @@
       <div class="pdp-main-img">
         <img id="pdp-main-image" src="images/img-0134.jpg" alt="Bloodraven Oversized T-Shirt — Red" />
       </div>
+      <div class="pdp-image-label" id="pdp-image-label">Red</div>
       <div class="pdp-thumbs" id="pdp-thumbs">
         <img class="pdp-thumb active" data-index="0" src="images/img-0134.jpg" alt="View 1" />
         <img class="pdp-thumb" data-index="1" src="images/img-0135.jpg" alt="View 2" />
@@ -1464,6 +1465,7 @@
   .pdp-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:start; }
   .pdp-main-img { overflow:hidden; background:var(--mid); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; max-height:80vh; }
   .pdp-main-img img { width:100%; height:auto; max-height:80vh; object-fit:contain; display:block; }
+  .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:14px; }
   .pdp-thumbs { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
   .pdp-thumb { width:64px; height:80px; object-fit:contain; background:var(--mid); cursor:pointer; border:1px solid var(--border); opacity:.55; transition:opacity .2s, border-color .2s; }
   .pdp-thumb:hover { opacity:.85; }
@@ -1852,7 +1854,9 @@
 <script>
   (function() {
     var images = ["images/img-0134.jpg","images/img-0135.jpg","images/img-0136.jpg","images/img-0137.jpg","images/img-0138.jpg","images/img-0139.jpg","images/img-0140.jpg","images/img-0141.jpg","images/img-0142.jpg","images/img-0143.jpg","images/img-0144.jpg","images/img-0145.jpg","images/img-0146.jpg","images/img-0147.jpg"];
+    var swatchList = [{"label":"Red","imgIndex":2},{"label":"Purple","imgIndex":4},{"label":"White","imgIndex":0},{"label":"Red White","imgIndex":6},{"label":"Blue","imgIndex":8},{"label":"Black","imgIndex":10},{"label":"Pink","imgIndex":12}];
     var mainImg = document.getElementById('pdp-main-image');
+    var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
     var colorSwatches = document.querySelectorAll('#pdp-color-swatches .modal-swatch');
     var colorLabel = document.getElementById('pdp-color-label');
@@ -1862,9 +1866,21 @@
     var selectedColor = { label: "Red", imgIndex: 2 };
     var selectedSizeLocal = null;
 
-    function setMainImage(index) {
+    function swatchForIndex(idx) {
+      var best = null;
+      for (var i = 0; i < swatchList.length; i++) {
+        if (swatchList[i].imgIndex <= idx) best = swatchList[i];
+      }
+      return best;
+    }
+
+    function setMainImage(index, label) {
       mainImg.src = images[index];
       thumbs.forEach(function(t) { t.classList.toggle('active', parseInt(t.dataset.index, 10) === index); });
+      if (imageLabel) {
+        var lbl = label || (swatchForIndex(index) ? swatchForIndex(index).label : '');
+        imageLabel.textContent = lbl;
+      }
     }
 
     thumbs.forEach(function(t) {
@@ -1878,7 +1894,7 @@
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         selectedColor = { label: sw.title, imgIndex: imgIndex };
         colorLabel.textContent = sw.title;
-        setMainImage(imgIndex);
+        setMainImage(imgIndex, sw.title);
       });
     });
 
