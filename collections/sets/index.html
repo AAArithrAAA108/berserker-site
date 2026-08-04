@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sets — BERSERKER</title>
+<link rel="icon" type="image/png" href="images/img-0001.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ee;
+    --cream: #ede9e3;
+    --accent: #e8f000;        /* electric yellow-green */
+    --accent2: #ff3c1e;       /* hot red */
+    --mid: #1c1c1c;
+    --muted: #888;
+    --border: #2a2a2a;
+    --card-bg: #141414;
+
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── ANNOUNCEMENT BAR ── */
+  .announce-bar {
+    background: var(--accent);
+    color: var(--black);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-align: center;
+    padding: 9px 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .announce-track {
+    display: inline-flex;
+    gap: 80px;
+    white-space: nowrap;
+    animation: marquee 28s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 32px;
+    letter-spacing: .08em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--black);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: none;
+    padding: 9px 18px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .2s, transform .15s;
+  }
+  .nav-cta:hover { background: #d4dc00; transform: translateY(-1px); }
+  .cart-icon {
+    color: var(--white);
+    font-size: 20px;
+    cursor: pointer;
+    position: relative;
+  }
+  .cart-badge {
+    position: absolute;
+    top: -6px; right: -8px;
+    background: var(--accent2);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 92vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    position: relative;
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px 80px 80px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 8vw, 120px);
+    line-height: .92;
+    letter-spacing: .01em;
+    color: var(--white);
+    margin-bottom: 28px;
+  }
+  .hero-title em {
+    font-style: normal;
+    color: var(--accent);
+    display: block;
+  }
+  .hero-subtitle {
+    font-size: 16px;
+    color: #aaa;
+    max-width: 420px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--black);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border: none;
+    padding: 16px 36px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform .2s, background .2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); background: #d4dc00; }
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 16px 36px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-outline:hover { border-color: var(--white); }
+  .hero-stats {
+    margin-top: 60px;
+    display: flex;
+    gap: 48px;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 42px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+    background: var(--mid);
+  }
+  .hero-img-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 100%;
+    gap: 3px;
+  }
+  .hero-img-cell {
+    overflow: hidden;
+    position: relative;
+  }
+  .hero-img-cell img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .6s ease;
+    filter: grayscale(20%);
+  }
+  .hero-img-cell:hover img { transform: scale(1.06); filter: grayscale(0%); }
+  .hero-img-cell.tall { grid-row: span 2; }
+  .hero-overlay-text {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    font-family: var(--font-display);
+    font-size: 72px;
+    color: rgba(255,255,255,.08);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -.02em;
+  }
+
+  /* ── TRUST STRIP ── */
+  .trust-strip {
+    background: var(--mid);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 40px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .trust-icon { font-size: 18px; }
+
+  /* ── SECTION HEADERS ── */
+  .section { padding: 100px 80px; }
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 56px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 5vw, 72px);
+    letter-spacing: .02em;
+    line-height: .95;
+  }
+  .section-title span { color: var(--accent); }
+  .section-link {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+    transition: color .2s, border-color .2s;
+  }
+  .section-link:hover { color: var(--white); border-color: var(--white); }
+
+  /* ── PRODUCT GRID ── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s, border-color .25s;
+  }
+  .product-card:hover { transform: translateY(-4px); border-color: #444; }
+  .product-img {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background: var(--mid);
+    position: relative;
+  }
+  .product-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .product-card:hover .product-img img { transform: scale(1.07); }
+  .product-badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: var(--accent2);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+  }
+  .product-badge.new { background: var(--accent); color: var(--black); }
+  .product-badge.pre { background: #7c3aed; }
+  .product-info {
+    padding: 18px 20px 20px;
+  }
+  .product-brand {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .product-price {
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--white);
+    letter-spacing: .03em;
+  }
+  .product-price .original {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-left: 8px;
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+  .product-swatches {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .swatch {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .swatch:hover { transform: scale(1.3); }
+  .product-add {
+    position: absolute;
+    bottom: -40px;
+    left: 0; right: 0;
+    background: var(--accent);
+    color: var(--black);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    transition: bottom .25s ease;
+  }
+  .product-card:hover .product-add { bottom: 0; }
+
+  /* ── CATEGORIES ── */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .cat-card {
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    background: var(--mid);
+  }
+  .cat-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(.7);
+    transition: transform .5s ease, filter .4s;
+  }
+  .cat-card:hover img { transform: scale(1.08); filter: brightness(.9); }
+  .cat-label {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: .04em;
+    color: #fff;
+    line-height: 1;
+  }
+  .cat-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    color: var(--accent);
+    display: block;
+    margin-top: 4px;
+  }
+
+
+  /* ── BRANDS MARQUEE ── */
+  .brands-section { padding: 0 0 100px; }
+  .brands-label {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .brands-track-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    background: var(--mid);
+  }
+  .brands-track {
+    display: inline-flex;
+    gap: 64px;
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: .1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .brand-name:hover { color: var(--white); }
+
+  /* ── REVIEWS ── */
+  .reviews-section {
+    padding: 0 80px 100px;
+    background: var(--mid);
+    margin: 0;
+    padding: 100px 80px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+  .review-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 28px;
+  }
+  .review-stars {
+    color: var(--accent);
+    font-size: 14px;
+    margin-bottom: 14px;
+    letter-spacing: 3px;
+  }
+  .review-text {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.75;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .review-author {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .review-author strong { color: var(--accent); }
+
+  /* ── PAYMENT OFFERS ── */
+  .offers-bar {
+    background: #0f0f0f;
+    border-top: 1px solid var(--border);
+    padding: 20px 80px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .offer-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.6;
+  }
+  .offer-item strong { color: var(--accent); display: block; font-size: 13px; }
+
+  /* ── NEWSLETTER ── */
+  .newsletter-section {
+    padding: 100px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  .newsletter-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 4vw, 64px);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .newsletter-sub { color: var(--muted); font-size: 15px; line-height: 1.7; }
+  .newsletter-form {
+    display: flex;
+    gap: 0;
+  }
+  .newsletter-input {
+    flex: 1;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-right: none;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 14px 20px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .newsletter-input::placeholder { color: var(--muted); }
+  .newsletter-input:focus { border-color: var(--accent); }
+  .newsletter-btn {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .newsletter-btn:hover { background: #d4dc00; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--mid);
+    border-top: 1px solid var(--border);
+    padding: 80px 80px 40px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+  .footer-brand .logo {
+    font-family: var(--font-display);
+    font-size: 40px;
+    color: var(--white);
+    letter-spacing: .06em;
+    margin-bottom: 16px;
+  }
+  .footer-brand .logo span { color: var(--accent); }
+  .footer-brand p { color: var(--muted); font-size: 14px; line-height: 1.8; max-width: 300px; }
+  .footer-social {
+    display: flex;
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .social-btn {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color .2s, color .2s;
+  }
+  .social-btn:hover { border-color: var(--white); color: var(--white); }
+  .footer-col h4 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color .2s;
+  }
+  .footer-col a:hover { color: var(--white); }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-bottom p { color: var(--muted); font-size: 12px; letter-spacing: .04em; }
+  .footer-bottom-links { display: flex; gap: 24px; }
+  .footer-bottom-links a { color: var(--muted); font-size: 12px; text-decoration: none; }
+  .footer-bottom-links a:hover { color: var(--white); }
+
+  /* ── BACK TO TOP ── */
+  .back-to-top {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    width: 48px; height: 48px;
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .3s, transform .2s;
+    z-index: 99;
+  }
+  .back-to-top.visible { opacity: 1; }
+  .back-to-top:hover { transform: translateY(-3px); }
+
+  /* ── COLOR PLACEHOLDER IMAGES ── */
+  .img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: .1em;
+    color: rgba(255,255,255,.2);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 1100px) {
+    .insta-grid { grid-template-columns: repeat(3, 1fr); }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-right { height: 60vw; }
+    .hero-left { padding: 60px 40px; }
+    .cat-grid { grid-template-columns: repeat(3, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .newsletter-section { grid-template-columns: 1fr; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .section { padding: 80px 40px; }
+    .instagram-section, .newsletter-section { padding: 80px 40px; }
+    .reviews-section { padding: 80px 40px; }
+    footer { padding: 60px 40px 30px; }
+    .offers-bar { padding: 20px 40px; }
+  }
+  @media(max-width: 640px) {
+    .insta-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-left { padding: 40px 24px; }
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .section { padding: 60px 24px; }
+  }
+
+  /* Fade-in on scroll */
+  .fade-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── SIZE PICKER ── */
+  .size-btn {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    color: #f5f2ee;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: .08em;
+    padding: 14px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .size-btn:hover { border-color: #888; }
+  .size-btn.selected { background: #e8f000; color: #0a0a0a; border-color: #e8f000; }
+  .modal-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    cursor: pointer;
+    transition: transform .15s, border-color .15s;
+    position: relative;
+  }
+  .modal-swatch:hover { transform: scale(1.2); }
+  .modal-swatch.selected { border-color: #e8f000; transform: scale(1.2); }
+  .modal-swatch.selected::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,.8);
+  }
+
+
+  .nav-logo-img {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    height: 40px;
+  }
+  .nav-logo-img .brand-logo-img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .logo-img-wrap .brand-logo-img {
+    height: 52px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 16px;
+    filter: brightness(1.05);
+  }
+  .insta-heading .brand-logo-img {
+    height: 52px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ── PRODUCT IMAGE SLIDER ── */
+  .product-img-slider {
+    overflow: hidden;
+    position: relative;
+  }
+  .product-img-slider .slider-track {
+    display: flex;
+    width: 800%;
+    height: 100%;
+    transition: none;
+  }
+  .product-img-slider .slider-track img {
+    width: 12.5%;   /* 100% / 8 */
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    flex-shrink: 0;
+    display: block;
+  }
+  /* On hover: slide through all 8 images in order, pause on each, then loop back to img1 */
+  /* 7 transitions × (0.3s slide + 2s pause) = 16.1s per full loop, repeats while hovered */
+  #product-1:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  @keyframes slideProduct1 {
+    /* img1 → img2 */
+    0%      { transform: translateX(0); }
+    1.86%   { transform: translateX(-12.5%); }
+    14.29%  { transform: translateX(-12.5%); }
+    /* img2 → img3 */
+    16.15%  { transform: translateX(-25%); }
+    28.57%  { transform: translateX(-25%); }
+    /* img3 → img4 */
+    30.43%  { transform: translateX(-37.5%); }
+    42.86%  { transform: translateX(-37.5%); }
+    /* img4 → img5 */
+    44.72%  { transform: translateX(-50%); }
+    57.14%  { transform: translateX(-50%); }
+    /* img5 → img6 */
+    59.01%  { transform: translateX(-62.5%); }
+    71.43%  { transform: translateX(-62.5%); }
+    /* img6 → img7 */
+    73.29%  { transform: translateX(-75%); }
+    85.71%  { transform: translateX(-75%); }
+    /* img7 → img8 */
+    87.58%  { transform: translateX(-87.5%); }
+    100%    { transform: translateX(-87.5%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  /* Snap back to first image on mouse-leave */
+  #product-1 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-2 reuses the same 8-image loop timing as product-1 */
+  #product-2:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-2 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-3 slider (6 images — Sleeveless) */
+  .product3-track {
+    width: 600% !important;
+  }
+  .product3-track img {
+    width: 16.6667% !important;
+  }
+  /* 5 transitions × (0.3s slide + 2s pause) = 11.5s per full loop, repeats while hovered */
+  #product-3:hover .slider-track {
+    animation: slideProduct3 11.5s linear infinite;
+  }
+  @keyframes slideProduct3 {
+    /* img1 → img2 */
+    0%      { transform: translateX(0); }
+    2.61%   { transform: translateX(-16.6667%); }
+    20%     { transform: translateX(-16.6667%); }
+    /* img2 → img3 */
+    22.61%  { transform: translateX(-33.3333%); }
+    40%     { transform: translateX(-33.3333%); }
+    /* img3 → img4 */
+    42.61%  { transform: translateX(-50%); }
+    60%     { transform: translateX(-50%); }
+    /* img4 → img5 */
+    62.61%  { transform: translateX(-66.6667%); }
+    80%     { transform: translateX(-66.6667%); }
+    /* img5 → img6 */
+    82.61%  { transform: translateX(-83.3333%); }
+    100%    { transform: translateX(-83.3333%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-3 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-4 slider (5 images — Founder Edition Hoodie) */
+  .product4-track {
+    width: 500% !important;
+  }
+  .product4-track img {
+    width: 20% !important;
+  }
+  /* 4 transitions × (0.3s slide + 2s pause) = 9.2s per full loop, repeats while hovered */
+  #product-4:hover .slider-track {
+    animation: slideProduct4 9.2s linear infinite;
+  }
+  @keyframes slideProduct4 {
+    /* img1 → img2 */
+    0%      { transform: translateX(0); }
+    3.26%   { transform: translateX(-20%); }
+    25%     { transform: translateX(-20%); }
+    /* img2 → img3 */
+    28.26%  { transform: translateX(-40%); }
+    50%     { transform: translateX(-40%); }
+    /* img3 → img4 */
+    53.26%  { transform: translateX(-60%); }
+    75%     { transform: translateX(-60%); }
+    /* img4 → img5 */
+    78.26%  { transform: translateX(-80%); }
+    100%    { transform: translateX(-80%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-4 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-5 slider (12 images — Lifting Essential Joggers) */
+  .product5-track {
+    width: 1200% !important;
+  }
+  .product5-track img {
+    width: 8.3333% !important;
+    object-position: top center !important;
+  }
+  /* 11 transitions × (0.3s slide + 2s pause) = 25.3s per full loop, repeats while hovered */
+  #product-5:hover .slider-track {
+    animation: slideProduct5 25.3s linear infinite;
+  }
+  @keyframes slideProduct5 {
+    0%      { transform: translateX(0); }
+    1.19%   { transform: translateX(-8.3333%); }
+    9.09%   { transform: translateX(-8.3333%); }
+    10.28%  { transform: translateX(-16.6667%); }
+    18.18%  { transform: translateX(-16.6667%); }
+    19.37%  { transform: translateX(-25%); }
+    27.27%  { transform: translateX(-25%); }
+    28.46%  { transform: translateX(-33.3333%); }
+    36.36%  { transform: translateX(-33.3333%); }
+    37.55%  { transform: translateX(-41.6667%); }
+    45.45%  { transform: translateX(-41.6667%); }
+    46.64%  { transform: translateX(-50%); }
+    54.55%  { transform: translateX(-50%); }
+    55.74%  { transform: translateX(-58.3333%); }
+    63.64%  { transform: translateX(-58.3333%); }
+    64.83%  { transform: translateX(-66.6667%); }
+    72.73%  { transform: translateX(-66.6667%); }
+    73.92%  { transform: translateX(-75%); }
+    81.82%  { transform: translateX(-75%); }
+    83.01%  { transform: translateX(-83.3333%); }
+    90.91%  { transform: translateX(-83.3333%); }
+    92.10%  { transform: translateX(-91.6667%); }
+    100%    { transform: translateX(-91.6667%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-5 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-6 reuses the same 5-image track sizing/timing as product-4 */
+  #product-6:hover .slider-track {
+    animation: slideProduct4 9.2s linear infinite;
+  }
+  #product-6 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-7 slider (3 images — YoungLA x Superman) */
+  .product7-track {
+    width: 300% !important;
+  }
+  .product7-track img {
+    width: 33.3333% !important;
+  }
+  /* 2 transitions × (0.3s slide + 2s pause) = 4.6s per full loop, repeats while hovered */
+  #product-7:hover .slider-track {
+    animation: slideProduct7 4.6s linear infinite;
+  }
+  @keyframes slideProduct7 {
+    0%      { transform: translateX(0); }
+    6.52%   { transform: translateX(-33.3333%); }
+    50%     { transform: translateX(-33.3333%); }
+    56.52%  { transform: translateX(-66.6667%); }
+    100%    { transform: translateX(-66.6667%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-7 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-8 slider (5 images — reuses product-4's track sizing/timing) */
+  #product-8:hover .slider-track {
+    animation: slideProduct4 9.2s linear infinite;
+  }
+  #product-8 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-9 slider (9 images — YoungLA Drip Oversized T-Shirt) */
+  .product9-track {
+    width: 900% !important;
+  }
+  .product9-track img {
+    width: 11.1111% !important;
+  }
+  /* 8 transitions × (0.3s slide + 2s pause) = 18.4s per full loop, repeats while hovered */
+  #product-9:hover .slider-track {
+    animation: slideProduct9 18.4s linear infinite;
+  }
+  @keyframes slideProduct9 {
+    0%      { transform: translateX(0); }
+    1.63%   { transform: translateX(-11.1111%); }
+    12.5%   { transform: translateX(-11.1111%); }
+    14.13%  { transform: translateX(-22.2222%); }
+    25%     { transform: translateX(-22.2222%); }
+    26.63%  { transform: translateX(-33.3333%); }
+    37.5%   { transform: translateX(-33.3333%); }
+    39.13%  { transform: translateX(-44.4444%); }
+    50%     { transform: translateX(-44.4444%); }
+    51.63%  { transform: translateX(-55.5556%); }
+    62.5%   { transform: translateX(-55.5556%); }
+    64.13%  { transform: translateX(-66.6667%); }
+    75%     { transform: translateX(-66.6667%); }
+    76.63%  { transform: translateX(-77.7778%); }
+    87.5%   { transform: translateX(-77.7778%); }
+    89.13%  { transform: translateX(-88.8889%); }
+    100%    { transform: translateX(-88.8889%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-9 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-10 slider (4 images — YoungLA Revenge Hoodie) */
+  .product10-track {
+    width: 400% !important;
+  }
+  .product10-track img {
+    width: 25% !important;
+  }
+  /* 3 transitions × (0.3s slide + 2s pause) = 6.9s per full loop, repeats while hovered */
+  #product-10:hover .slider-track {
+    animation: slideProduct10 6.9s linear infinite;
+  }
+  @keyframes slideProduct10 {
+    0%      { transform: translateX(0); }
+    4.35%   { transform: translateX(-25%); }
+    33.33%  { transform: translateX(-25%); }
+    37.68%  { transform: translateX(-50%); }
+    66.67%  { transform: translateX(-50%); }
+    71.02%  { transform: translateX(-75%); }
+    100%    { transform: translateX(-75%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-10 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-11 reuses the base 8-image track sizing and product-1's loop timing */
+  #product-11:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-11 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-12 reuses product-3's 6-image track sizing/timing */
+  #product-12:hover .slider-track {
+    animation: slideProduct3 11.5s linear infinite;
+  }
+  #product-12 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-13 reuses product-7's 3-image track sizing/timing */
+  #product-13:hover .slider-track {
+    animation: slideProduct7 4.6s linear infinite;
+  }
+  #product-13 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-14 reuses the base 8-image track sizing and product-1's loop timing */
+  #product-14:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-14 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-15 reuses product-10's 4-image track sizing/timing */
+  #product-15:hover .slider-track {
+    animation: slideProduct10 6.9s linear infinite;
+  }
+  #product-15 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-16 slider (10 images — VoidTech Immortal Compression) */
+  .product16-track {
+    width: 1000% !important;
+  }
+  .product16-track img {
+    width: 10% !important;
+  }
+  /* 9 transitions × (0.3s slide + 2s pause) = 20.7s per full loop, repeats while hovered */
+  #product-16:hover .slider-track {
+    animation: slideProduct16 20.7s linear infinite;
+  }
+  @keyframes slideProduct16 {
+    0%      { transform: translateX(0); }
+    1.45%   { transform: translateX(-10%); }
+    11.11%  { transform: translateX(-10%); }
+    12.56%  { transform: translateX(-20%); }
+    22.22%  { transform: translateX(-20%); }
+    23.67%  { transform: translateX(-30%); }
+    33.33%  { transform: translateX(-30%); }
+    34.78%  { transform: translateX(-40%); }
+    44.44%  { transform: translateX(-40%); }
+    45.89%  { transform: translateX(-50%); }
+    55.56%  { transform: translateX(-50%); }
+    57.01%  { transform: translateX(-60%); }
+    66.67%  { transform: translateX(-60%); }
+    68.12%  { transform: translateX(-70%); }
+    77.78%  { transform: translateX(-70%); }
+    79.23%  { transform: translateX(-80%); }
+    88.89%  { transform: translateX(-80%); }
+    90.34%  { transform: translateX(-90%); }
+    100%    { transform: translateX(-90%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-16 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-17 reuses product-4's 5-image track sizing/timing */
+  #product-17:hover .slider-track {
+    animation: slideProduct4 9.2s linear infinite;
+  }
+  #product-17 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-18 reuses product-16's 10-image track sizing/timing */
+  #product-18:hover .slider-track {
+    animation: slideProduct16 20.7s linear infinite;
+  }
+  #product-18 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-19 reuses product-5's 12-image track sizing/timing */
+  #product-19:hover .slider-track {
+    animation: slideProduct5 25.3s linear infinite;
+  }
+  #product-19 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-20 slider (14 images — Bloodraven Oversized T-Shirt) */
+  .product20-track {
+    width: 1400% !important;
+  }
+  .product20-track img {
+    width: 7.1429% !important;
+  }
+  /* 13 transitions × (0.3s slide + 2s pause) = 29.9s per full loop, repeats while hovered */
+  #product-20:hover .slider-track {
+    animation: slideProduct20 29.9s linear infinite;
+  }
+  @keyframes slideProduct20 {
+    0%      { transform: translateX(0); }
+    1.00%   { transform: translateX(-7.1429%); }
+    7.69%   { transform: translateX(-7.1429%); }
+    8.70%   { transform: translateX(-14.2857%); }
+    15.38%  { transform: translateX(-14.2857%); }
+    16.39%  { transform: translateX(-21.4286%); }
+    23.08%  { transform: translateX(-21.4286%); }
+    24.08%  { transform: translateX(-28.5714%); }
+    30.77%  { transform: translateX(-28.5714%); }
+    31.77%  { transform: translateX(-35.7143%); }
+    38.46%  { transform: translateX(-35.7143%); }
+    39.47%  { transform: translateX(-42.8571%); }
+    46.15%  { transform: translateX(-42.8571%); }
+    47.16%  { transform: translateX(-50%); }
+    53.85%  { transform: translateX(-50%); }
+    54.85%  { transform: translateX(-57.1429%); }
+    61.54%  { transform: translateX(-57.1429%); }
+    62.54%  { transform: translateX(-64.2857%); }
+    69.23%  { transform: translateX(-64.2857%); }
+    70.24%  { transform: translateX(-71.4286%); }
+    76.92%  { transform: translateX(-71.4286%); }
+    77.93%  { transform: translateX(-78.5714%); }
+    84.62%  { transform: translateX(-78.5714%); }
+    85.62%  { transform: translateX(-85.7143%); }
+    92.31%  { transform: translateX(-85.7143%); }
+    93.31%  { transform: translateX(-92.8571%); }
+    100%    { transform: translateX(-92.8571%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-20 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-21 reuses product-10's 4-image track sizing/timing */
+  #product-21:hover .slider-track {
+    animation: slideProduct10 6.9s linear infinite;
+  }
+  #product-21 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-22 reuses product-20's 14-image track sizing/timing */
+  #product-22:hover .slider-track {
+    animation: slideProduct20 29.9s linear infinite;
+  }
+  #product-22 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-23 reuses the base 8-image track sizing and product-1's loop timing */
+  #product-23:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-23 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-24 reuses product-16's 10-image track sizing/timing */
+  #product-24:hover .slider-track {
+    animation: slideProduct16 20.7s linear infinite;
+  }
+  #product-24 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-25 reuses product-4's 5-image track sizing/timing */
+  #product-25:hover .slider-track {
+    animation: slideProduct4 9.2s linear infinite;
+  }
+  #product-25 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-26 reuses product-5's 12-image track sizing/timing */
+  #product-26:hover .slider-track {
+    animation: slideProduct5 25.3s linear infinite;
+  }
+  #product-26 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-27 reuses product-16's 10-image track sizing/timing */
+  #product-27:hover .slider-track {
+    animation: slideProduct16 20.7s linear infinite;
+  }
+  #product-27 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-28 slider (40 images — Chrome Hearts Retro Oversized T-Shirt, 20 variants) */
+  .product28-track {
+    width: 4000% !important;
+  }
+  .product28-track img {
+    width: 2.5% !important;
+  }
+  /* 39 transitions x (0.3s slide + 2s pause) = 89.7s per full loop, repeats while hovered */
+  #product-28:hover .slider-track {
+    animation: slideProduct28 89.7s linear infinite;
+  }
+  @keyframes slideProduct28 {
+    0%      { transform: translateX(0); }
+    0.3344% { transform: translateX(-2.5000%); }
+    2.5641% { transform: translateX(-2.5000%); }
+    2.8986% { transform: translateX(-5.0000%); }
+    5.1282% { transform: translateX(-5.0000%); }
+    5.4627% { transform: translateX(-7.5000%); }
+    7.6923% { transform: translateX(-7.5000%); }
+    8.0268% { transform: translateX(-10.0000%); }
+    10.2564%{ transform: translateX(-10.0000%); }
+    10.5909%{ transform: translateX(-12.5000%); }
+    12.8205%{ transform: translateX(-12.5000%); }
+    13.1550%{ transform: translateX(-15.0000%); }
+    15.3846%{ transform: translateX(-15.0000%); }
+    15.7191%{ transform: translateX(-17.5000%); }
+    17.9487%{ transform: translateX(-17.5000%); }
+    18.2832%{ transform: translateX(-20.0000%); }
+    20.5128%{ transform: translateX(-20.0000%); }
+    20.8473%{ transform: translateX(-22.5000%); }
+    23.0769%{ transform: translateX(-22.5000%); }
+    23.4114%{ transform: translateX(-25.0000%); }
+    25.6410%{ transform: translateX(-25.0000%); }
+    25.9755%{ transform: translateX(-27.5000%); }
+    28.2051%{ transform: translateX(-27.5000%); }
+    28.5396%{ transform: translateX(-30.0000%); }
+    30.7692%{ transform: translateX(-30.0000%); }
+    31.1037%{ transform: translateX(-32.5000%); }
+    33.3333%{ transform: translateX(-32.5000%); }
+    33.6678%{ transform: translateX(-35.0000%); }
+    35.8974%{ transform: translateX(-35.0000%); }
+    36.2319%{ transform: translateX(-37.5000%); }
+    38.4615%{ transform: translateX(-37.5000%); }
+    38.7960%{ transform: translateX(-40.0000%); }
+    41.0256%{ transform: translateX(-40.0000%); }
+    41.3601%{ transform: translateX(-42.5000%); }
+    43.5897%{ transform: translateX(-42.5000%); }
+    43.9242%{ transform: translateX(-45.0000%); }
+    46.1538%{ transform: translateX(-45.0000%); }
+    46.4883%{ transform: translateX(-47.5000%); }
+    48.7179%{ transform: translateX(-47.5000%); }
+    49.0524%{ transform: translateX(-50.0000%); }
+    51.2821%{ transform: translateX(-50.0000%); }
+    51.6165%{ transform: translateX(-52.5000%); }
+    53.8462%{ transform: translateX(-52.5000%); }
+    54.1806%{ transform: translateX(-55.0000%); }
+    56.4103%{ transform: translateX(-55.0000%); }
+    56.7447%{ transform: translateX(-57.5000%); }
+    58.9744%{ transform: translateX(-57.5000%); }
+    59.3088%{ transform: translateX(-60.0000%); }
+    61.5385%{ transform: translateX(-60.0000%); }
+    61.8729%{ transform: translateX(-62.5000%); }
+    64.1026%{ transform: translateX(-62.5000%); }
+    64.4370%{ transform: translateX(-65.0000%); }
+    66.6667%{ transform: translateX(-65.0000%); }
+    67.0011%{ transform: translateX(-67.5000%); }
+    69.2308%{ transform: translateX(-67.5000%); }
+    69.5652%{ transform: translateX(-70.0000%); }
+    71.7949%{ transform: translateX(-70.0000%); }
+    72.1293%{ transform: translateX(-72.5000%); }
+    74.3590%{ transform: translateX(-72.5000%); }
+    74.6934%{ transform: translateX(-75.0000%); }
+    76.9231%{ transform: translateX(-75.0000%); }
+    77.2575%{ transform: translateX(-77.5000%); }
+    79.4872%{ transform: translateX(-77.5000%); }
+    79.8216%{ transform: translateX(-80.0000%); }
+    82.0513%{ transform: translateX(-80.0000%); }
+    82.3857%{ transform: translateX(-82.5000%); }
+    84.6154%{ transform: translateX(-82.5000%); }
+    84.9498%{ transform: translateX(-85.0000%); }
+    87.1795%{ transform: translateX(-85.0000%); }
+    87.5139%{ transform: translateX(-87.5000%); }
+    89.7436%{ transform: translateX(-87.5000%); }
+    90.0780%{ transform: translateX(-90.0000%); }
+    92.3077%{ transform: translateX(-90.0000%); }
+    92.6421%{ transform: translateX(-92.5000%); }
+    94.8718%{ transform: translateX(-92.5000%); }
+    95.2062%{ transform: translateX(-95.0000%); }
+    97.4359%{ transform: translateX(-95.0000%); }
+    97.7703%{ transform: translateX(-97.5000%); }
+    100%    { transform: translateX(-97.5000%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-28 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-29 reuses product-9's 9-image track sizing/timing */
+  #product-29:hover .slider-track {
+    animation: slideProduct9 18.4s linear infinite;
+  }
+  #product-29 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-30 slider (42 images -- Chrome Hearts Retro Hoodie, 21 variants) */
+  .product30-track {
+    width: 4200% !important;
+  }
+  .product30-track img {
+    width: 2.381% !important;
+  }
+  /* 41 transitions x (0.3s slide + 2s pause) = 94.3s per full loop, repeats while hovered */
+  #product-30:hover .slider-track {
+    animation: slideProduct30 94.3s linear infinite;
+  }
+  @keyframes slideProduct30 {
+    0%      { transform: translateX(0); }
+    0.3181% { transform: translateX(-2.3810%); }
+    2.4390% { transform: translateX(-2.3810%); }
+    2.7572% { transform: translateX(-4.7619%); }
+    4.8780% { transform: translateX(-4.7619%); }
+    5.1962% { transform: translateX(-7.1429%); }
+    7.3171% { transform: translateX(-7.1429%); }
+    7.6352% { transform: translateX(-9.5238%); }
+    9.7561% { transform: translateX(-9.5238%); }
+    10.0742%{ transform: translateX(-11.9048%); }
+    12.1951%{ transform: translateX(-11.9048%); }
+    12.5133%{ transform: translateX(-14.2857%); }
+    14.6341%{ transform: translateX(-14.2857%); }
+    14.9523%{ transform: translateX(-16.6667%); }
+    17.0732%{ transform: translateX(-16.6667%); }
+    17.3913%{ transform: translateX(-19.0476%); }
+    19.5122%{ transform: translateX(-19.0476%); }
+    19.8303%{ transform: translateX(-21.4286%); }
+    21.9512%{ transform: translateX(-21.4286%); }
+    22.2694%{ transform: translateX(-23.8095%); }
+    24.3902%{ transform: translateX(-23.8095%); }
+    24.7084%{ transform: translateX(-26.1905%); }
+    26.8293%{ transform: translateX(-26.1905%); }
+    27.1474%{ transform: translateX(-28.5714%); }
+    29.2683%{ transform: translateX(-28.5714%); }
+    29.5864%{ transform: translateX(-30.9524%); }
+    31.7073%{ transform: translateX(-30.9524%); }
+    32.0255%{ transform: translateX(-33.3333%); }
+    34.1463%{ transform: translateX(-33.3333%); }
+    34.4645%{ transform: translateX(-35.7143%); }
+    36.5854%{ transform: translateX(-35.7143%); }
+    36.9035%{ transform: translateX(-38.0952%); }
+    39.0244%{ transform: translateX(-38.0952%); }
+    39.3425%{ transform: translateX(-40.4762%); }
+    41.4634%{ transform: translateX(-40.4762%); }
+    41.7815%{ transform: translateX(-42.8571%); }
+    43.9024%{ transform: translateX(-42.8571%); }
+    44.2206%{ transform: translateX(-45.2381%); }
+    46.3415%{ transform: translateX(-45.2381%); }
+    46.6596%{ transform: translateX(-47.6190%); }
+    48.7805%{ transform: translateX(-47.6190%); }
+    49.0986%{ transform: translateX(-50.0000%); }
+    51.2195%{ transform: translateX(-50.0000%); }
+    51.5376%{ transform: translateX(-52.3810%); }
+    53.6585%{ transform: translateX(-52.3810%); }
+    53.9767%{ transform: translateX(-54.7619%); }
+    56.0976%{ transform: translateX(-54.7619%); }
+    56.4157%{ transform: translateX(-57.1429%); }
+    58.5366%{ transform: translateX(-57.1429%); }
+    58.8547%{ transform: translateX(-59.5238%); }
+    60.9756%{ transform: translateX(-59.5238%); }
+    61.2937%{ transform: translateX(-61.9048%); }
+    63.4146%{ transform: translateX(-61.9048%); }
+    63.7328%{ transform: translateX(-64.2857%); }
+    65.8537%{ transform: translateX(-64.2857%); }
+    66.1718%{ transform: translateX(-66.6667%); }
+    68.2927%{ transform: translateX(-66.6667%); }
+    68.6108%{ transform: translateX(-69.0476%); }
+    70.7317%{ transform: translateX(-69.0476%); }
+    71.0498%{ transform: translateX(-71.4286%); }
+    73.1707%{ transform: translateX(-71.4286%); }
+    73.4889%{ transform: translateX(-73.8095%); }
+    75.6098%{ transform: translateX(-73.8095%); }
+    75.9279%{ transform: translateX(-76.1905%); }
+    78.0488%{ transform: translateX(-76.1905%); }
+    78.3669%{ transform: translateX(-78.5714%); }
+    80.4878%{ transform: translateX(-78.5714%); }
+    80.8059%{ transform: translateX(-80.9524%); }
+    82.9268%{ transform: translateX(-80.9524%); }
+    83.2450%{ transform: translateX(-83.3333%); }
+    85.3659%{ transform: translateX(-83.3333%); }
+    85.6840%{ transform: translateX(-85.7143%); }
+    87.8049%{ transform: translateX(-85.7143%); }
+    88.1230%{ transform: translateX(-88.0952%); }
+    90.2439%{ transform: translateX(-88.0952%); }
+    90.5620%{ transform: translateX(-90.4762%); }
+    92.6829%{ transform: translateX(-90.4762%); }
+    93.0011%{ transform: translateX(-92.8571%); }
+    95.1220%{ transform: translateX(-92.8571%); }
+    95.4401%{ transform: translateX(-95.2381%); }
+    97.5610%{ transform: translateX(-95.2381%); }
+    97.8791%{ transform: translateX(-97.6190%); }
+    100%    { transform: translateX(-97.6190%); }
+    /* loop restarts here — jumps straight back to img1 */
+  }
+  #product-30 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-31 and Product-32 reuse product-10's 4-image track sizing/timing */
+  #product-31:hover .slider-track {
+    animation: slideProduct10 6.9s linear infinite;
+  }
+  #product-31 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  #product-32:hover .slider-track {
+    animation: slideProduct10 6.9s linear infinite;
+  }
+  #product-32 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-33 reuses product-3's 6-image track sizing/timing */
+  #product-33:hover .slider-track {
+    animation: slideProduct3 11.5s linear infinite;
+  }
+  #product-33 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-33's source photos are pre-composed flat-lays with built-in whitespace — contain instead of cover so nothing gets cropped */
+  #product-33 .slider-track img {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+  /* Product-34 reuses the base 8-image track sizing and product-1's loop timing */
+  #product-34:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-34 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-34's source photos are pre-composed flat-lays with built-in whitespace — contain instead of cover so nothing gets cropped */
+  #product-34 .slider-track img {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+  /* Product-35 reuses product-16's 10-image track sizing/timing; same flat-lay photo style as product-34 */
+  #product-35:hover .slider-track {
+    animation: slideProduct16 20.7s linear infinite;
+  }
+  #product-35 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  #product-35 .slider-track img {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+  /* Product-36 reuses product-3's 6-image track sizing/timing; same flat-lay photo style */
+  #product-36:hover .slider-track {
+    animation: slideProduct3 11.5s linear infinite;
+  }
+  #product-36 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  #product-36 .slider-track img {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+  /* Product-37 reuses product-20's 14-image track sizing/timing; same flat-lay photo style */
+  #product-37:hover .slider-track {
+    animation: slideProduct20 29.9s linear infinite;
+  }
+  #product-37 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  #product-37 .slider-track img {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+  /* Product-38 reuses product-7's 3-image track sizing/timing; same flat-lay photo style */
+  #product-38:hover .slider-track {
+    animation: slideProduct7 4.6s linear infinite;
+  }
+  #product-38 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-39 reuses the base 8-image track sizing and product-1's loop timing */
+  #product-39:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-39 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-40 reuses product-4's 5-image track sizing/timing */
+  #product-40:hover .slider-track {
+    animation: slideProduct4 9.2s linear infinite;
+  }
+  #product-40 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  /* Product-41 reuses the base 8-image track sizing and product-1's loop timing */
+  #product-41:hover .slider-track {
+    animation: slideProduct1 16.1s linear infinite;
+  }
+  #product-41 .slider-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+  #product-38 .slider-track img {
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+  #voidtech-card:hover
+  @keyframes slide3 {
+    0%      { transform: translateX(0); }
+    6.52%   { transform: translateX(-33.333%); }
+    56.52%  { transform: translateX(-33.333%); }
+    63.04%  { transform: translateX(-66.666%); }
+    100%    { transform: translateX(-66.666%); }
+  }
+  #voidtech-card
+
+
+  /* ── VOIDTECH SLIDER (3 images) ── */
+  .voidtech-track {
+    width: 300% !important;
+  }
+  .voidtech-track img {
+    width: 33.333% !important;
+    object-fit: cover !important;
+    object-position: center 30% !important;
+  }
+  #voidtech-card:hover .voidtech-track {
+    animation: slide3 4.6s ease forwards;
+  }
+  @keyframes slide3 {
+    0%      { transform: translateX(0); }
+    6.52%   { transform: translateX(-33.333%); }
+    56.52%  { transform: translateX(-33.333%); }
+    63.04%  { transform: translateX(-66.666%); }
+    100%    { transform: translateX(-66.666%); }
+  }
+  #voidtech-card .voidtech-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+
+
+  /* ── HERO IMAGE BRAND LABELS ── */
+  .hero-brand-label {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    background: none;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: .12em;
+    text-align: center;
+    padding: 0;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0,0,0,.8);
+  }
+
+
+  /* ── INSTAGRAM ── */
+  .instagram-section { padding: 100px 80px; }
+  .insta-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 56px;
+  }
+  .insta-cell {
+    aspect-ratio: 1;
+    background: var(--mid);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  .insta-cell img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .4s, filter .3s;
+    filter: grayscale(30%);
+  }
+  .insta-cell:hover img { transform: scale(1.1); filter: grayscale(0%); }
+  .insta-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .3s;
+  }
+  .insta-cell:hover .insta-overlay { background: rgba(0,0,0,.4); }
+  .insta-handle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: #fff;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .insta-cell:hover .insta-handle { opacity: 1; }
+
+  /* ── BATMAN SLIDER (5 images) ── */
+  .batman-track {
+    width: 500% !important;
+  }
+  .batman-track img {
+    width: 20% !important;
+    object-fit: cover !important;
+    object-position: top center !important;
+  }
+  #batman-card:hover .batman-track {
+    animation: slide5 9.2s ease forwards;
+  }
+  @keyframes slide5 {
+    0%      { transform: translateX(0); }
+    3.26%   { transform: translateX(-20%); }
+    28.26%  { transform: translateX(-20%); }
+    31.52%  { transform: translateX(-40%); }
+    56.52%  { transform: translateX(-40%); }
+    59.78%  { transform: translateX(-60%); }
+    84.78%  { transform: translateX(-60%); }
+    88.04%  { transform: translateX(-80%); }
+    100%    { transform: translateX(-80%); }
+  }
+  #batman-card .batman-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+
+
+  /* ── CHROME HEARTS SLIDER (4 images) ── */
+  .chrome-track {
+    width: 400% !important;
+  }
+  .chrome-track img {
+    width: 25% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+  }
+  #chrome-card:hover .chrome-track {
+    animation: slide4 6.9s ease forwards;
+  }
+  @keyframes slide4 {
+    0%      { transform: translateX(0); }
+    4.35%   { transform: translateX(-25%); }
+    37.68%  { transform: translateX(-25%); }
+    42.03%  { transform: translateX(-50%); }
+    75.36%  { transform: translateX(-50%); }
+    79.71%  { transform: translateX(-75%); }
+    100%    { transform: translateX(-75%); }
+  }
+  #chrome-card .chrome-track {
+    transform: translateX(0);
+    transition: transform 0.4s ease;
+  }
+
+
+  /* ── BRAND LOGO IMAGES IN MARQUEE ── */
+  .brands-track-wrap {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+  .brand-logo-item {
+    display: inline-flex;
+    align-items: center;
+    height: 96px;
+    vertical-align: middle;
+  }
+  .brand-logo-png {
+    height: 72px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+    filter: none;
+    opacity: 1;
+    transition: opacity .2s;
+    vertical-align: middle;
+  }
+  .brand-logo-png:hover { opacity: 1; }
+  .brand-name-text {
+    font-family: var(--font-display);
+    font-size: 56px;
+    letter-spacing: .1em;
+    color: #1a1a1a;
+    opacity: .65;
+    transition: opacity .2s;
+    line-height: 1;
+  }
+  .brand-name-text:hover { opacity: 1; }
+  .brand-sep {
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: #999;
+    display: inline-flex;
+    align-items: center;
+    height: 96px;
+    vertical-align: middle;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo-img"><img src="images/img-0002.jpg" alt="BERSERKER" class="brand-logo-img" /></a>
+  <ul class="nav-links">
+    <li><a href="/collections/" id="nav-collections">Collections</a></li>
+    <li><a href="/brands/" id="nav-brands">Brands</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="/all-products/" class="nav-cta">Shop Now</a>
+    <div class="cart-icon">
+      🛒
+      <span class="cart-badge" id="cart-count">0</span>
+    </div>
+  </div>
+</nav>
+
+<section class="section" id="all-products-grid" style="padding-top:48px;">
+  <div class="section-header">
+    <h2 class="section-title">SETS<br><span>COLLECTION</span></h2>
+  </div>
+  <div class="product-grid">
+    <div class="product-card fade-in" id="product-41">
+      <div class="product-img product-img-slider">
+        <div class="slider-track">
+        <img src="images/img-0370.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 1" />
+        <img src="images/img-0371.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 2" />
+        <img src="images/img-0372.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 3" />
+        <img src="images/img-0373.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 4" />
+        <img src="images/img-0374.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 5" />
+        <img src="images/img-0375.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 6" />
+        <img src="images/img-0376.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 7" />
+        <img src="images/img-0377.jpg" alt="Lululemon Define Nulu Jacket + Align Yoga Pants Set view 8" />
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Lululemon</div>
+        <div class="product-name">Define Nulu Jacket + Align Yoga Pants Set</div>
+        <div class="product-price">₹6,499</div>
+        <div class="product-swatches">
+          <div class="swatch" style="background:#a8bcc8;" title="Blue" data-img-index="0"></div>
+          <div class="swatch" style="background:#c9a898;" title="Mauve" data-img-index="2"></div>
+          <div class="swatch" style="background:#141414;" title="Black" data-img-index="4"></div>
+          <div class="swatch" style="background:#f0ede8;" title="White" data-img-index="6"></div>
+        </div>
+      </div>
+      <button class="product-add">Add to Cart</button>
+    </div>
+  
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-img-wrap"><img src="images/img-0378.jpg" alt="BERSERKER" class="brand-logo-img" /></div>
+      <p>India's most affordable destination for authentic premium activewear. Quality-checked, community-verified, delivered to your door.</p>
+      <div class="footer-social">
+        
+        
+        
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Brands</h4>
+      <ul>
+        <li><a href="/gymshark/">Gymshark</a></li>
+        <li><a href="/youngla/">YoungLA</a></li>
+        <li><a href="/breathedivinity/">Breathe Divinity</a></li>
+        <li><a href="/chromehearts/">Chrome Hearts</a></li>
+        <li><a href="/lululemon/">Lululemon</a></li>
+        <li><a href="/skims/">Skims</a></li>
+        <li><a href="/cactusjack/">Cactus Jack</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="/about-berserker/">About Us</a></li>
+        <li><a href="/contact-berserker/">Contact Us</a></li>
+        <li><a href="/returns-and-refunds/">Returns and Refunds</a></li>
+        <li><a href="/shipping-info/">Shipping Info</a></li>
+        <li><a href="https://instagram.com/berserker.in" target="_blank">DM on Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 BERSERKER. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="/privacy-policy/">Privacy Policy</a>
+      <a href="/terms-of-service/">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+
+
+<!-- SIZE PICKER MODAL -->
+<div id="size-overlay" onclick="closeSizePicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;"></div>
+<div id="size-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#141414;border:1px solid #2a2a2a;z-index:301;padding:40px 36px;width:320px;max-width:90vw;">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.08em;color:#f5f2ee;margin-bottom:6px;">SELECT SIZE</div>
+  <div id="size-product-name" style="font-family:'DM Sans',sans-serif;font-size:12px;color:#888;margin-bottom:24px;letter-spacing:.04em;"></div>
+  <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#888;margin-bottom:10px;"><span id="variant-label-prefix">Color</span> — <span id="selected-color-label" style="color:#f5f2ee;"></span></div>
+  <div id="modal-color-swatches" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;"></div>
+  <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#888;margin-bottom:10px;">Size</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;">
+    <button class="size-btn" data-size="S">S</button>
+    <button class="size-btn" data-size="M">M</button>
+    <button class="size-btn" data-size="L">L</button>
+    <button class="size-btn" data-size="XL">XL</button>
+  </div>
+  <button id="size-confirm" onclick="confirmSize()" style="width:100%;background:#e8f000;color:#0a0a0a;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;padding:14px;cursor:pointer;opacity:.4;pointer-events:none;">ADD TO CART</button>
+  <button onclick="closeSizePicker()" style="width:100%;background:none;border:none;color:#555;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer;margin-top:12px;padding:4px;">CANCEL</button>
+</div>
+<div id="cart-overlay" onclick="closeCart()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;"></div>
+<div id="cart-sidebar" style="position:fixed;top:0;right:-72%;width:72%;height:100%;background:#141414;border-left:1px solid #2a2a2a;z-index:201;transition:right .35s ease;display:flex;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 28px;border-bottom:1px solid #2a2a2a;">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.1em;color:#f5f2ee;">CART</span>
+    <button onclick="closeCart()" style="background:none;border:none;color:#888;font-size:24px;cursor:pointer;line-height:1;">✕</button>
+  </div>
+  <div id="cart-items" style="flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:16px;">
+    <div id="cart-empty" style="display:flex;align-items:center;justify-content:center;height:100%;font-family:'Bebas Neue',sans-serif;font-size:28px;color:#444;text-align:center;line-height:1.3;">Cart's Empty.<br>Go BERSERK.</div>
+  </div>
+  <div id="cart-footer" style="display:none;padding:24px 28px;border-top:1px solid #2a2a2a;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <span style="font-family:'DM Sans',sans-serif;font-size:14px;color:#aaa;letter-spacing:.06em;text-transform:uppercase;">Total</span>
+      <span id="cart-total" style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#f5f2ee;"></span>
+    </div>
+    <button style="width:100%;background:#e8f000;color:#0a0a0a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;padding:16px;cursor:pointer;" onclick="window.location.href='/checkout/'">CHECKOUT</button>
+  </div>
+</div>
+<script>
+  // Cart state — persisted across pages via localStorage (shared key, same origin)
+  const CART_STORAGE_KEY = 'berserkerCart';
+  const cartItems = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+    if (Array.isArray(stored)) cartItems.push(...stored);
+  } catch (e) {}
+
+  function openCart() {
+    document.getElementById('cart-sidebar').style.right = '0';
+    document.getElementById('cart-overlay').style.display = 'block';
+  }
+  function closeCart() {
+    document.getElementById('cart-sidebar').style.right = '-72%';
+    document.getElementById('cart-overlay').style.display = 'none';
+  }
+
+  function changeQty(name, delta) {
+    const item = cartItems.find(i => i.name === name);
+    if (!item) return;
+    if (delta > 0 && item.qty >= 5) { showToast("Can't add more than 5 of a product at a time"); return; }
+    item.qty += delta;
+    if (item.qty <= 0) cartItems.splice(cartItems.indexOf(item), 1);
+    updateCart();
+  }
+
+  function removeItem(name) {
+    const idx = cartItems.findIndex(i => i.name === name);
+    if (idx > -1) cartItems.splice(idx, 1);
+    updateCart();
+  }
+
+  function updateCart() {
+    try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems)); } catch (e) {}
+    const count = cartItems.reduce((a, i) => a + i.qty, 0);
+    document.getElementById('cart-count').textContent = count;
+
+    const itemsEl = document.getElementById('cart-items');
+    const footerEl = document.getElementById('cart-footer');
+    const totalEl = document.getElementById('cart-total');
+
+    itemsEl.innerHTML = '';
+
+    if (cartItems.length === 0) {
+      footerEl.style.display = 'none';
+      const empty = document.createElement('div');
+      empty.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;font-family:Bebas Neue,sans-serif;font-size:28px;color:#444;text-align:center;line-height:1.3;';
+      empty.innerHTML = "Cart's Empty.<br>Go BERSERK.";
+      itemsEl.appendChild(empty);
+      return;
+    }
+
+    footerEl.style.display = 'block';
+    let total = 0;
+
+    cartItems.forEach(item => {
+      total += item.price * item.qty;
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:flex-start;padding:14px 0;border-bottom:1px solid #2a2a2a;gap:14px;';
+      div.dataset.name = item.name;
+      div.innerHTML = `
+        <div style="width:72px;height:90px;flex-shrink:0;overflow:hidden;background:#1c1c1c;border:1px solid #2a2a2a;">
+          ${item.imgSrc ? `<img src="${item.imgSrc}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" />` : ''}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:Space Mono,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#e8f000;margin-bottom:4px;">${item.brand}</div>
+          <div style="font-size:12px;color:#f5f2ee;line-height:1.4;margin-bottom:8px;">${item.name}</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button data-action="dec" data-name="${item.name}" style="background:#2a2a2a;border:none;color:#f5f2ee;width:22px;height:22px;cursor:pointer;font-size:16px;line-height:1;">−</button>
+            <span style="font-size:13px;color:#f5f2ee;">${item.qty}</span>
+            <button data-action="inc" data-name="${item.name}" style="background:#2a2a2a;border:none;color:${item.qty>=5?'#444':'#f5f2ee'};width:22px;height:22px;cursor:${item.qty>=5?'not-allowed':'pointer'};font-size:16px;line-height:1;">+</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#f5f2ee;">₹${(item.price * item.qty).toLocaleString('en-IN')}</span>
+          <button data-action="remove" data-name="${item.name}" style="background:none;border:none;color:#555;font-size:11px;cursor:pointer;font-family:Space Mono,monospace;letter-spacing:.06em;">REMOVE</button>
+        </div>
+      `;
+      itemsEl.appendChild(div);
+    });
+
+    totalEl.textContent = '₹' + total.toLocaleString('en-IN');
+  }
+
+  // Single event delegation on cart-items — no stale closures
+  document.getElementById('cart-items').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const name = btn.dataset.name;
+    const action = btn.dataset.action;
+    if (action === 'inc') changeQty(name, 1);
+    else if (action === 'dec') changeQty(name, -1);
+    else if (action === 'remove') removeItem(name);
+  });
+
+  function showToast(msg) {
+    let t = document.getElementById('cart-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'cart-toast';
+      t.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1c1c1c;color:#f5f2ee;font-family:Space Mono,monospace;font-size:11px;letter-spacing:.08em;padding:12px 24px;border:1px solid #2a2a2a;z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+  }
+
+  function addToCart(brand, name, price, imgSrc) {
+    const existing = cartItems.find(i => i.name === name);
+    if (existing) {
+      if (existing.qty >= 5) { showToast("Can't add more than 5 of a product at a time"); return; }
+      existing.qty++;
+    } else {
+      cartItems.push({ brand, name, price, qty: 1, imgSrc });
+    }
+    updateCart();
+  }
+
+  // Wire up cart icon
+  document.querySelector('.cart-icon').addEventListener('click', openCart);
+
+  // Size picker state
+  let pendingItem = null;
+  let selectedSize = null;
+  let selectedColor = null;
+
+  function checkConfirmReady() {
+    const confirm = document.getElementById('size-confirm');
+    const ready = selectedSize && selectedColor !== null;
+    confirm.style.opacity = ready ? '1' : '.4';
+    confirm.style.pointerEvents = ready ? 'auto' : 'none';
+  }
+
+  function openSizePicker(brand, name, price, imgSrc, colors, allImgs) {
+    pendingItem = { brand, name, price, imgSrc, allImgs };
+    selectedSize = null;
+    selectedColor = null;
+    document.getElementById('size-product-name').textContent = name;
+    document.getElementById('selected-color-label').textContent = '';
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+    const confirm = document.getElementById('size-confirm');
+    confirm.style.opacity = '1';
+    confirm.style.pointerEvents = 'auto';
+
+    // Build color/variant swatches
+    document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
+    const swatchContainer = document.getElementById('modal-color-swatches');
+    swatchContainer.innerHTML = '';
+    colors.forEach(({ bg, label, imgIndex, variant }) => {
+      const div = document.createElement('div');
+      div.className = 'modal-swatch';
+      div.style.background = bg;
+      div.title = label;
+      if (variant) {
+        div.textContent = variant;
+        div.style.cssText += 'display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:#f5f2ee;';
+      }
+      div.addEventListener('click', () => {
+        document.querySelectorAll('.modal-swatch').forEach(s => s.classList.remove('selected'));
+        div.classList.add('selected');
+        selectedColor = { label, imgIndex };
+        document.getElementById('selected-color-label').textContent = label;
+      });
+      swatchContainer.appendChild(div);
+    });
+
+    document.getElementById('size-overlay').style.display = 'block';
+    document.getElementById('size-modal').style.display = 'block';
+  }
+
+  function closeSizePicker() {
+    pendingItem = null;
+    selectedSize = null;
+    selectedColor = null;
+    document.getElementById('size-overlay').style.display = 'none';
+    document.getElementById('size-modal').style.display = 'none';
+  }
+
+  function confirmSize() {
+    if (!pendingItem) return;
+    if (!selectedColor && !selectedSize) { showToast('Please select size and color'); return; }
+    if (!selectedColor) { showToast('Please select color'); return; }
+    if (!selectedSize) { showToast('Please select size'); return; }
+    const nameWithDetails = `${pendingItem.name} — ${selectedColor.label} / ${selectedSize}`;
+    const colorImg = pendingItem.allImgs[selectedColor.imgIndex] || pendingItem.imgSrc;
+    addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, colorImg);
+    closeSizePicker();
+  }
+
+  // Size button clicks
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedSize = btn.dataset.size;
+    });
+  });
+
+  // Wire up Add to Cart buttons
+  document.querySelectorAll('.product-add').forEach(btn => {
+    const card = btn.closest('.product-card');
+    const brand = card.querySelector('.product-brand')?.textContent.trim() || '';
+    const name  = card.querySelector('.product-name')?.textContent.trim() || '';
+    const priceStr = card.querySelector('.product-price')?.childNodes[0]?.textContent.trim() || '0';
+    const price = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
+    const imgSrc = card.querySelector('.product-img img')?.src || '';
+
+    // Collect colors from swatches — with per-color image
+    const allCardImgs = [...card.querySelectorAll('.product-img img')].map(i => i.src);
+    const colors = [...card.querySelectorAll('.swatch')].map(s => ({
+      bg: s.style.background,
+      label: s.title || s.style.background,
+      imgIndex: parseInt(s.dataset.imgIndex || '0'),
+      variant: s.dataset.variant || null
+    }));
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openSizePicker(brand, name, price, imgSrc, colors, allCardImgs);
+    });
+  });
+
+  // Product cell click-through to respective product pages
+  const productLinks = {
+    'product-1': 'https://www.berserker.in/gymshark/gymshark-onyx-5-half-sleeve',
+    'product-2': 'https://www.berserker.in/gymshark/gymshark-onyx-5-long-sleeve',
+    'product-3': 'https://www.berserker.in/gymshark/gymshark-onyx-5-sleeveless',
+    'product-4': 'https://www.berserker.in/gymshark/gymshark-founder-hoodie',
+    'product-5': 'https://www.berserker.in/gymshark/gymshark-lifting-essential-joggers',
+    'product-6': 'https://www.berserker.in/youngla/youngla-batman-half-sleeve',
+    'product-7': 'https://www.berserker.in/youngla/youngla-superman-half-sleeve',
+    'product-8': "https://www.berserker.in/youngla/youngla-gold's-gym-tshirt",
+    'product-9': 'https://www.berserker.in/youngla/youngla-drip-oversized-tshirt',
+    'product-10': 'https://www.berserker.in/youngla/youngla-revenge-hoodie',
+    'product-11': 'https://www.berserker.in/youngla/youngla-revenge-joggers',
+    'product-12': 'https://www.berserker.in/youngla/youngla-divine-sweats',
+    'product-13': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-nightfall-half-sleeve',
+    'product-14': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-berserker',
+    'product-15': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-cyber-skeleton',
+    'product-16': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-immortal',
+    'product-17': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-pulsefire',
+    'product-18': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-infernal',
+    'product-19': 'https://www.berserker.in/breathedivinity/breathedivinity-hollow-souls',
+    'product-20': 'https://www.berserker.in/breathedivinity/breathedivinity-bloodraven',
+    'product-21': 'https://www.berserker.in/breathedivinity/breathedivinity-deathclaw',
+    'product-22': 'https://www.berserker.in/breathedivinity/breathedivinity-dragon-blade',
+    'product-23': 'https://www.berserker.in/breathedivinity/breathedivinity-gargoyle',
+    'product-24': 'https://www.berserker.in/breathedivinity/breathedivinity-fallen-knight-long-sleeve',
+    'product-25': 'https://www.berserker.in/breathedivinity/breathedivinity-deathwing-oversized-hoodie',
+    'product-26': 'https://www.berserker.in/breathedivinity/breathedivinity-blood-oath-sweatpants',
+    'product-27': 'https://www.berserker.in/breathedivinity/breathedivinity-eternal-wyvern-oversized-sweatpants',
+    'product-28': 'https://www.berserker.in/chromehearts/chromehearts-retro-oversized-tshirt',
+    'product-29': 'https://www.berserker.in/chromehearts/chromehearts-vintage-oversized-tshirt',
+    'product-30': 'https://www.berserker.in/chromehearts/chromehearts-retro-hoodie',
+    'product-31': 'https://www.berserker.in/chromehearts/chromehearts-forever-denim-jacket',
+    'product-32': 'https://www.berserker.in/chromehearts/chromehearts-mastermind-ripped-denim-jacket',
+    'product-33': 'https://www.berserker.in/chromehearts/chromehearts-retro-jeans',
+    'product-34': 'https://www.berserker.in/cactusjack/cactusjack-oversized-tshirt',
+    'product-35': 'https://www.berserker.in/cactusjack/cactusjack-astroworld-oversized-tshirt',
+    'product-36': 'https://www.berserker.in/cactusjack/cactusjack-fragment-oversized-tshirt',
+    'product-37': 'https://www.berserker.in/cactusjack/cactusjack-mcdonalds-oversized-tshirt',
+    'product-38': 'https://www.berserker.in/cactusjack/cactusjack-playstation-oversized-tshirt',
+    'product-39': 'https://www.berserker.in/skims/skims-cotton-jersey-tshirt',
+    'product-40': 'https://www.berserker.in/skims/skims-rhinestone-logo-mini-dress',
+    'product-41': 'https://www.berserker.in/lululemon/lululemon-define-nulu-align-yoga-set'
+  };
+  document.querySelectorAll('.product-card').forEach(card => {
+    const url = productLinks[card.id];
+    if (!url) return;
+    card.addEventListener('click', () => {
+      window.location.href = url;
+    });
+  });
+
+  // Init
+  updateCart();
+
+  // Back to top
+  const btt = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btt.classList.toggle('visible', window.scrollY > 400);
+  });
+
+</script>
+
+</body>
+</html>
