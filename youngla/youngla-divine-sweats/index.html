@@ -27,7 +27,7 @@
     --font-mono: 'Space Mono', monospace;
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
 
   body {
     background: var(--black);
@@ -319,6 +319,14 @@
     line-height: .95;
   }
   .section-title span { color: var(--accent); }
+  @media(max-width: 640px) {
+    .section-header { flex-wrap: wrap; row-gap: 12px; }
+    .section-title { font-size: clamp(32px, 9vw, 56px); }
+  }
+  @media(max-width: 640px) {
+    .hero-title { font-size: clamp(40px, 12vw, 100px); }
+    .insta-heading .brand-logo-img { height: 36px; }
+  }
   .section-link {
     font-family: var(--font-mono);
     font-size: 11px;
