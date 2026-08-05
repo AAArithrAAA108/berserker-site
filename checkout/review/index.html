@@ -1099,9 +1099,29 @@
       <div>
         <h3 class="review-heading">Order Items</h3>
         <div id="review-items"></div>
-        <div style="margin-top:24px;padding-top:24px;border-top:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-family:'DM Sans',sans-serif;color:#aaa;text-transform:uppercase;font-size:13px;letter-spacing:.06em;">Total</span>
-          <span id="review-total" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:#f5f2ee;"></span>
+
+        <div class="checkout-coupon">
+          <label for="coupon-input">Coupon Code</label>
+          <div class="checkout-coupon-row">
+            <input type="text" id="coupon-input" placeholder="Enter code" />
+            <button id="coupon-apply-btn" type="button">Apply</button>
+          </div>
+          <p id="coupon-message"></p>
+        </div>
+
+        <div style="margin-top:24px;padding-top:24px;border-top:1px solid #2a2a2a;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:'DM Sans',sans-serif;color:#aaa;text-transform:uppercase;font-size:13px;letter-spacing:.06em;">Subtotal</span>
+            <span id="review-subtotal" style="font-family:'Space Mono',monospace;font-size:14px;color:#f5f2ee;"></span>
+          </div>
+          <div id="coupon-discount-row" style="display:none;justify-content:space-between;align-items:center;margin-top:10px;">
+            <span style="font-family:'DM Sans',sans-serif;color:#e8f000;text-transform:uppercase;font-size:13px;letter-spacing:.06em;">Discount (<span id="coupon-code-label"></span>)</span>
+            <span id="coupon-discount-amount" style="font-family:'Space Mono',monospace;font-size:14px;color:#e8f000;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid #1e1e1e;">
+            <span style="font-family:'DM Sans',sans-serif;color:#aaa;text-transform:uppercase;font-size:13px;letter-spacing:.06em;">Total</span>
+            <span id="review-total" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:#f5f2ee;"></span>
+          </div>
         </div>
 
         <h3 class="review-heading" style="margin-top:40px;">Shipping To</h3>
@@ -1133,6 +1153,14 @@
   .review-item-name { font-size:13px; color:#f5f2ee; line-height:1.4; margin-bottom:6px; }
   .review-item-qty { font-size:12px; color:#888; }
   .review-item-price { font-family:'Bebas Neue',sans-serif; font-size:18px; color:#f5f2ee; flex-shrink:0; }
+  .checkout-coupon { margin-top:24px; }
+  .checkout-coupon label { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#888; display:block; margin-bottom:8px; }
+  .checkout-coupon-row { display:flex; }
+  .checkout-coupon-row input { flex:1; min-width:0; background:#141414; border:1px solid #2a2a2a; border-right:none; color:#f5f2ee; font-family:'Space Mono',monospace; font-size:13px; letter-spacing:.04em; text-transform:uppercase; padding:12px 16px; outline:none; }
+  .checkout-coupon-row input:focus { border-color:#e8f000; }
+  .checkout-coupon-row button { background:#2a2a2a; color:#f5f2ee; border:none; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:0 22px; cursor:pointer; transition:background .2s; }
+  .checkout-coupon-row button:hover { background:#3a3a3a; }
+  #coupon-message { font-size:12px; font-family:'DM Sans',sans-serif; margin-top:8px; min-height:14px; }
   .review-payment-box { background:#111; border:1px solid #1e1e1e; padding:32px; }
   @media(max-width:900px) {
     .review-grid { grid-template-columns:1fr; }
@@ -1541,11 +1569,13 @@
     content.style.display = 'grid';
 
     var itemsEl = document.getElementById('review-items');
-    var total = 0;
+    var subtotal = 0;
+    var totalQty = 0;
     itemsEl.innerHTML = '';
     cart.forEach(function(item) {
       var lineTotal = item.price * item.qty;
-      total += lineTotal;
+      subtotal += lineTotal;
+      totalQty += item.qty;
       var row = document.createElement('div');
       row.className = 'review-item-row';
       row.innerHTML =
@@ -1561,8 +1591,52 @@
       itemsEl.appendChild(row);
     });
 
-    document.getElementById('review-total').textContent = '₹' + total.toLocaleString('en-IN');
-    document.getElementById('pay-amount').textContent = total.toLocaleString('en-IN');
+    var COUPONS = {
+      'BRSKR25': { type: 'percent', value: 25, minQty: 10 }
+    };
+    var appliedDiscount = 0;
+    var appliedCode = null;
+
+    function currentTotal() {
+      return subtotal - appliedDiscount;
+    }
+
+    function renderTotals() {
+      document.getElementById('review-subtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+      document.getElementById('review-total').textContent = '₹' + currentTotal().toLocaleString('en-IN');
+      document.getElementById('pay-amount').textContent = currentTotal().toLocaleString('en-IN');
+    }
+    renderTotals();
+
+    document.getElementById('coupon-apply-btn').addEventListener('click', function() {
+      var codeInput = document.getElementById('coupon-input').value.trim().toUpperCase();
+      var msgEl = document.getElementById('coupon-message');
+      var discountRow = document.getElementById('coupon-discount-row');
+      var coupon = COUPONS[codeInput];
+
+      appliedDiscount = 0;
+      appliedCode = null;
+      discountRow.style.display = 'none';
+
+      if (!codeInput) {
+        msgEl.textContent = '';
+      } else if (!coupon) {
+        msgEl.textContent = 'Invalid coupon code.';
+        msgEl.style.color = '#ff3c1e';
+      } else if (totalQty < coupon.minQty) {
+        msgEl.textContent = 'This code needs at least ' + coupon.minQty + ' items in your cart (you have ' + totalQty + ').';
+        msgEl.style.color = '#ff3c1e';
+      } else {
+        appliedDiscount = Math.round(subtotal * coupon.value / 100);
+        appliedCode = codeInput;
+        document.getElementById('coupon-code-label').textContent = codeInput;
+        document.getElementById('coupon-discount-amount').textContent = '−₹' + appliedDiscount.toLocaleString('en-IN');
+        discountRow.style.display = 'flex';
+        msgEl.textContent = coupon.value + '% discount applied!';
+        msgEl.style.color = '#8fd14f';
+      }
+      renderTotals();
+    });
 
     document.getElementById('review-address').innerHTML =
       address.name + '<br>' +
@@ -1580,10 +1654,10 @@
         // TODO: replace with your real Razorpay Key ID (Dashboard → Settings → API Keys).
         // The Key ID is safe to expose client-side; never put your Key Secret here.
         key: 'RAZORPAY_KEY_ID',
-        amount: Math.round(total * 100), // amount in paise
+        amount: Math.round(currentTotal() * 100), // amount in paise
         currency: 'INR',
         name: 'BERSERKER',
-        description: 'Order Payment',
+        description: 'Order Payment' + (appliedCode ? ' (Coupon: ' + appliedCode + ')' : ''),
         prefill: {
           name: address.name,
           email: address.email || '',
