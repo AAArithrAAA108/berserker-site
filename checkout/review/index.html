@@ -1132,8 +1132,39 @@
       <div>
         <div class="review-payment-box">
           <h3 class="review-heading">Payment</h3>
-          <p style="color:#888;font-size:13px;font-family:'DM Sans',sans-serif;line-height:1.7;margin:16px 0 24px;">All payments are processed securely through Razorpay. We never see or store your card, UPI, or bank details.</p>
-          <button id="pay-btn" class="btn-primary" style="width:100%;text-align:center;">Pay ₹<span id="pay-amount">0</span> Securely via Razorpay</button>
+          <p style="color:#888;font-size:13px;font-family:'DM Sans',sans-serif;line-height:1.7;margin:16px 0 20px;">All payments are processed securely through Razorpay. We never see or store your card, UPI, or bank details.</p>
+
+          <div class="payment-method-group">
+            <label class="payment-method-option">
+              <input type="radio" name="payment-method" value="full" checked />
+              <span class="payment-method-label">
+                <strong>UPI / Cards</strong>
+                <small>Pay the full order amount now via Razorpay.</small>
+              </span>
+            </label>
+            <label class="payment-method-option">
+              <input type="radio" name="payment-method" value="cod" />
+              <span class="payment-method-label">
+                <strong>Cash on Delivery</strong>
+                <small>Pay a non-refundable advance now; the rest is due when you receive your order.</small>
+              </span>
+            </label>
+          </div>
+
+          <div id="cod-breakdown" style="display:none;">
+            <div class="cod-breakdown-row">
+              <span>COD Advance (pay now)</span>
+              <span id="cod-advance-amount"></span>
+            </div>
+            <div class="cod-breakdown-row">
+              <span>Balance Due on Delivery</span>
+              <span id="cod-balance-amount"></span>
+            </div>
+          </div>
+
+          <button id="pay-btn" class="btn-primary" style="width:100%;text-align:center;margin-top:24px;">Pay ₹<span id="pay-amount">0</span> Securely via Razorpay</button>
+
+          <p class="checkout-disclaimer">Orders can be cancelled free of charge up to <strong>12 hours</strong> after payment. After 12 hours, the payment made is <strong>non-refundable</strong>. To cancel within that window, reach out to us via <a href="mailto:support@berserker.in">email</a> or <a href="https://instagram.com/berserker.in" target="_blank">Instagram DM</a>.</p>
         </div>
       </div>
     </div>
@@ -1162,6 +1193,19 @@
   .checkout-coupon-row button:hover { background:#3a3a3a; }
   #coupon-message { font-size:12px; font-family:'DM Sans',sans-serif; margin-top:8px; min-height:14px; }
   .review-payment-box { background:#111; border:1px solid #1e1e1e; padding:32px; }
+  .payment-method-group { display:flex; flex-direction:column; gap:10px; margin-top:4px; }
+  .payment-method-option { display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid #2a2a2a; cursor:pointer; transition:border-color .2s; }
+  .payment-method-option:has(input:checked), .payment-method-option.selected { border-color:#e8f000; }
+  .payment-method-option input { margin-top:3px; accent-color:#e8f000; flex-shrink:0; }
+  .payment-method-label strong { display:block; font-family:'DM Sans',sans-serif; font-size:14px; color:#f5f2ee; margin-bottom:4px; }
+  .payment-method-label small { display:block; font-family:'DM Sans',sans-serif; font-size:12px; color:#888; line-height:1.5; }
+  #cod-breakdown { margin-top:16px; padding-top:16px; border-top:1px solid #1e1e1e; }
+  .cod-breakdown-row { display:flex; justify-content:space-between; font-family:'DM Sans',sans-serif; font-size:13px; color:#aaa; margin-bottom:8px; }
+  .cod-breakdown-row span:last-child { color:#f5f2ee; font-family:'Space Mono',monospace; }
+  .checkout-disclaimer { margin-top:20px; padding-top:20px; border-top:1px solid #1e1e1e; font-family:'DM Sans',sans-serif; font-size:11px; color:#666; line-height:1.7; }
+  .checkout-disclaimer strong { color:#999; }
+  .checkout-disclaimer a { color:#888; text-decoration:none; border-bottom:1px solid #333; }
+  .checkout-disclaimer a:hover { color:#e8f000; border-color:#e8f000; }
   @media(max-width:900px) {
     .review-grid { grid-template-columns:1fr; }
   }
@@ -1541,6 +1585,56 @@
     var cart = [];
     try { cart = JSON.parse(localStorage.getItem('berserkerCart') || '[]'); } catch (e) {}
 
+    var COD_TABLE = {
+      "Gymshark|Founder Edition Oversized Hoodie": 4500,
+      "Gymshark|Lifting Essential Joggers": 3000,
+      "Gymshark|Onyx 5.0 Seamless Compression Half Sleeve": 3000,
+      "Gymshark|Onyx 5.0 Seamless Compression Full Sleeve": 3000,
+      "Gymshark|Onyx 5.0 Seamless Compression Sleeveless": 3000,
+      "YoungLA × Batman|Compression Half Sleeve": 4000,
+      "YoungLA|Divine Sweats Sweatpants": 2900,
+      "YoungLA|Drip Oversized T-Shirt": 2800,
+      "YoungLA × Gold's Gym|Slim Fit T-Shirt": 3000,
+      "YoungLA|Revenge Hoodie": 3500,
+      "YoungLA|Revenge Joggers": 3000,
+      "YoungLA × Superman|Compression Half Sleeve": 3000,
+      "BreatheDivinity|Blood Oath Sweatpants": 3400,
+      "BreatheDivinity|Bloodraven Oversized T-Shirt": 3600,
+      "BreatheDivinity|Deathclaw Oversized T-Shirt": 3700,
+      "BreatheDivinity|Deathwing Oversized Hoodie": 3500,
+      "BreatheDivinity|Dragon Blade Oversized T-Shirt": 3700,
+      "BreatheDivinity|Eternal Wyvern Oversized Sweatpants": 3400,
+      "BreatheDivinity|Fallen Knight Long Sleeve Compression": 3700,
+      "BreatheDivinity|Gargoyle Oversized T-Shirt": 3700,
+      "BreatheDivinity|Hollow Souls Oversized T-Shirt": 3500,
+      "BreatheDivinity|VoidTech Berserker Compression": 2500,
+      "BreatheDivinity|VoidTech Cyber Skeleton Compression": 3500,
+      "BreatheDivinity|VoidTech Immortal Compression": 3500,
+      "BreatheDivinity|VoidTech Infernal Compression": 3500,
+      "BreatheDivinity|VoidTech Nightfall Compression Half Sleeve": 2500,
+      "BreatheDivinity|VoidTech PulseFire Compression": 3500,
+      "Chrome Hearts|Forever Black Denim Jacket": 7300,
+      "Chrome Hearts × Mastermind|Ripped Denim Jacket": 7300,
+      "Chrome Hearts|Retro Hoodie": 5100,
+      "Chrome Hearts|Retro Jeans": 5600,
+      "Chrome Hearts|Retro Oversized T-Shirt": 3100,
+      "Chrome Hearts|Vintage Oversized T-Shirt": 3100,
+      "Cactus Jack x Travis Scott|Astroworld Oversized T-Shirt": 3000,
+      "Cactus Jack x Travis Scott x Fragment|Oversized T-Shirt": 3000,
+      "Cactus Jack x Travis Scott x McDonald's|Oversized T-Shirt": 3000,
+      "Cactus Jack x Travis Scott|Oversized T-Shirt": 3000,
+      "Cactus Jack x Travis Scott x Playstation|Oversized T-Shirt": 3000,
+      "Skims|Cotton Jersey T-Shirt": 2600,
+      "Skims|Rhinestone Logo Pointelle Mini Slip Dress": 4900,
+      "Lululemon|Define Nulu Jacket + Align Yoga Pants Set": 6000
+    };
+
+    function codAdvanceFor(item) {
+      var baseName = item.name.split(' — ')[0];
+      var advance = COD_TABLE[item.brand + '|' + baseName];
+      return advance === undefined ? item.price : advance;
+    }
+
     var emptyNotice = document.getElementById('review-empty-notice');
     var emptyText = document.getElementById('review-empty-text');
     var emptyLink = document.getElementById('review-empty-link');
@@ -1571,11 +1665,13 @@
     var itemsEl = document.getElementById('review-items');
     var subtotal = 0;
     var totalQty = 0;
+    var codTotal = 0;
     itemsEl.innerHTML = '';
     cart.forEach(function(item) {
       var lineTotal = item.price * item.qty;
       subtotal += lineTotal;
       totalQty += item.qty;
+      codTotal += codAdvanceFor(item) * item.qty;
       var row = document.createElement('div');
       row.className = 'review-item-row';
       row.innerHTML =
@@ -1601,12 +1697,44 @@
       return subtotal - appliedDiscount;
     }
 
+    function selectedPaymentMethod() {
+      var checked = document.querySelector('input[name="payment-method"]:checked');
+      return checked ? checked.value : 'full';
+    }
+
+    function updatePaymentUI() {
+      var orderTotal = currentTotal();
+      var method = selectedPaymentMethod();
+      var codBreakdown = document.getElementById('cod-breakdown');
+      var payBtn = document.getElementById('pay-btn');
+
+      document.querySelectorAll('.payment-method-option').forEach(function(el) {
+        el.classList.toggle('selected', el.querySelector('input').checked);
+      });
+
+      if (method === 'cod') {
+        var advanceToPay = Math.min(codTotal, orderTotal);
+        var balance = Math.max(orderTotal - advanceToPay, 0);
+        document.getElementById('cod-advance-amount').textContent = '₹' + advanceToPay.toLocaleString('en-IN');
+        document.getElementById('cod-balance-amount').textContent = '₹' + balance.toLocaleString('en-IN');
+        codBreakdown.style.display = 'block';
+        payBtn.innerHTML = 'Pay ₹<span id="pay-amount">' + advanceToPay.toLocaleString('en-IN') + '</span> Advance via Razorpay';
+      } else {
+        codBreakdown.style.display = 'none';
+        payBtn.innerHTML = 'Pay ₹<span id="pay-amount">' + orderTotal.toLocaleString('en-IN') + '</span> Securely via Razorpay';
+      }
+    }
+
     function renderTotals() {
       document.getElementById('review-subtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
       document.getElementById('review-total').textContent = '₹' + currentTotal().toLocaleString('en-IN');
-      document.getElementById('pay-amount').textContent = currentTotal().toLocaleString('en-IN');
+      updatePaymentUI();
     }
     renderTotals();
+
+    document.querySelectorAll('input[name="payment-method"]').forEach(function(radio) {
+      radio.addEventListener('change', updatePaymentUI);
+    });
 
     document.getElementById('coupon-apply-btn').addEventListener('click', function() {
       var codeInput = document.getElementById('coupon-input').value.trim().toUpperCase();
@@ -1650,21 +1778,29 @@
         alert('Payment gateway failed to load. Please check your connection and try again.');
         return;
       }
+      var orderTotal = currentTotal();
+      var method = selectedPaymentMethod();
+      var isCod = method === 'cod';
+      var amountToCharge = isCod ? Math.min(codTotal, orderTotal) : orderTotal;
+      var balanceDue = isCod ? Math.max(orderTotal - amountToCharge, 0) : 0;
+      var couponNote = appliedCode ? ' (Coupon: ' + appliedCode + ')' : '';
+
       var options = {
         // TODO: replace with your real Razorpay Key ID (Dashboard → Settings → API Keys).
         // The Key ID is safe to expose client-side; never put your Key Secret here.
         key: 'RAZORPAY_KEY_ID',
-        amount: Math.round(currentTotal() * 100), // amount in paise
+        amount: Math.round(amountToCharge * 100), // amount in paise
         currency: 'INR',
         name: 'BERSERKER',
-        description: 'Order Payment' + (appliedCode ? ' (Coupon: ' + appliedCode + ')' : ''),
+        description: (isCod ? 'COD Advance Payment' : 'Order Payment') + couponNote,
         prefill: {
           name: address.name,
           email: address.email || '',
           contact: address.phone
         },
         notes: {
-          address: address.address1 + ', ' + address.city + ', ' + address.state + ' - ' + address.pincode
+          address: address.address1 + ', ' + address.city + ', ' + address.state + ' - ' + address.pincode,
+          paymentMethod: isCod ? 'Cash on Delivery (advance paid online)' : 'Full payment online'
         },
         theme: { color: '#e8f000' },
         handler: function(response) {
@@ -1672,7 +1808,12 @@
             localStorage.removeItem('berserkerCart');
             sessionStorage.removeItem('berserkerCheckoutAddress');
           } catch (e) {}
-          alert('Payment successful! Payment ID: ' + response.razorpay_payment_id + '\n\nThank you for your order.');
+          var msg = 'Payment successful! Payment ID: ' + response.razorpay_payment_id + '\n\n';
+          if (isCod) {
+            msg += 'Advance received. Balance of ₹' + balanceDue.toLocaleString('en-IN') + ' is due when your order is delivered.\n\n';
+          }
+          msg += 'Thank you for your order.';
+          alert(msg);
           window.location.href = '/';
         }
       };
