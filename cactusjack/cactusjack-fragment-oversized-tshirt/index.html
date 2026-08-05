@@ -1548,6 +1548,7 @@
     try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems)); } catch (e) {}
     const count = cartItems.reduce((a, i) => a + i.qty, 0);
     document.getElementById('cart-count').textContent = count;
+    checkDiscountUnlock(count);
 
     const itemsEl = document.getElementById('cart-items');
     const footerEl = document.getElementById('cart-footer');
@@ -1606,6 +1607,37 @@
     else if (action === 'dec') changeQty(name, -1);
     else if (action === 'remove') removeItem(name);
   });
+
+  function checkDiscountUnlock(qty) {
+    if (qty >= 10) {
+      if (localStorage.getItem('berserkerDiscountShown') !== '1') {
+        showDiscountToast();
+        try { localStorage.setItem('berserkerDiscountShown', '1'); } catch (e) {}
+      }
+    } else {
+      try { localStorage.removeItem('berserkerDiscountShown'); } catch (e) {}
+    }
+  }
+
+  function showDiscountToast() {
+    let d = document.getElementById('discount-toast');
+    if (!d) {
+      d = document.createElement('div');
+      d.id = 'discount-toast';
+      d.style.cssText = 'position:fixed;top:90px;left:50%;transform:translateX(-50%) translateY(-16px);background:#e8f000;color:#0a0a0a;font-family:Space Mono,monospace;font-size:20px;font-weight:700;letter-spacing:.02em;padding:18px 28px;border:2px solid #0a0a0a;z-index:600;opacity:0;transition:opacity .3s, transform .3s;text-align:center;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+      d.textContent = '25% DISCOUNT UNLOCKED! Use code BRSKR25 at checkout.';
+      document.body.appendChild(d);
+    }
+    requestAnimationFrame(() => {
+      d.style.opacity = '1';
+      d.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    clearTimeout(d._timer);
+    d._timer = setTimeout(() => {
+      d.style.opacity = '0';
+      d.style.transform = 'translateX(-50%) translateY(-16px)';
+    }, 5000);
+  }
 
   function showToast(msg) {
     let t = document.getElementById('cart-toast');
