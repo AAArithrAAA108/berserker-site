@@ -1818,9 +1818,8 @@
       var couponNote = appliedCode ? ' (Coupon: ' + appliedCode + ')' : '';
 
       var options = {
-        // TODO: replace with your real Razorpay Key ID (Dashboard → Settings → API Keys).
-        // The Key ID is safe to expose client-side; never put your Key Secret here.
-        key: 'RAZORPAY_KEY_ID',
+        // Test mode key — swap for your rzp_live_... key when you're ready to accept real payments.
+        key: 'rzp_test_SnjEhhUdNITC9S',
         amount: Math.round(amountToCharge * 100), // amount in paise
         currency: 'INR',
         name: 'BERSERKER',
