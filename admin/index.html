@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="color-scheme" content="dark" />
+<title>Admin Login — BERSERKER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a; --white: #f5f2ee; --accent: #e8f000; --accent2: #ff3c1e;
+    --mid: #1c1c1c; --muted: #888; --border: #2a2a2a; --card-bg: #141414;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .login-box { width: 100%; max-width: 380px; }
+  .login-logo { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: .08em; text-align: center; margin-bottom: 8px; }
+  .login-logo span { color: var(--accent); }
+  .login-sub { text-align: center; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 40px; }
+  .login-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .login-field label { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .login-field input {
+    background: var(--card-bg); border: 1px solid var(--border); color: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 14px 16px; outline: none; transition: border-color .2s; width: 100%;
+  }
+  .login-field input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; background: var(--accent); color: var(--black); border: none;
+    font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; padding: 16px; cursor: pointer; margin-top: 8px; transition: background .2s;
+  }
+  .login-btn:hover { background: #d4dc00; }
+  .login-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .login-message { margin-top: 16px; font-size: 13px; text-align: center; min-height: 18px; }
+</style>
+</head>
+<body>
+
+<div class="login-box">
+  <div class="login-logo">BERSERKER<span>.</span></div>
+  <div class="login-sub">Admin Access</div>
+
+  <form id="login-form">
+    <div class="login-field">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" required autocomplete="username" />
+    </div>
+    <div class="login-field">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" required autocomplete="current-password" />
+    </div>
+    <button type="submit" class="login-btn" id="login-btn">Sign In</button>
+    <p id="login-message" class="login-message"></p>
+  </form>
+</div>
+
+<script>
+  var SUPABASE_URL = 'https://gvddahtgbhbqusyczxuo.supabase.co';
+  var SUPABASE_ANON_KEY = 'sb_publishable_9eNluV7u_mGfSeFI7ssJjg_jeF7h0yK';
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  (async function() {
+    var { data } = await sb.auth.getSession();
+    if (data && data.session) {
+      window.location.href = '/admin/dashboard/';
+    }
+  })();
+
+  document.getElementById('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('login-btn');
+    var msg = document.getElementById('login-message');
+    var email = document.getElementById('login-email').value.trim();
+    var password = document.getElementById('login-password').value;
+
+    btn.disabled = true;
+    msg.style.color = '#888';
+    msg.textContent = 'Signing in...';
+
+    var { data, error } = await sb.auth.signInWithPassword({ email: email, password: password });
+
+    if (error) {
+      btn.disabled = false;
+      msg.style.color = '#ff3c1e';
+      msg.textContent = error.message;
+      return;
+    }
+
+    var { data: profile } = await sb.from('admin_profiles').select('role').eq('id', data.user.id).maybeSingle();
+    if (!profile) {
+      await sb.auth.signOut();
+      btn.disabled = false;
+      msg.style.color = '#ff3c1e';
+      msg.textContent = 'This account is not authorized as an admin.';
+      return;
+    }
+
+    window.location.href = '/admin/dashboard/';
+  });
+</script>
+
+</body>
+</html>

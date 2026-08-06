@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="color-scheme" content="dark" />
+<title>Admin Dashboard — BERSERKER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a; --white: #f5f2ee; --accent: #e8f000; --accent2: #ff3c1e;
+    --mid: #1c1c1c; --muted: #888; --border: #2a2a2a; --card-bg: #141414;
+    color-scheme: dark;
+  }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; }
+  a { color: inherit; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 64px; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,.95); position: sticky; top: 0; z-index: 10;
+  }
+  .header-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .06em; }
+  .header-logo span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .header-role { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .header-role.super { color: var(--accent); }
+  .signout-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 8px 16px; cursor: pointer; transition: border-color .2s, color .2s; }
+  .signout-btn:hover { border-color: var(--white); color: var(--white); }
+
+  .tabs { display: flex; gap: 4px; padding: 24px 32px 0; border-bottom: 1px solid var(--border); }
+  .tab-btn { background: none; border: none; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { padding: 32px; max-width: 1400px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: .02em; margin-bottom: 24px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 12px; border-bottom: 1px solid #1a1a1a; vertical-align: top; }
+  tbody tr:hover { background: #0f0f0f; }
+  .table-wrap { overflow-x: auto; background: var(--card-bg); border: 1px solid var(--border); }
+
+  .btn { background: var(--accent); color: var(--black); border: none; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; cursor: pointer; transition: background .2s; }
+  .btn:hover { background: #d4dc00; }
+  .btn.secondary { background: #2a2a2a; color: var(--white); }
+  .btn.secondary:hover { background: #3a3a3a; }
+  .btn.danger { background: var(--accent2); color: #fff; }
+  .btn.danger:hover { background: #e0301a; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  select, input[type=text], input[type=number], input[type=email] {
+    background: var(--mid); border: 1px solid var(--border); color: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 10px; outline: none;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+
+  .status-badge { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; padding: 3px 8px; display: inline-block; }
+  .status-badge.placed { background: #2a2a2a; color: var(--white); }
+  .status-badge.delivered { background: #1a4a1a; color: #8fd14f; }
+  .status-badge.cancelled { background: #3a1a1a; color: var(--accent2); }
+
+  .add-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 24px; padding: 20px; background: var(--card-bg); border: 1px solid var(--border); }
+  .add-form .field { display: flex; flex-direction: column; gap: 6px; }
+  .add-form label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .add-form .checkbox-field { flex-direction: row; align-items: center; gap: 8px; }
+
+  .order-detail { display: none; background: #0f0f0f; padding: 14px; margin-top: 8px; border: 1px solid var(--border); font-size: 12px; color: #ccc; }
+  .order-detail.open { display: block; }
+  .order-detail-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e1e1e; }
+
+  .msg { font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .loading-note { color: var(--muted); font-family: 'Space Mono', monospace; font-size: 12px; padding: 20px; text-align: center; }
+
+  @media(max-width: 700px) {
+    header { padding: 0 16px; }
+    .tabs { padding: 16px 16px 0; overflow-x: auto; }
+    main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">BERSERKER<span>.</span> <span style="color:var(--muted);font-size:16px;">Admin</span></div>
+  <div class="header-right">
+    <span class="header-role" id="header-role">—</span>
+    <button class="signout-btn" id="signout-btn">Sign Out</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="orders">Orders</button>
+  <button class="tab-btn" data-tab="coupons">Coupons</button>
+  <button class="tab-btn" data-tab="products">Products</button>
+  <button class="tab-btn" data-tab="admins" id="admins-tab-btn" style="display:none;">Admins</button>
+</div>
+
+<main>
+
+  <!-- ORDERS -->
+  <section class="panel active" id="panel-orders">
+    <div class="panel-title">Orders</div>
+    <div id="orders-loading" class="loading-note">Loading orders...</div>
+    <div class="table-wrap" id="orders-table-wrap" style="display:none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Order #</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th>
+            <th>Payment</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- COUPONS -->
+  <section class="panel" id="panel-coupons">
+    <div class="panel-title">Coupons</div>
+    <form class="add-form" id="coupon-form">
+      <div class="field"><label>Code</label><input type="text" id="new-coupon-code" required style="width:140px;text-transform:uppercase;" /></div>
+      <div class="field"><label>Discount %</label><input type="number" id="new-coupon-percent" required min="1" max="100" style="width:100px;" /></div>
+      <div class="field"><label>Min Qty</label><input type="number" id="new-coupon-minqty" required min="1" value="1" style="width:90px;" /></div>
+      <div class="field checkbox-field"><input type="checkbox" id="new-coupon-active" checked /><label>Active</label></div>
+      <button type="submit" class="btn">Add Coupon</button>
+    </form>
+    <p id="coupon-msg" class="msg"></p>
+    <div id="coupons-loading" class="loading-note">Loading coupons...</div>
+    <div class="table-wrap" id="coupons-table-wrap" style="display:none;">
+      <table>
+        <thead><tr><th>Code</th><th>Discount</th><th>Min Qty</th><th>Active</th><th>Actions</th></tr></thead>
+        <tbody id="coupons-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="panel" id="panel-products">
+    <div class="panel-title">Products</div>
+    <div id="products-loading" class="loading-note">Loading products...</div>
+    <div class="table-wrap" id="products-table-wrap" style="display:none;">
+      <table>
+        <thead><tr><th>Brand</th><th>Name</th><th>Slug</th><th>Price (₹)</th><th>COD Advance (₹)</th><th>Colors</th><th>Actions</th></tr></thead>
+        <tbody id="products-tbody"></tbody>
+      </table>
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-top:16px;max-width:640px;">Editing price/COD advance here updates the database record only — it does not change the live product page on the storefront. Update the site page separately to keep them in sync.</p>
+  </section>
+
+  <!-- ADMINS -->
+  <section class="panel" id="panel-admins">
+    <div class="panel-title">Admins</div>
+    <form class="add-form" id="admin-form">
+      <div class="field"><label>User UID</label><input type="text" id="new-admin-uid" required placeholder="From Supabase Auth → Users" style="width:280px;" /></div>
+      <div class="field"><label>Email</label><input type="email" id="new-admin-email" required style="width:220px;" /></div>
+      <div class="field"><label>Role</label>
+        <select id="new-admin-role">
+          <option value="admin">admin</option>
+          <option value="super_admin">super_admin</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Add Admin</button>
+    </form>
+    <p id="admin-msg" class="msg"></p>
+    <div id="admins-loading" class="loading-note">Loading admins...</div>
+    <div class="table-wrap" id="admins-table-wrap" style="display:none;">
+      <table>
+        <thead><tr><th>Email</th><th>Role</th><th>Added</th><th>Actions</th></tr></thead>
+        <tbody id="admins-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  var SUPABASE_URL = 'https://gvddahtgbhbqusyczxuo.supabase.co';
+  var SUPABASE_ANON_KEY = 'sb_publishable_9eNluV7u_mGfSeFI7ssJjg_jeF7h0yK';
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var currentUser = null;
+  var currentRole = null;
+
+  function fmtMoney(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+  function fmtDate(iso) { return new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+
+  // ── AUTH GATE ──
+  async function initAuth() {
+    var { data } = await sb.auth.getSession();
+    if (!data || !data.session) {
+      window.location.href = '/admin/';
+      return false;
+    }
+    currentUser = data.session.user;
+
+    var { data: profile } = await sb.from('admin_profiles').select('role').eq('id', currentUser.id).maybeSingle();
+    if (!profile) {
+      await sb.auth.signOut();
+      window.location.href = '/admin/';
+      return false;
+    }
+    currentRole = profile.role;
+
+    var roleEl = document.getElementById('header-role');
+    roleEl.textContent = currentUser.email + ' · ' + currentRole;
+    if (currentRole === 'super_admin') {
+      roleEl.classList.add('super');
+      document.getElementById('admins-tab-btn').style.display = '';
+    }
+    return true;
+  }
+
+  document.getElementById('signout-btn').addEventListener('click', async function() {
+    await sb.auth.signOut();
+    window.location.href = '/admin/';
+  });
+
+  // ── TABS ──
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── ORDERS ──
+  async function loadOrders() {
+    var { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
+    document.getElementById('orders-loading').style.display = 'none';
+    if (error) {
+      document.getElementById('orders-loading').style.display = 'block';
+      document.getElementById('orders-loading').textContent = 'Failed to load orders: ' + error.message;
+      return;
+    }
+    document.getElementById('orders-table-wrap').style.display = 'block';
+    var tbody = document.getElementById('orders-tbody');
+    tbody.innerHTML = '';
+    data.forEach(function(o) {
+      var itemCount = Array.isArray(o.items) ? o.items.reduce(function(a, i) { return a + (i.qty || 1); }, 0) : 0;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + o.order_number + '</td>' +
+        '<td>' + fmtDate(o.created_at) + '</td>' +
+        '<td>' + esc(o.customer_name) + '<br><span style="color:var(--muted);font-size:11px;">' + esc(o.customer_phone) + '</span></td>' +
+        '<td>' + itemCount + '</td>' +
+        '<td>' + fmtMoney(o.order_total) + '<br><span style="color:var(--muted);font-size:11px;">paid ' + fmtMoney(o.amount_paid) + '</span></td>' +
+        '<td>' + (o.payment_method === 'cod' ? 'COD' : 'Full (Razorpay)') + '</td>' +
+        '<td><select class="status-select" data-order="' + o.order_number + '">' +
+          ['placed','delivered','cancelled'].map(function(s) { return '<option value="' + s + '"' + (s === o.status ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+        '</select></td>' +
+        '<td class="btn-row"><button class="btn secondary view-order-btn" data-order="' + o.order_number + '">View</button>' +
+          '<button class="btn danger delete-order-btn" data-order="' + o.order_number + '">Delete</button></td>';
+      tbody.appendChild(tr);
+
+      var detailTr = document.createElement('tr');
+      var detailTd = document.createElement('td');
+      detailTd.colSpan = 8;
+      var itemsHtml = (o.items || []).map(function(i) {
+        return '<div class="order-detail-row"><span>' + esc(i.brand) + ' — ' + esc(i.name) + ' × ' + i.qty + '</span><span>' + fmtMoney(i.price * i.qty) + '</span></div>';
+      }).join('');
+      detailTd.innerHTML =
+        '<div class="order-detail" id="detail-' + o.order_number + '">' +
+          '<strong>Items</strong>' + itemsHtml +
+          '<div class="order-detail-row"><span>Subtotal</span><span>' + fmtMoney(o.subtotal) + '</span></div>' +
+          (o.coupon_code ? '<div class="order-detail-row"><span>Coupon (' + esc(o.coupon_code) + ')</span><span>−' + fmtMoney(o.discount) + '</span></div>' : '') +
+          '<div class="order-detail-row"><span>Order Total</span><span>' + fmtMoney(o.order_total) + '</span></div>' +
+          (o.payment_method === 'cod' ? '<div class="order-detail-row"><span>Balance Due on Delivery</span><span>' + fmtMoney(o.balance_due) + '</span></div>' : '') +
+          '<div class="order-detail-row"><span>Razorpay Payment ID</span><span>' + esc(o.razorpay_payment_id || '—') + '</span></div>' +
+          '<div class="order-detail-row" style="border-bottom:none;"><span>Ship To</span><span style="text-align:right;">' +
+            esc(o.address_line1) + (o.address_line2 ? ', ' + esc(o.address_line2) : '') + '<br>' +
+            esc(o.city) + ', ' + esc(o.state) + ' - ' + esc(o.pincode) + '<br>' + esc(o.country) +
+          '</span></div>' +
+        '</div>';
+      detailTr.appendChild(detailTd);
+      tbody.appendChild(detailTr);
+    });
+
+    document.querySelectorAll('.view-order-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.getElementById('detail-' + btn.dataset.order).classList.toggle('open');
+      });
+    });
+    document.querySelectorAll('.status-select').forEach(function(sel) {
+      sel.addEventListener('change', async function() {
+        sel.disabled = true;
+        await sb.from('orders').update({ status: sel.value }).eq('order_number', sel.dataset.order);
+        sel.disabled = false;
+      });
+    });
+    document.querySelectorAll('.delete-order-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        if (!confirm('Delete order #' + btn.dataset.order + '? This cannot be undone.')) return;
+        await sb.from('orders').delete().eq('order_number', btn.dataset.order);
+        loadOrders();
+      });
+    });
+  }
+
+  // ── COUPONS ──
+  async function loadCoupons() {
+    var { data, error } = await sb.from('coupons').select('*').order('created_at', { ascending: false });
+    document.getElementById('coupons-loading').style.display = 'none';
+    if (error) {
+      document.getElementById('coupons-loading').style.display = 'block';
+      document.getElementById('coupons-loading').textContent = 'Failed to load coupons: ' + error.message;
+      return;
+    }
+    document.getElementById('coupons-table-wrap').style.display = 'block';
+    var tbody = document.getElementById('coupons-tbody');
+    tbody.innerHTML = '';
+    data.forEach(function(c) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + esc(c.code) + '</td>' +
+        '<td>' + c.discount_percent + '%</td>' +
+        '<td>' + c.min_qty + '</td>' +
+        '<td>' + (c.active ? 'Yes' : 'No') + '</td>' +
+        '<td class="btn-row">' +
+          '<button class="btn secondary toggle-coupon-btn" data-code="' + esc(c.code) + '" data-active="' + c.active + '">' + (c.active ? 'Deactivate' : 'Activate') + '</button>' +
+          '<button class="btn danger delete-coupon-btn" data-code="' + esc(c.code) + '">Delete</button>' +
+        '</td>';
+      tbody.appendChild(tr);
+    });
+    document.querySelectorAll('.toggle-coupon-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        await sb.from('coupons').update({ active: btn.dataset.active !== 'true' }).eq('code', btn.dataset.code);
+        loadCoupons();
+      });
+    });
+    document.querySelectorAll('.delete-coupon-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        if (!confirm('Delete coupon ' + btn.dataset.code + '?')) return;
+        await sb.from('coupons').delete().eq('code', btn.dataset.code);
+        loadCoupons();
+      });
+    });
+  }
+
+  document.getElementById('coupon-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var msg = document.getElementById('coupon-msg');
+    var code = document.getElementById('new-coupon-code').value.trim().toUpperCase();
+    var percent = parseFloat(document.getElementById('new-coupon-percent').value);
+    var minQty = parseInt(document.getElementById('new-coupon-minqty').value, 10);
+    var active = document.getElementById('new-coupon-active').checked;
+
+    var { error } = await sb.from('coupons').insert({ code: code, discount_percent: percent, min_qty: minQty, active: active });
+    if (error) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = error.message;
+    } else {
+      msg.style.color = '#8fd14f';
+      msg.textContent = 'Coupon added.';
+      e.target.reset();
+      document.getElementById('new-coupon-minqty').value = 1;
+      document.getElementById('new-coupon-active').checked = true;
+      loadCoupons();
+    }
+  });
+
+  // ── PRODUCTS ──
+  async function loadProducts() {
+    var { data, error } = await sb
+      .from('products')
+      .select('*, product_colors(label, hex, image_index)')
+      .order('brand', { ascending: true });
+    document.getElementById('products-loading').style.display = 'none';
+    if (error) {
+      document.getElementById('products-loading').style.display = 'block';
+      document.getElementById('products-loading').textContent = 'Failed to load products: ' + error.message;
+      return;
+    }
+    document.getElementById('products-table-wrap').style.display = 'block';
+    var tbody = document.getElementById('products-tbody');
+    tbody.innerHTML = '';
+    data.forEach(function(p) {
+      var colorsHtml = (p.product_colors || []).map(function(c) {
+        return '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + (c.hex || '#333') + ';border:1px solid #444;margin-right:3px;" title="' + esc(c.label) + '"></span>';
+      }).join('');
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + esc(p.brand) + '</td>' +
+        '<td>' + esc(p.name) + '</td>' +
+        '<td style="color:var(--muted);font-size:11px;">' + esc(p.slug) + '</td>' +
+        '<td><input type="number" class="edit-price" data-id="' + p.id + '" value="' + p.price + '" style="width:90px;" /></td>' +
+        '<td><input type="number" class="edit-cod" data-id="' + p.id + '" value="' + p.cod_advance + '" style="width:90px;" /></td>' +
+        '<td>' + (colorsHtml || '<span style="color:var(--muted);">—</span>') + '</td>' +
+        '<td class="btn-row"><button class="btn save-product-btn" data-id="' + p.id + '">Save</button>' +
+          '<button class="btn danger delete-product-btn" data-id="' + p.id + '">Delete</button></td>';
+      tbody.appendChild(tr);
+    });
+    document.querySelectorAll('.save-product-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        var id = btn.dataset.id;
+        var price = parseFloat(document.querySelector('.edit-price[data-id="' + id + '"]').value);
+        var cod = parseFloat(document.querySelector('.edit-cod[data-id="' + id + '"]').value);
+        btn.disabled = true;
+        await sb.from('products').update({ price: price, cod_advance: cod, updated_at: new Date().toISOString() }).eq('id', id);
+        btn.disabled = false;
+        btn.textContent = 'Saved';
+        setTimeout(function() { btn.textContent = 'Save'; }, 1500);
+      });
+    });
+    document.querySelectorAll('.delete-product-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        if (!confirm('Delete this product record from the database? (Does not remove the live storefront page.)')) return;
+        await sb.from('products').delete().eq('id', btn.dataset.id);
+        loadProducts();
+      });
+    });
+  }
+
+  // ── ADMINS ──
+  async function loadAdmins() {
+    var { data, error } = await sb.from('admin_profiles').select('*').order('created_at', { ascending: true });
+    document.getElementById('admins-loading').style.display = 'none';
+    if (error) {
+      document.getElementById('admins-loading').style.display = 'block';
+      document.getElementById('admins-loading').textContent = 'Failed to load admins: ' + error.message;
+      return;
+    }
+    document.getElementById('admins-table-wrap').style.display = 'block';
+    var tbody = document.getElementById('admins-tbody');
+    tbody.innerHTML = '';
+    data.forEach(function(a) {
+      var isSelf = a.id === currentUser.id;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + esc(a.email) + (isSelf ? ' <span style="color:var(--muted);">(you)</span>' : '') + '</td>' +
+        '<td>' + esc(a.role) + '</td>' +
+        '<td>' + fmtDate(a.created_at) + '</td>' +
+        '<td class="btn-row">' +
+          '<button class="btn secondary toggle-role-btn" data-id="' + a.id + '" data-role="' + a.role + '"' + (isSelf ? ' disabled' : '') + '>' + (a.role === 'super_admin' ? 'Demote to admin' : 'Promote to super_admin') + '</button>' +
+          '<button class="btn danger remove-admin-btn" data-id="' + a.id + '"' + (isSelf ? ' disabled' : '') + '>Remove</button>' +
+        '</td>';
+      tbody.appendChild(tr);
+    });
+    document.querySelectorAll('.toggle-role-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        var newRole = btn.dataset.role === 'super_admin' ? 'admin' : 'super_admin';
+        await sb.from('admin_profiles').update({ role: newRole }).eq('id', btn.dataset.id);
+        loadAdmins();
+      });
+    });
+    document.querySelectorAll('.remove-admin-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        if (!confirm('Remove this admin\'s access?')) return;
+        await sb.from('admin_profiles').delete().eq('id', btn.dataset.id);
+        loadAdmins();
+      });
+    });
+  }
+
+  document.getElementById('admin-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var msg = document.getElementById('admin-msg');
+    var uid = document.getElementById('new-admin-uid').value.trim();
+    var email = document.getElementById('new-admin-email').value.trim();
+    var role = document.getElementById('new-admin-role').value;
+
+    var { error } = await sb.from('admin_profiles').insert({ id: uid, email: email, role: role });
+    if (error) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = error.message;
+    } else {
+      msg.style.color = '#8fd14f';
+      msg.textContent = 'Admin added.';
+      e.target.reset();
+      loadAdmins();
+    }
+  });
+
+  // ── INIT ──
+  (async function() {
+    var ok = await initAuth();
+    if (!ok) return;
+    loadOrders();
+    loadCoupons();
+    loadProducts();
+    if (currentRole === 'super_admin') loadAdmins();
+  })();
+</script>
+
+</body>
+</html>

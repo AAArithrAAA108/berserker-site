@@ -1081,6 +1081,7 @@
 
 <!-- CHECKOUT: REVIEW & PAY -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <div style="background:#0a0a0a;min-height:70vh;padding:100px 80px;">
   <div style="max-width:920px;margin:0 auto;">
     <div class="checkout-steps">
@@ -1582,6 +1583,14 @@
 
 <script>
   (function() {
+    // Safe to expose client-side: the anon key only grants what row-level
+    // security policies in Supabase explicitly allow (product reads + order inserts).
+    var SUPABASE_URL = 'https://gvddahtgbhbqusyczxuo.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable_9eNluV7u_mGfSeFI7ssJjg_jeF7h0yK';
+    var sb = (typeof window.supabase !== 'undefined')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
     var cart = [];
     try { cart = JSON.parse(localStorage.getItem('berserkerCart') || '[]'); } catch (e) {}
 
@@ -1687,9 +1696,6 @@
       itemsEl.appendChild(row);
     });
 
-    var COUPONS = {
-      'BRSKR25': { type: 'percent', value: 25, minQty: 10 }
-    };
     var appliedDiscount = 0;
     var appliedCode = null;
 
@@ -1736,11 +1742,11 @@
       radio.addEventListener('change', updatePaymentUI);
     });
 
-    document.getElementById('coupon-apply-btn').addEventListener('click', function() {
+    document.getElementById('coupon-apply-btn').addEventListener('click', async function() {
       var codeInput = document.getElementById('coupon-input').value.trim().toUpperCase();
       var msgEl = document.getElementById('coupon-message');
       var discountRow = document.getElementById('coupon-discount-row');
-      var coupon = COUPONS[codeInput];
+      var applyBtn = this;
 
       appliedDiscount = 0;
       appliedCode = null;
@@ -1748,20 +1754,46 @@
 
       if (!codeInput) {
         msgEl.textContent = '';
-      } else if (!coupon) {
-        msgEl.textContent = 'Invalid coupon code.';
-        msgEl.style.color = '#ff3c1e';
-      } else if (totalQty < coupon.minQty) {
-        msgEl.textContent = 'This code needs at least ' + coupon.minQty + ' items in your cart (you have ' + totalQty + ').';
-        msgEl.style.color = '#ff3c1e';
-      } else {
-        appliedDiscount = Math.round(subtotal * coupon.value / 100);
+        renderTotals();
+        return;
+      }
+
+      applyBtn.disabled = true;
+      msgEl.style.color = '#888';
+      msgEl.textContent = 'Checking code...';
+
+      var result = null;
+      if (sb) {
+        try {
+          var rpcRes = await sb.rpc('validate_coupon', { p_code: codeInput, p_qty: totalQty });
+          if (!rpcRes.error && rpcRes.data && rpcRes.data.length) result = rpcRes.data[0];
+        } catch (e) {}
+      }
+
+      // Fallback (e.g. database not reachable yet) so BRSKR25 still works as advertised.
+      if (!result) {
+        if (codeInput === 'BRSKR25') {
+          result = totalQty >= 10
+            ? { valid: true, discount_percent: 25, message: '25% discount applied!' }
+            : { valid: false, discount_percent: 0, message: 'This code needs at least 10 items in your cart (you have ' + totalQty + ').' };
+        } else {
+          result = { valid: false, discount_percent: 0, message: 'Invalid coupon code.' };
+        }
+      }
+
+      applyBtn.disabled = false;
+
+      if (result.valid) {
+        appliedDiscount = Math.round(subtotal * result.discount_percent / 100);
         appliedCode = codeInput;
         document.getElementById('coupon-code-label').textContent = codeInput;
         document.getElementById('coupon-discount-amount').textContent = '−₹' + appliedDiscount.toLocaleString('en-IN');
         discountRow.style.display = 'flex';
-        msgEl.textContent = coupon.value + '% discount applied!';
+        msgEl.textContent = result.message;
         msgEl.style.color = '#8fd14f';
+      } else {
+        msgEl.textContent = result.message;
+        msgEl.style.color = '#ff3c1e';
       }
       renderTotals();
     });
@@ -1803,12 +1835,51 @@
           paymentMethod: isCod ? 'Cash on Delivery (advance paid online)' : 'Full payment online'
         },
         theme: { color: '#e8f000' },
-        handler: function(response) {
+        handler: async function(response) {
+          var orderNumber = null;
+          if (sb) {
+            try {
+              var orderItems = cart.map(function(item) {
+                return { brand: item.brand, name: item.name, qty: item.qty, price: item.price, imgSrc: item.imgSrc };
+              });
+              var insertRes = await sb.from('orders').insert({
+                customer_name: address.name,
+                customer_phone: address.phone,
+                customer_email: address.email || null,
+                address_line1: address.address1,
+                address_line2: address.address2 || null,
+                city: address.city,
+                state: address.state,
+                pincode: address.pincode,
+                country: address.country,
+                items: orderItems,
+                subtotal: subtotal,
+                discount: appliedDiscount,
+                coupon_code: appliedCode,
+                order_total: orderTotal,
+                payment_method: method,
+                amount_paid: amountToCharge,
+                balance_due: balanceDue,
+                razorpay_payment_id: response.razorpay_payment_id
+              }).select('order_number').single();
+              if (insertRes.error) {
+                console.error('Order save failed:', insertRes.error);
+              } else if (insertRes.data) {
+                orderNumber = insertRes.data.order_number;
+              }
+            } catch (e) {
+              console.error('Order save failed:', e);
+            }
+          }
+
           try {
             localStorage.removeItem('berserkerCart');
             sessionStorage.removeItem('berserkerCheckoutAddress');
           } catch (e) {}
-          var msg = 'Payment successful! Payment ID: ' + response.razorpay_payment_id + '\n\n';
+
+          var msg = 'Payment successful!\n\n';
+          msg += orderNumber ? ('Order #' + orderNumber + '\n') : '';
+          msg += 'Payment ID: ' + response.razorpay_payment_id + '\n\n';
           if (isCod) {
             msg += 'Advance received. Balance of ₹' + balanceDue.toLocaleString('en-IN') + ' is due when your order is delivered.\n\n';
           }
