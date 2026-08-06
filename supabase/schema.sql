@@ -169,6 +169,59 @@ $$ language plpgsql security definer;
 
 grant execute on function validate_coupon(text, int) to anon;
 
+-- ── SECURE ORDER CREATION (callable by the public storefront) ──
+-- The storefront runs as the anon role, which can INSERT into orders but
+-- cannot SELECT from it (admin-only). Postgres applies the SELECT policy to
+-- the RETURNING clause of an INSERT too, so a plain `insert().select()` from
+-- the client silently returns no row and the order number never comes back.
+-- This function inserts as security definer and returns just the order
+-- number, without exposing any other order's data to the caller.
+create or replace function create_order(
+  p_customer_name text,
+  p_customer_phone text,
+  p_customer_email text,
+  p_address_line1 text,
+  p_address_line2 text,
+  p_city text,
+  p_state text,
+  p_pincode text,
+  p_country text,
+  p_items jsonb,
+  p_subtotal numeric,
+  p_discount numeric,
+  p_coupon_code text,
+  p_order_total numeric,
+  p_payment_method text,
+  p_amount_paid numeric,
+  p_balance_due numeric,
+  p_razorpay_payment_id text
+)
+returns bigint as $$
+declare
+  v_order_number bigint;
+begin
+  insert into orders (
+    customer_name, customer_phone, customer_email,
+    address_line1, address_line2, city, state, pincode, country,
+    items, subtotal, discount, coupon_code, order_total,
+    payment_method, amount_paid, balance_due, razorpay_payment_id
+  ) values (
+    p_customer_name, p_customer_phone, p_customer_email,
+    p_address_line1, p_address_line2, p_city, p_state, p_pincode, p_country,
+    p_items, p_subtotal, p_discount, p_coupon_code, p_order_total,
+    p_payment_method, p_amount_paid, p_balance_due, p_razorpay_payment_id
+  )
+  returning order_number into v_order_number;
+
+  return v_order_number;
+end;
+$$ language plpgsql security definer;
+
+grant execute on function create_order(
+  text, text, text, text, text, text, text, text, text,
+  jsonb, numeric, numeric, text, numeric, text, numeric, numeric, text
+) to anon;
+
 -- ── SEED DATA ──
 -- Existing BRSKR25 coupon, matching what's already live on the site.
 insert into coupons (code, discount_percent, min_qty, active)

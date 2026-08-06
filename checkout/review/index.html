@@ -1840,30 +1840,30 @@
               var orderItems = cart.map(function(item) {
                 return { brand: item.brand, name: item.name, qty: item.qty, price: item.price, imgSrc: item.imgSrc };
               });
-              var insertRes = await sb.from('orders').insert({
-                customer_name: address.name,
-                customer_phone: address.phone,
-                customer_email: address.email || null,
-                address_line1: address.address1,
-                address_line2: address.address2 || null,
-                city: address.city,
-                state: address.state,
-                pincode: address.pincode,
-                country: address.country,
-                items: orderItems,
-                subtotal: subtotal,
-                discount: appliedDiscount,
-                coupon_code: appliedCode,
-                order_total: orderTotal,
-                payment_method: method,
-                amount_paid: amountToCharge,
-                balance_due: balanceDue,
-                razorpay_payment_id: response.razorpay_payment_id
-              }).select('order_number').single();
+              var insertRes = await sb.rpc('create_order', {
+                p_customer_name: address.name,
+                p_customer_phone: address.phone,
+                p_customer_email: address.email || null,
+                p_address_line1: address.address1,
+                p_address_line2: address.address2 || null,
+                p_city: address.city,
+                p_state: address.state,
+                p_pincode: address.pincode,
+                p_country: address.country,
+                p_items: orderItems,
+                p_subtotal: subtotal,
+                p_discount: appliedDiscount,
+                p_coupon_code: appliedCode,
+                p_order_total: orderTotal,
+                p_payment_method: method,
+                p_amount_paid: amountToCharge,
+                p_balance_due: balanceDue,
+                p_razorpay_payment_id: response.razorpay_payment_id
+              });
               if (insertRes.error) {
                 console.error('Order save failed:', insertRes.error);
               } else if (insertRes.data) {
-                orderNumber = insertRes.data.order_number;
+                orderNumber = insertRes.data;
               }
             } catch (e) {
               console.error('Order save failed:', e);
