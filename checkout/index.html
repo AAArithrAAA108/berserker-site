@@ -1175,6 +1175,17 @@
         </div>
       </div>
 
+      <div class="checkout-field">
+        <label>Shipping Method</label>
+        <div class="shipping-method-option">
+          <input type="radio" name="shipping-method" value="standard" checked disabled />
+          <span class="shipping-method-label">
+            <strong>Standard Expressed Shipping</strong>
+            <small id="shipping-estimate">Estimated delivery date: calculating…</small>
+          </span>
+        </div>
+      </div>
+
       <button type="submit" class="btn-primary" style="margin-top:16px;width:100%;text-align:center;">Continue to Payment →</button>
     </form>
   </div>
@@ -1192,6 +1203,10 @@
   .checkout-field input:focus, .checkout-field select:focus { border-color:#e8f000; }
   .checkout-field input:disabled { color:#666; cursor:not-allowed; }
   .checkout-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .shipping-method-option { display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid var(--accent); background:#141414; }
+  .shipping-method-option input { margin-top:3px; accent-color:#e8f000; flex-shrink:0; }
+  .shipping-method-label strong { display:block; font-family:'DM Sans',sans-serif; font-size:14px; color:#f5f2ee; margin-bottom:4px; }
+  .shipping-method-label small { display:block; font-family:'DM Sans',sans-serif; font-size:12px; color:#888; line-height:1.5; }
   @media(max-width:640px) {
     div[style*="padding:100px 80px"] { padding:60px 24px !important; }
     .checkout-row-2 { grid-template-columns:1fr; }
@@ -1565,6 +1580,23 @@
 
 <script>
   (function() {
+    function ordinal(n) {
+      var s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
+    function formatShipDate(d) {
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      var text = ordinal(d.getDate()) + ' ' + months[d.getMonth()];
+      return text;
+    }
+    (function renderShippingEstimate() {
+      var today = new Date();
+      var startDate = new Date(today); startDate.setDate(today.getDate() + 35);
+      var endDate = new Date(today); endDate.setDate(today.getDate() + 45);
+      var el = document.getElementById('shipping-estimate');
+      if (el) el.textContent = 'Estimated delivery date: ' + formatShipDate(startDate) + ' to ' + formatShipDate(endDate);
+    })();
+
     var cart = [];
     try { cart = JSON.parse(localStorage.getItem('berserkerCart') || '[]'); } catch (e) {}
 
