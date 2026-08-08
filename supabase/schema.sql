@@ -53,6 +53,17 @@ create table if not exists product_images (
 
 create index if not exists product_images_product_id_idx on product_images(product_id);
 
+create table if not exists product_variants (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references products(id) on delete cascade,
+  color_id uuid not null references product_colors(id) on delete cascade,
+  size text not null check (size in ('S','M','L','XL')),
+  in_stock boolean not null default true,
+  unique (product_id, color_id, size)
+);
+
+create index if not exists product_variants_product_id_idx on product_variants(product_id);
+
 -- ── COUPONS ──
 -- Not publicly readable as a table (see validate_coupon() RPC below) so the
 -- full code list can't just be scraped from the API.
@@ -115,6 +126,7 @@ alter table admin_profiles enable row level security;
 alter table products enable row level security;
 alter table product_colors enable row level security;
 alter table product_images enable row level security;
+alter table product_variants enable row level security;
 alter table coupons enable row level security;
 alter table customers enable row level security;
 alter table orders enable row level security;
@@ -144,6 +156,11 @@ drop policy if exists "public read product_images" on product_images;
 create policy "public read product_images" on product_images for select using (true);
 drop policy if exists "admin write product_images" on product_images;
 create policy "admin write product_images" on product_images for all using (is_admin()) with check (is_admin());
+
+drop policy if exists "public read product_variants" on product_variants;
+create policy "public read product_variants" on product_variants for select using (true);
+drop policy if exists "admin write product_variants" on product_variants;
+create policy "admin write product_variants" on product_variants for all using (is_admin()) with check (is_admin());
 
 -- Coupons: no public read policy at all (deliberately) — only reachable via validate_coupon() below.
 drop policy if exists "admin manage coupons" on coupons;
