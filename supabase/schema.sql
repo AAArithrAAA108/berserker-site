@@ -24,8 +24,14 @@ create table if not exists products (
   slug text unique not null,
   price numeric(10,2) not null,
   cod_advance numeric(10,2) not null default 0,
+  position int,
+  category text,
+  sleeve_length text,
+  description text,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  constraint products_category_check check (category in ('t-shirt','compression','pants','jacket','dress','set')),
+  constraint products_sleeve_length_check check (sleeve_length is null or sleeve_length in ('half','full','sleeveless'))
 );
 
 create table if not exists product_colors (
