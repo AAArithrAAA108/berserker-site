@@ -42,6 +42,15 @@ create table if not exists product_colors (
   image_index int not null default 0
 );
 
+create table if not exists product_images (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references products(id) on delete cascade,
+  storage_path text not null,
+  sort_order int not null default 0
+);
+
+create index if not exists product_images_product_id_idx on product_images(product_id);
+
 -- ── COUPONS ──
 -- Not publicly readable as a table (see validate_coupon() RPC below) so the
 -- full code list can't just be scraped from the API.
@@ -103,6 +112,7 @@ create index if not exists orders_customer_phone_idx on orders (customer_phone);
 alter table admin_profiles enable row level security;
 alter table products enable row level security;
 alter table product_colors enable row level security;
+alter table product_images enable row level security;
 alter table coupons enable row level security;
 alter table customers enable row level security;
 alter table orders enable row level security;
@@ -127,6 +137,11 @@ drop policy if exists "public read product_colors" on product_colors;
 create policy "public read product_colors" on product_colors for select using (true);
 drop policy if exists "admin write product_colors" on product_colors;
 create policy "admin write product_colors" on product_colors for all using (is_admin()) with check (is_admin());
+
+drop policy if exists "public read product_images" on product_images;
+create policy "public read product_images" on product_images for select using (true);
+drop policy if exists "admin write product_images" on product_images;
+create policy "admin write product_images" on product_images for all using (is_admin()) with check (is_admin());
 
 -- Coupons: no public read policy at all (deliberately) — only reachable via validate_coupon() below.
 drop policy if exists "admin manage coupons" on coupons;
