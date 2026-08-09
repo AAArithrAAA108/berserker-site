@@ -24,17 +24,51 @@ create table if not exists products (
   slug text unique not null,
   price numeric(10,2) not null,
   cod_advance numeric(10,2) not null default 0,
+  position int not null,
+  category text not null,
+  sleeve_length text,
+  description text,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  constraint products_category_check check (category in ('t-shirt','compression','pants','jacket','dress','set')),
+  constraint products_sleeve_length_check check (sleeve_length is null or sleeve_length in ('half','full','sleeveless')),
+  -- DEFERRABLE so set_product_position() can shift a block of rows without the
+  -- intermediate (momentarily colliding) state tripping the uniqueness check.
+  constraint products_position_unique unique (position) deferrable initially immediate
 );
+
+-- product_images must be created BEFORE product_colors: product_colors.cover_image_id
+-- has a foreign key onto it, so the reverse order fails a fresh top-to-bottom run
+-- with "relation product_images does not exist".
+create table if not exists product_images (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references products(id) on delete cascade,
+  storage_path text not null,
+  sort_order int not null default 0
+);
+
+create index if not exists product_images_product_id_idx on product_images(product_id);
 
 create table if not exists product_colors (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null references products(id) on delete cascade,
   label text not null,
   hex text,
-  image_index int not null default 0
+  image_index int not null default 0,
+  color_group text not null,
+  cover_image_id uuid references product_images(id)
 );
+
+create table if not exists product_variants (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references products(id) on delete cascade,
+  color_id uuid not null references product_colors(id) on delete cascade,
+  size text not null check (size in ('S','M','L','XL')),
+  in_stock boolean not null default true,
+  unique (product_id, color_id, size)
+);
+
+create index if not exists product_variants_product_id_idx on product_variants(product_id);
 
 -- ── COUPONS ──
 -- Not publicly readable as a table (see validate_coupon() RPC below) so the
@@ -97,6 +131,8 @@ create index if not exists orders_customer_phone_idx on orders (customer_phone);
 alter table admin_profiles enable row level security;
 alter table products enable row level security;
 alter table product_colors enable row level security;
+alter table product_images enable row level security;
+alter table product_variants enable row level security;
 alter table coupons enable row level security;
 alter table customers enable row level security;
 alter table orders enable row level security;
@@ -121,6 +157,16 @@ drop policy if exists "public read product_colors" on product_colors;
 create policy "public read product_colors" on product_colors for select using (true);
 drop policy if exists "admin write product_colors" on product_colors;
 create policy "admin write product_colors" on product_colors for all using (is_admin()) with check (is_admin());
+
+drop policy if exists "public read product_images" on product_images;
+create policy "public read product_images" on product_images for select using (true);
+drop policy if exists "admin write product_images" on product_images;
+create policy "admin write product_images" on product_images for all using (is_admin()) with check (is_admin());
+
+drop policy if exists "public read product_variants" on product_variants;
+create policy "public read product_variants" on product_variants for select using (true);
+drop policy if exists "admin write product_variants" on product_variants;
+create policy "admin write product_variants" on product_variants for all using (is_admin()) with check (is_admin());
 
 -- Coupons: no public read policy at all (deliberately) — only reachable via validate_coupon() below.
 drop policy if exists "admin manage coupons" on coupons;
@@ -221,6 +267,83 @@ grant execute on function create_order(
   text, text, text, text, text, text, text, text, text,
   jsonb, numeric, numeric, text, numeric, text, numeric, numeric, text
 ) to anon;
+
+-- ── COLOR GROUP CLASSIFIER ──
+create or replace function classify_color_group(hex text)
+returns text
+language plpgsql
+immutable
+as $$
+declare
+  r int; g int; b int;
+  palette text[] := array['Black','White','Grey','Red','Blue','Green','Purple','Pink','Orange','Navy','Maroon','Gold','Brown','Cream','Denim'];
+  palette_hex text[] := array['#141414','#f0ede8','#8a8a8a','#c41e1e','#1c4aa0','#1c8a3a','#5a1ca0','#c41e8a','#c46a1e','#1c2c4a','#5a1a1a','#c4a01c','#5a3f2a','#ede9e3','#6b9fd4'];
+  best_name text := 'Black';
+  best_dist float8 := 'Infinity'::float8;
+  i int;
+  pr int; pg int; pb int;
+  dist float8;
+begin
+  if hex is null or length(hex) != 7 then
+    return 'Uncategorized';
+  end if;
+  r := ('x' || substr(hex, 2, 2))::bit(8)::int;
+  g := ('x' || substr(hex, 4, 2))::bit(8)::int;
+  b := ('x' || substr(hex, 6, 2))::bit(8)::int;
+  for i in 1 .. array_length(palette, 1) loop
+    pr := ('x' || substr(palette_hex[i], 2, 2))::bit(8)::int;
+    pg := ('x' || substr(palette_hex[i], 4, 2))::bit(8)::int;
+    pb := ('x' || substr(palette_hex[i], 6, 2))::bit(8)::int;
+    dist := pow(r - pr, 2) + pow(g - pg, 2) + pow(b - pb, 2);
+    if dist < best_dist then
+      best_dist := dist;
+      best_name := palette[i];
+    end if;
+  end loop;
+  return best_name;
+end;
+$$;
+
+-- ── PRODUCT REORDERING ──
+-- SECURITY DEFINER + internal is_admin() gate: the admin panel calls this as an
+-- authenticated user, and without the definer context the shift UPDATEs would
+-- silently match zero rows under RLS and look like a successful no-op.
+create or replace function set_product_position(p_product_id uuid, p_new_position int)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_old_position int;
+begin
+  if not is_admin() then
+    raise exception 'set_product_position: admin privileges required';
+  end if;
+
+  -- Defer the uniqueness check to commit so the block shift below is legal.
+  set constraints products_position_unique deferred;
+
+  select position into v_old_position from products where id = p_product_id;
+
+  -- products.position is NOT NULL, so a null here can only mean "no such product".
+  if v_old_position is null then
+    raise exception 'set_product_position: no product found with id %', p_product_id;
+  end if;
+
+  if p_new_position = v_old_position then
+    return;
+  elsif p_new_position < v_old_position then
+    update products set position = position + 1
+    where position >= p_new_position and position < v_old_position and id != p_product_id;
+  else
+    update products set position = position - 1
+    where position > v_old_position and position <= p_new_position and id != p_product_id;
+  end if;
+
+  update products set position = p_new_position where id = p_product_id;
+end;
+$$;
 
 -- ── SEED DATA ──
 -- Existing BRSKR25 coupon, matching what's already live on the site.
