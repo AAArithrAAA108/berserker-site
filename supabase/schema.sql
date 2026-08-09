@@ -32,7 +32,9 @@ create table if not exists products (
   updated_at timestamptz not null default now(),
   constraint products_category_check check (category in ('t-shirt','compression','pants','jacket','dress','set')),
   constraint products_sleeve_length_check check (sleeve_length is null or sleeve_length in ('half','full','sleeveless')),
-  constraint products_position_unique unique (position)
+  -- DEFERRABLE so set_product_position() can shift a block of rows without the
+  -- intermediate (momentarily colliding) state tripping the uniqueness check.
+  constraint products_position_unique unique (position) deferrable initially immediate
 );
 
 create table if not exists product_colors (
@@ -300,21 +302,30 @@ end;
 $$;
 
 -- ── PRODUCT REORDERING ──
+-- SECURITY DEFINER + internal is_admin() gate: the admin panel calls this as an
+-- authenticated user, and without the definer context the shift UPDATEs would
+-- silently match zero rows under RLS and look like a successful no-op.
 create or replace function set_product_position(p_product_id uuid, p_new_position int)
 returns void
 language plpgsql
+security definer
+set search_path = public
 as $$
 declare
   v_old_position int;
 begin
+  if not is_admin() then
+    raise exception 'set_product_position: admin privileges required';
+  end if;
+
+  -- Defer the uniqueness check to commit so the block shift below is legal.
+  set constraints products_position_unique deferred;
+
   select position into v_old_position from products where id = p_product_id;
 
+  -- products.position is NOT NULL, so a null here can only mean "no such product".
   if v_old_position is null then
-    -- new product being placed for the first time: make room, then set it
-    update products set position = position + 1
-    where position >= p_new_position;
-    update products set position = p_new_position where id = p_product_id;
-    return;
+    raise exception 'set_product_position: no product found with id %', p_product_id;
   end if;
 
   if p_new_position = v_old_position then
