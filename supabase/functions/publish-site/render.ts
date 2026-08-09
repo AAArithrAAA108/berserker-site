@@ -8,13 +8,26 @@ function formatInr(amount: number): string {
   return "₹" + amount.toLocaleString("en-IN");
 }
 
+// Escapes text that ultimately comes from an admin-editable database column
+// before it is interpolated into HTML markup or an HTML attribute value.
+// Without this, a product name/brand/colour label containing `<`, `>`, `&`,
+// `"` or `'` becomes stored XSS in the generated storefront page.
+export function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function renderProductCard(product: CatalogProduct): string {
   const wasPrice = strikethroughPrice(product.price);
-  const colorGroups = [...new Set(product.colors.map((c) => c.colorGroup))].join(",");
+  const colorGroups = [...new Set(product.colors.map((c) => c.colorGroup))].map(esc).join(",");
   const swatches = product.colors
     .map(
       (c) =>
-        `<div class="swatch" style="background:${c.hex ?? "#333"};" title="${c.label}" data-color-group="${c.colorGroup}"></div>`
+        `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-color-group="${esc(c.colorGroup)}"></div>`
     )
     .join("");
   const sizeButtons = (product.colors[0]?.variants ?? [])
@@ -27,14 +40,14 @@ export function renderProductCard(product: CatalogProduct): string {
 
   return `
 <div class="product-card fade-in" id="product-${product.position}"
-     data-category="${product.category}"
-     ${product.sleeveLength ? `data-sleeve="${product.sleeveLength}"` : ""}
+     data-category="${esc(product.category)}"
+     ${product.sleeveLength ? `data-sleeve="${esc(product.sleeveLength)}"` : ""}
      data-colors="${colorGroups}"
      data-price="${product.price}">
-  <div class="product-img"><img src="${coverImage}" alt="${product.name}" /></div>
+  <div class="product-img"><img src="${esc(coverImage)}" alt="${esc(product.name)}" /></div>
   <div class="product-info">
-    <div class="product-brand">${product.brand}</div>
-    <div class="product-name">${product.name}</div>
+    <div class="product-brand">${esc(product.brand)}</div>
+    <div class="product-name">${esc(product.name)}</div>
     <div class="product-price">
       <span class="price-now">${formatInr(product.price)}</span>
       <span class="price-was">${formatInr(wasPrice)}</span>
