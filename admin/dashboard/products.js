@@ -148,6 +148,7 @@ function renderEditForm(product) {
     } else {
       msg.style.color = '#8fd14f';
       msg.textContent = 'Saved.';
+      openProductId = null;
       loadProductsList();
     }
   });
