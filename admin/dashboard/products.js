@@ -78,9 +78,87 @@ function wireDeleteButtons() {
   });
 }
 
-// Task 3 will replace this stub with the real Edit-panel implementation.
-function wireEditButtons() {}
+var openProductId = null;
+
+function wireEditButtons() {
+  document.querySelectorAll('.edit-product-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = btn.dataset.id;
+      var detail = document.getElementById('product-detail-' + id);
+      if (openProductId === id) {
+        detail.classList.remove('open');
+        openProductId = null;
+        return;
+      }
+      if (openProductId) {
+        var prevDetail = document.getElementById('product-detail-' + openProductId);
+        if (prevDetail) prevDetail.classList.remove('open');
+      }
+      openProductId = id;
+      var product = productsCache.find(function(p) { return p.id === id; });
+      renderEditForm(product);
+      detail.classList.add('open');
+    });
+  });
+}
+
+function renderEditForm(product) {
+  var detail = document.getElementById('product-detail-' + product.id);
+  detail.innerHTML =
+    '<form class="add-form" id="edit-form-' + product.id + '">' +
+      '<div class="field"><label>Brand</label><input type="text" name="brand" value="' + esc(product.brand) + '" required style="width:160px;" /></div>' +
+      '<div class="field"><label>Name</label><input type="text" name="name" value="' + esc(product.name) + '" required style="width:260px;" /></div>' +
+      '<div class="field"><label>Price (₹)</label><input type="number" name="price" value="' + product.price + '" required style="width:100px;" /></div>' +
+      '<div class="field"><label>COD Advance (₹)</label><input type="number" name="cod_advance" value="' + product.cod_advance + '" required style="width:100px;" /></div>' +
+      '<div class="field"><label>Category</label><select name="category">' +
+        ['t-shirt','compression','pants','jacket','dress','set'].map(function(c) {
+          return '<option value="' + c + '"' + (c === product.category ? ' selected' : '') + '>' + c + '</option>';
+        }).join('') +
+      '</select></div>' +
+      '<div class="field"><label>Sleeve Length</label><select name="sleeve_length">' +
+        ['', 'half', 'full', 'sleeveless'].map(function(s) {
+          return '<option value="' + s + '"' + (s === (product.sleeve_length || '') ? ' selected' : '') + '>' + (s || '(none)') + '</option>';
+        }).join('') +
+      '</select></div>' +
+      '<div class="field" style="flex-basis:100%;"><label>Description</label><textarea name="description" style="width:100%;min-height:60px;background:var(--mid);border:1px solid var(--border);color:var(--white);font-family:\'DM Sans\',sans-serif;font-size:13px;padding:8px 10px;">' + esc(product.description || '') + '</textarea></div>' +
+      '<button type="submit" class="btn">Save Changes</button>' +
+      '<p class="msg" id="edit-msg-' + product.id + '"></p>' +
+    '</form>' +
+    '<div id="images-section-' + product.id + '"></div>' +
+    '<div id="colors-section-' + product.id + '"></div>';
+
+  document.getElementById('edit-form-' + product.id).addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var form = e.target;
+    var msg = document.getElementById('edit-msg-' + product.id);
+    var sleeveVal = form.sleeve_length.value;
+    var { error } = await sb.from('products').update({
+      brand: form.brand.value.trim(),
+      name: form.name.value.trim(),
+      price: parseFloat(form.price.value),
+      cod_advance: parseFloat(form.cod_advance.value),
+      category: form.category.value,
+      sleeve_length: sleeveVal === '' ? null : sleeveVal,
+      description: form.description.value.trim() || null,
+      updated_at: new Date().toISOString(),
+    }).eq('id', product.id);
+    if (error) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = error.message;
+    } else {
+      msg.style.color = '#8fd14f';
+      msg.textContent = 'Saved.';
+      loadProductsList();
+    }
+  });
+
+  renderImagesSection(product); // Task 5
+  renderColorsSection(product); // Task 6
+}
 
 function initProducts() {
   loadProductsList();
 }
+
+function renderImagesSection(product) { /* implemented in Task 5 */ }
+function renderColorsSection(product) { /* implemented in Task 6 */ }
