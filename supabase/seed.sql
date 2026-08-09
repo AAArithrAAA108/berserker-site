@@ -1,5 +1,16 @@
 -- Product catalog seed (generated from live product pages).
 --
+-- FRESH/EMPTY DATABASE BOOTSTRAP ONLY. This file is NOT safe to re-run against
+-- a populated database. In particular, the `delete from product_colors ...`
+-- below cascades: product_variants.color_id references product_colors(id)
+-- on delete cascade, so re-running this against a live database would
+-- silently delete every product_variants row (destroying all in_stock flags)
+-- and every product_colors row's cover_image_id assignment (colours are
+-- recreated with brand-new ids that no longer match anything). The guard
+-- immediately below refuses to run once `products` has any rows, precisely
+-- to prevent this. Do not remove that guard to "just reseed" a live database
+-- without first understanding and accepting that data loss.
+--
 -- products.position, products.category and product_colors.color_group are all
 -- NOT NULL with no default, so every insert below supplies them explicitly:
 --   position      sequential 1..41, the storefront display order.
@@ -11,7 +22,15 @@
 --                 real colour, falling back to classify_color_group(hex) otherwise.
 --
 -- position is deliberately NOT part of the ON CONFLICT update: re-running this
--- file must not clobber an ordering the admin panel has since changed.
+-- file (against a fresh database, per the guard above) must not clobber an
+-- ordering the admin panel has since changed.
+
+do $$
+begin
+  if exists (select 1 from products limit 1) then
+    raise exception 'seed.sql refused to run: products table is not empty. This file is for bootstrapping a fresh database only — running it against existing data would cascade-delete product_variants stock flags and product_colors cover_image_id assignments. If you really intend to wipe and reseed, review this guard and remove it deliberately.';
+  end if;
+end $$;
 
 insert into products (brand, name, slug, price, cod_advance, position, category, sleeve_length) values ('Gymshark', 'Founder Edition Oversized Hoodie', 'gymshark-founder-hoodie', 5299, 4500, 4, 'jacket', null) on conflict (slug) do update set brand=excluded.brand, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
 insert into products (brand, name, slug, price, cod_advance, position, category, sleeve_length) values ('Gymshark', 'Lifting Essential Joggers', 'gymshark-lifting-essential-joggers', 4799, 3000, 5, 'pants', null) on conflict (slug) do update set brand=excluded.brand, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
@@ -55,7 +74,11 @@ insert into products (brand, name, slug, price, cod_advance, position, category,
 insert into products (brand, name, slug, price, cod_advance, position, category, sleeve_length) values ('Skims', 'Rhinestone Logo Pointelle Mini Slip Dress', 'skims-rhinestone-logo-mini-dress', 6499, 4900, 40, 'dress', null) on conflict (slug) do update set brand=excluded.brand, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
 insert into products (brand, name, slug, price, cod_advance, position, category, sleeve_length) values ('Lululemon', 'Define Nulu Jacket + Align Yoga Pants Set', 'lululemon-define-nulu-align-yoga-set', 6499, 6000, 41, 'set', null) on conflict (slug) do update set brand=excluded.brand, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
 
--- Product colors (linked by slug lookup; re-runnable without duplicating rows)
+-- Product colors (linked by slug lookup). The delete+reinsert pattern below
+-- only avoids duplicate rows in the fresh-database scenario the guard above
+-- enforces — see the header warning; it is NOT safe against a populated
+-- database, where it would cascade-delete product_variants and orphan
+-- product_colors.cover_image_id.
 
 delete from product_colors where product_id in (select id from products);
 insert into product_colors (product_id, label, hex, image_index, color_group) select id, 'Forest Green', '#1a4a35', 0, 'Green' from products where slug = 'gymshark-founder-hoodie';
