@@ -157,6 +157,61 @@ function renderEditForm(product) {
   renderColorsSection(product); // Task 6
 }
 
+document.getElementById('show-add-product-btn').addEventListener('click', function() {
+  var wrap = document.getElementById('add-product-form-wrap');
+  if (wrap.style.display === 'none') {
+    wrap.style.display = 'block';
+    renderAddProductForm();
+  } else {
+    wrap.style.display = 'none';
+  }
+});
+
+function renderAddProductForm() {
+  var wrap = document.getElementById('add-product-form-wrap');
+  wrap.innerHTML =
+    '<form class="add-form" id="add-product-form">' +
+      '<div class="field"><label>Brand</label><input type="text" name="brand" required style="width:160px;" /></div>' +
+      '<div class="field"><label>Name</label><input type="text" name="name" required style="width:260px;" /></div>' +
+      '<div class="field"><label>Slug</label><input type="text" name="slug" required placeholder="unique-url-slug" style="width:220px;" /></div>' +
+      '<div class="field"><label>Price (₹)</label><input type="number" name="price" required style="width:100px;" /></div>' +
+      '<div class="field"><label>COD Advance (₹)</label><input type="number" name="cod_advance" required value="0" style="width:100px;" /></div>' +
+      '<div class="field"><label>Category</label><select name="category" required>' +
+        ['t-shirt','compression','pants','jacket','dress','set'].map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('') +
+      '</select></div>' +
+      '<button type="submit" class="btn">Create Product</button>' +
+      '<p class="msg" id="add-product-msg"></p>' +
+    '</form>';
+
+  document.getElementById('add-product-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var form = e.target;
+    var msg = document.getElementById('add-product-msg');
+
+    var { data: maxRow } = await sb.from('products').select('position').order('position', { ascending: false }).limit(1).maybeSingle();
+    var nextPosition = (maxRow ? maxRow.position : 0) + 1;
+
+    var { error } = await sb.from('products').insert({
+      brand: form.brand.value.trim(),
+      name: form.name.value.trim(),
+      slug: form.slug.value.trim(),
+      price: parseFloat(form.price.value),
+      cod_advance: parseFloat(form.cod_advance.value),
+      category: form.category.value,
+      position: nextPosition,
+    });
+    if (error) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = error.message;
+    } else {
+      msg.style.color = '#8fd14f';
+      msg.textContent = 'Product created at position ' + nextPosition + '. Add colors/images by clicking Edit on it below.';
+      form.reset();
+      loadProductsList();
+    }
+  });
+}
+
 function initProducts() {
   loadProductsList();
 }
