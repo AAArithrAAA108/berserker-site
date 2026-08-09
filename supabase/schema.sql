@@ -137,6 +137,16 @@ alter table coupons enable row level security;
 alter table customers enable row level security;
 alter table orders enable row level security;
 
+-- ── STORAGE ──
+-- The `product-images` bucket (public=true, created in Foundation) has RLS
+-- enabled on storage.objects by default with zero policies out of the box, meaning
+-- writes are denied to everyone until an explicit policy is added. This grants
+-- INSERT/UPDATE/DELETE to admins only; public GET is unaffected (public-bucket reads
+-- bypass RLS entirely, they don't need a SELECT policy here).
+-- create policy "admin write product-images objects" on storage.objects for all
+--   using (bucket_id = 'product-images' and is_admin())
+--   with check (bucket_id = 'product-images' and is_admin());
+
 -- Helper: is the currently-authenticated user an admin (of either role)?
 create or replace function is_admin() returns boolean as $$
   select exists (select 1 from admin_profiles where id = auth.uid());
