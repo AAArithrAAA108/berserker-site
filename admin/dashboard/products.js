@@ -216,6 +216,41 @@ function initProducts() {
   loadProductsList();
 }
 
+document.getElementById('publish-btn').addEventListener('click', async function() {
+  var btn = this;
+  var status = document.getElementById('publish-status');
+  btn.disabled = true;
+  status.style.color = 'var(--muted)';
+  status.textContent = 'Publishing...';
+
+  var { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData || !sessionData.session) {
+    status.style.color = '#ff3c1e';
+    status.textContent = 'Not signed in.';
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    var res = await fetch('https://gvddahtgbhbqusyczxuo.supabase.co/functions/v1/publish-site', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + sessionData.session.access_token },
+    });
+    var body = await res.json();
+    if (body.ok) {
+      status.style.color = '#8fd14f';
+      status.textContent = 'Published ' + body.productCount + ' products (commit ' + body.commitSha.slice(0, 7) + ').';
+    } else {
+      status.style.color = '#ff3c1e';
+      status.textContent = 'Publish failed: ' + (body.error || 'unknown error');
+    }
+  } catch (err) {
+    status.style.color = '#ff3c1e';
+    status.textContent = 'Publish failed: ' + err.message;
+  }
+  btn.disabled = false;
+});
+
 async function renderImagesSection(product) {
   var container = document.getElementById('images-section-' + product.id);
   container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Images</p><div id="images-grid-' + product.id + '" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="file" id="image-upload-' + product.id + '" accept="image/jpeg,image/png,image/webp" multiple style="margin-top:8px;" /><p class="msg" id="image-upload-msg-' + product.id + '"></p>';
