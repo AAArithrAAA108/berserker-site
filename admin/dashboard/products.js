@@ -216,5 +216,55 @@ function initProducts() {
   loadProductsList();
 }
 
-function renderImagesSection(product) { /* implemented in Task 5 */ }
+async function renderImagesSection(product) {
+  var container = document.getElementById('images-section-' + product.id);
+  container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Images</p><div id="images-grid-' + product.id + '" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="file" id="image-upload-' + product.id + '" accept="image/jpeg,image/png,image/webp" multiple style="margin-top:8px;" /><p class="msg" id="image-upload-msg-' + product.id + '"></p>';
+
+  await refreshImagesGrid(product.id);
+
+  document.getElementById('image-upload-' + product.id).addEventListener('change', async function(e) {
+    var files = Array.from(e.target.files || []);
+    var msg = document.getElementById('image-upload-msg-' + product.id);
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      var { data: existing } = await sb.from('product_images').select('sort_order').eq('product_id', product.id).order('sort_order', { ascending: false }).limit(1).maybeSingle();
+      var nextSort = (existing ? existing.sort_order : -1) + 1;
+      var storagePath = product.slug + '/' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
+      if (uploadError) { msg.style.color = '#ff3c1e'; msg.textContent = 'Upload failed: ' + uploadError.message; continue; }
+      var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort });
+      if (rowError) { msg.style.color = '#ff3c1e'; msg.textContent = 'Row insert failed: ' + rowError.message; continue; }
+    }
+    msg.style.color = '#8fd14f';
+    msg.textContent = 'Uploaded ' + files.length + ' image(s).';
+    e.target.value = '';
+    await refreshImagesGrid(product.id);
+  });
+}
+
+async function refreshImagesGrid(productId) {
+  var { data: images, error } = await sb.from('product_images').select('id, storage_path, sort_order').eq('product_id', productId).order('sort_order', { ascending: true });
+  var grid = document.getElementById('images-grid-' + productId);
+  if (error) { grid.innerHTML = 'Failed to load images: ' + esc(error.message); return; }
+  grid.innerHTML = images.map(function(img) {
+    var url = sb.storage.from('product-images').getPublicUrl(img.storage_path).data.publicUrl;
+    return '<div style="position:relative;"><img src="' + esc(url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);" />' +
+      '<button class="btn danger delete-image-btn" data-image-id="' + img.id + '" data-storage-path="' + esc(img.storage_path) + '" style="position:absolute;top:2px;right:2px;padding:2px 6px;font-size:9px;">×</button></div>';
+  }).join('') || '<span style="color:var(--muted);font-size:12px;">No images yet.</span>';
+
+  var product = productsCache.find(function(p) { return p.id === productId; });
+  if (product && images.length) {
+    product.cover_thumb_url = sb.storage.from('product-images').getPublicUrl(images[0].storage_path).data.publicUrl;
+  }
+
+  grid.querySelectorAll('.delete-image-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      if (!confirm('Delete this image? If any color uses it as a cover, that color will need a new cover assigned.')) return;
+      await sb.storage.from('product-images').remove([btn.dataset.storagePath]);
+      await sb.from('product_images').delete().eq('id', btn.dataset.imageId);
+      await refreshImagesGrid(productId);
+    });
+  });
+}
+
 function renderColorsSection(product) { /* implemented in Task 6 */ }

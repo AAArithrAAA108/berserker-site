@@ -56,7 +56,7 @@ create table if not exists product_colors (
   hex text,
   image_index int not null default 0,
   color_group text not null,
-  cover_image_id uuid references product_images(id)
+  cover_image_id uuid references product_images(id) on delete set null
 );
 
 create table if not exists product_variants (
