@@ -279,7 +279,14 @@ grant execute on function create_order(
 ) to anon;
 
 -- ── COLOR GROUP CLASSIFIER ──
-create or replace function classify_color_group(hex text)
+-- label-aware: an earlier Foundation fix (fix_color_group_prefer_label_over_hex_distance)
+-- corrected EXISTING rows via a one-time UPDATE using this same resolution order, but
+-- never carried it into this function -- so any NEW color classified by hex alone would
+-- reintroduce the same misclassification (e.g. Forest Green #1a4a1a landing in Black).
+-- This signature replaces the old hex-only classify_color_group(hex text); label is
+-- optional (defaults to null) so any 1-arg caller still works, just without the
+-- label-aware improvement.
+create or replace function classify_color_group(hex text, label text default null)
 returns text
 language plpgsql
 immutable
@@ -288,18 +295,62 @@ declare
   r int; g int; b int;
   palette text[] := array['Black','White','Grey','Red','Blue','Green','Purple','Pink','Orange','Navy','Maroon','Gold','Brown','Cream','Denim'];
   palette_hex text[] := array['#141414','#f0ede8','#8a8a8a','#c41e1e','#1c4aa0','#1c8a3a','#5a1ca0','#c41e8a','#c46a1e','#1c2c4a','#5a1a1a','#c4a01c','#5a3f2a','#ede9e3','#6b9fd4'];
+  kw_words text[] := array['black','white','grey','gray','charcoal','red','crimson','blue','denim','green','teal','purple','pink','orange','navy','maroon','gold','brown','cream','beige'];
+  kw_groups text[] := array['Black','White','Grey','Grey','Grey','Red','Red','Blue','Denim','Green','Green','Purple','Pink','Orange','Navy','Maroon','Gold','Brown','Cream','Cream'];
+  lower_label text;
+  best_word_pos int := null;
+  best_word_len int := -1;
+  best_word_group text := null;
+  i int;
+  pos int;
   best_name text := 'Black';
   best_dist float8 := 'Infinity'::float8;
-  i int;
   pr int; pg int; pb int;
   dist float8;
+  spread int;
 begin
-  if hex is null or length(hex) != 7 then
+  lower_label := lower(coalesce(label, ''));
+
+  -- Step 1: earliest whole-word palette colour name in the label wins (ties -> longest word)
+  if lower_label <> '' then
+    for i in 1 .. array_length(kw_words, 1) loop
+      if lower_label ~ ('\m' || kw_words[i] || '\M') then
+        pos := strpos(lower_label, kw_words[i]);
+        if best_word_pos is null or pos < best_word_pos
+           or (pos = best_word_pos and length(kw_words[i]) > best_word_len) then
+          best_word_pos := pos;
+          best_word_len := length(kw_words[i]);
+          best_word_group := kw_groups[i];
+        end if;
+      end if;
+    end loop;
+    if best_word_group is not null then
+      return best_word_group;
+    end if;
+    -- Step 2: vague neutral word
+    if lower_label ~ '\mstealth\M' then
+      return 'Grey';
+    end if;
+  end if;
+
+  if hex is null or length(hex) != 7 or hex !~* '^#[0-9a-f]{6}$' then
     return 'Uncategorized';
   end if;
   r := ('x' || substr(hex, 2, 2))::bit(8)::int;
   g := ('x' || substr(hex, 4, 2))::bit(8)::int;
   b := ('x' || substr(hex, 6, 2))::bit(8)::int;
+
+  -- Step 3: near-neutral hex bucketed by lightness (the distance classifier maps
+  -- flat greys like #2a2a2a to Navy, which step 4 alone would get wrong)
+  spread := greatest(r, g, b) - least(r, g, b);
+  if spread <= 16 then
+    if greatest(r, g, b) < 60 then return 'Black';
+    elsif least(r, g, b) > 200 then return 'White';
+    else return 'Grey';
+    end if;
+  end if;
+
+  -- Step 4: fall back to nearest palette anchor by hex distance
   for i in 1 .. array_length(palette, 1) loop
     pr := ('x' || substr(palette_hex[i], 2, 2))::bit(8)::int;
     pg := ('x' || substr(palette_hex[i], 4, 2))::bit(8)::int;

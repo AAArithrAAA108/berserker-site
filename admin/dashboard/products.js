@@ -333,9 +333,10 @@ async function renderColorsSection(product) {
     input.addEventListener('blur', async function() {
       var hex = input.value.trim();
       var row = input.closest('.color-row');
+      var label = row.querySelector('.color-label').value.trim();
       var display = row.querySelector('.color-group-display');
-      if (!hex) return;
-      var { data: suggested, error } = await sb.rpc('classify_color_group', { hex: hex });
+      if (!hex && !label) return;
+      var { data: suggested, error } = await sb.rpc('classify_color_group', { hex: hex || null, label: label || null });
       if (!error && suggested) { display.textContent = suggested + ' (suggested)'; }
     });
   });
@@ -347,10 +348,8 @@ async function renderColorsSection(product) {
     var hex = hexInput.value.trim() || null;
     if (!label) { alert('Color label is required.'); return; }
     var colorGroup = 'Uncategorized';
-    if (hex) {
-      var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex });
-      if (suggested) colorGroup = suggested;
-    }
+    var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex, label: label });
+    if (suggested) colorGroup = suggested;
     var { error } = await sb.from('product_colors').insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup });
     var msg = document.getElementById('colors-msg-' + product.id);
     if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
