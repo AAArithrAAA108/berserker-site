@@ -278,4 +278,93 @@ async function refreshImagesGrid(productId) {
   });
 }
 
-function renderColorsSection(product) { /* implemented in Task 6 */ }
+async function renderColorsSection(product) {
+  var container = document.getElementById('colors-section-' + product.id);
+  var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
+  if (error) { container.innerHTML = 'Failed to load colors: ' + esc(error.message); return; }
+
+  var { data: images } = await sb.from('product_images').select('id, storage_path').eq('product_id', product.id).order('sort_order', { ascending: true });
+  var coverOptions = (images || []).map(function(img) {
+    return { id: img.id, url: sb.storage.from('product-images').getPublicUrl(img.storage_path).data.publicUrl };
+  });
+
+  container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Colors & Stock</p>' +
+    colors.map(function(c) {
+      var coverSelectOptions = coverOptions.map(function(img) {
+        return '<option value="' + img.id + '"' + (img.id === c.cover_image_id ? ' selected' : '') + '>' + img.id.slice(0, 8) + '</option>';
+      }).join('');
+      return '<div class="color-row" data-color-id="' + c.id + '" style="border:1px solid var(--border);padding:10px;margin-bottom:8px;">' +
+        '<div class="btn-row" style="align-items:center;">' +
+          '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;"></span>' +
+          '<input type="text" class="color-label" value="' + esc(c.label) + '" style="width:120px;" />' +
+          '<input type="text" class="color-hex" value="' + esc(c.hex || '') + '" placeholder="#rrggbb" style="width:90px;" />' +
+          '<span class="color-group-display" style="font-size:11px;color:var(--muted);">' + esc(c.color_group) + '</span>' +
+          '<select class="color-cover-select">' + '<option value="">(no cover)</option>' + coverSelectOptions + '</select>' +
+          '<button class="btn secondary save-color-btn">Save</button>' +
+          '<button class="btn danger delete-color-btn">Delete</button>' +
+        '</div>' +
+        '<div class="stock-grid" id="stock-grid-' + c.id + '" style="margin-top:8px;"></div>' +
+      '</div>';
+    }).join('') +
+    '<div class="btn-row" style="margin-top:8px;">' +
+      '<input type="text" id="new-color-label-' + product.id + '" placeholder="Color label" style="width:140px;" />' +
+      '<input type="text" id="new-color-hex-' + product.id + '" placeholder="#rrggbb" style="width:100px;" />' +
+      '<button class="btn" id="add-color-btn-' + product.id + '">+ Add Color</button>' +
+    '</div>' +
+    '<p class="msg" id="colors-msg-' + product.id + '"></p>';
+
+  colors.forEach(function(c) { renderStockGrid(c.id, product.id); }); // Task 7
+
+  container.querySelectorAll('.save-color-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var row = btn.closest('.color-row');
+      var colorId = row.dataset.colorId;
+      var label = row.querySelector('.color-label').value.trim();
+      var hex = row.querySelector('.color-hex').value.trim() || null;
+      var coverImageId = row.querySelector('.color-cover-select').value || null;
+      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, cover_image_id: coverImageId }).eq('id', colorId);
+      var msg = document.getElementById('colors-msg-' + product.id);
+      if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
+      else { msg.style.color = '#8fd14f'; msg.textContent = 'Color saved.'; renderColorsSection(product); }
+    });
+  });
+
+  container.querySelectorAll('.color-hex').forEach(function(input) {
+    input.addEventListener('blur', async function() {
+      var hex = input.value.trim();
+      var row = input.closest('.color-row');
+      var display = row.querySelector('.color-group-display');
+      if (!hex) return;
+      var { data: suggested, error } = await sb.rpc('classify_color_group', { hex: hex });
+      if (!error && suggested) { display.textContent = suggested + ' (suggested)'; }
+    });
+  });
+
+  document.getElementById('add-color-btn-' + product.id).addEventListener('click', async function() {
+    var labelInput = document.getElementById('new-color-label-' + product.id);
+    var hexInput = document.getElementById('new-color-hex-' + product.id);
+    var label = labelInput.value.trim();
+    var hex = hexInput.value.trim() || null;
+    if (!label) { alert('Color label is required.'); return; }
+    var colorGroup = 'Uncategorized';
+    if (hex) {
+      var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex });
+      if (suggested) colorGroup = suggested;
+    }
+    var { error } = await sb.from('product_colors').insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup });
+    var msg = document.getElementById('colors-msg-' + product.id);
+    if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
+    else { labelInput.value = ''; hexInput.value = ''; renderColorsSection(product); }
+  });
+
+  container.querySelectorAll('.delete-color-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      if (!confirm('Delete this color and all its size/stock data?')) return;
+      var colorId = btn.closest('.color-row').dataset.colorId;
+      await sb.from('product_colors').delete().eq('id', colorId);
+      renderColorsSection(product);
+    });
+  });
+}
+
+function renderStockGrid(colorId, productId) { /* implemented in Task 7 */ }
