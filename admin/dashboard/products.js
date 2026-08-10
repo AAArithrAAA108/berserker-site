@@ -260,8 +260,19 @@ async function refreshImagesGrid(productId) {
   grid.querySelectorAll('.delete-image-btn').forEach(function(btn) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this image? If any color uses it as a cover, that color will need a new cover assigned.')) return;
-      await sb.storage.from('product-images').remove([btn.dataset.storagePath]);
-      await sb.from('product_images').delete().eq('id', btn.dataset.imageId);
+      var msg = document.getElementById('image-upload-msg-' + productId);
+      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath]);
+      if (removeError) {
+        if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: ' + removeError.message; }
+        return;
+      }
+      var { error: deleteError } = await sb.from('product_images').delete().eq('id', btn.dataset.imageId);
+      if (deleteError) {
+        if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: storage object removed but database row could not be deleted (' + deleteError.message + '). Please refresh and retry.'; }
+        await refreshImagesGrid(productId);
+        return;
+      }
+      if (msg) { msg.style.color = '#8fd14f'; msg.textContent = 'Image deleted.'; }
       await refreshImagesGrid(productId);
     });
   });
