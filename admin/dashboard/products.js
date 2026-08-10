@@ -366,4 +366,38 @@ async function renderColorsSection(product) {
   });
 }
 
-function renderStockGrid(colorId, productId) { /* implemented in Task 7 */ }
+var ALL_SIZES = ['S', 'M', 'L', 'XL'];
+
+async function renderStockGrid(colorId, productId) {
+  var grid = document.getElementById('stock-grid-' + colorId);
+  if (!grid) return;
+  var { data: variants, error } = await sb.from('product_variants').select('id, size, in_stock').eq('color_id', colorId);
+  if (error) { grid.innerHTML = 'Failed to load stock: ' + esc(error.message); return; }
+
+  var bySize = {};
+  (variants || []).forEach(function(v) { bySize[v.size] = v; });
+
+  grid.innerHTML = ALL_SIZES.map(function(size) {
+    var v = bySize[size];
+    var inStock = v ? v.in_stock : true;
+    return '<label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;font-size:12px;">' +
+      '<input type="checkbox" class="stock-toggle" data-size="' + size + '" data-color-id="' + colorId + '" data-variant-id="' + (v ? v.id : '') + '"' + (inStock ? ' checked' : '') + ' /> ' + size +
+    '</label>';
+  }).join('');
+
+  grid.querySelectorAll('.stock-toggle').forEach(function(cb) {
+    cb.addEventListener('change', async function() {
+      var size = cb.dataset.size;
+      var colorIdAttr = cb.dataset.colorId;
+      var variantId = cb.dataset.variantId;
+      cb.disabled = true;
+      if (variantId) {
+        await sb.from('product_variants').update({ in_stock: cb.checked }).eq('id', variantId);
+      } else {
+        var { data: newRow, error } = await sb.from('product_variants').insert({ product_id: productId, color_id: colorIdAttr, size: size, in_stock: cb.checked }).select('id').single();
+        if (!error && newRow) cb.dataset.variantId = newRow.id;
+      }
+      cb.disabled = false;
+    });
+  });
+}
