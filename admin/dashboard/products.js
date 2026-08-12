@@ -20,6 +20,14 @@ async function loadProductsList() {
 }
 
 function renderProductsTable() {
+  // Rebuilding the table destroys every `.open`-classed detail div (they're
+  // recreated fresh below with no `open` class), so any previously-open
+  // product's tracked id must be reset here too -- otherwise the next Edit
+  // click on that same product is misread as a close-toggle by
+  // wireEditButtons() and silently does nothing. Resetting here (rather than
+  // at each of this function's callers -- reorder, delete, add, save) means
+  // it can never drift out of sync again as new callers are added.
+  openProductId = null;
   var tbody = document.getElementById('products-tbody');
   tbody.innerHTML = '';
   productsCache.forEach(function(p) {
@@ -72,7 +80,34 @@ function wireDeleteButtons() {
   document.querySelectorAll('.delete-product-btn').forEach(function(btn) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this product and all its colors/images/variants from the database? (Does not remove the live storefront page until you Publish.)')) return;
-      await sb.from('products').delete().eq('id', btn.dataset.id);
+      btn.disabled = true;
+
+      // The product_images ROWS cascade-delete via the FK when the product row
+      // goes, but the underlying Storage files do not -- remove those first so
+      // they don't become permanently orphaned (no row left anywhere to point
+      // at them, so nothing in the admin UI could ever find or delete them again).
+      var { data: images, error: imagesError } = await sb.from('product_images').select('storage_path').eq('product_id', btn.dataset.id);
+      if (imagesError) {
+        alert('Delete failed: could not look up this product\'s images (' + imagesError.message + ').');
+        btn.disabled = false;
+        return;
+      }
+      if (images && images.length) {
+        var paths = images.map(function(img) { return img.storage_path; });
+        var { error: removeError } = await sb.storage.from('product-images').remove(paths);
+        if (removeError) {
+          alert('Delete failed: could not remove this product\'s images from storage (' + removeError.message + '). Product was NOT deleted.');
+          btn.disabled = false;
+          return;
+        }
+      }
+
+      var { error: deleteError } = await sb.from('products').delete().eq('id', btn.dataset.id);
+      if (deleteError) {
+        alert('Delete failed: ' + deleteError.message + (images && images.length ? ' (note: this product\'s images were already removed from storage before this failure.)' : ''));
+        btn.disabled = false;
+        return;
+      }
       loadProductsList();
     });
   });
@@ -148,7 +183,6 @@ function renderEditForm(product) {
     } else {
       msg.style.color = '#8fd14f';
       msg.textContent = 'Saved.';
-      openProductId = null;
       loadProductsList();
     }
   });
@@ -260,18 +294,26 @@ async function renderImagesSection(product) {
   document.getElementById('image-upload-' + product.id).addEventListener('change', async function(e) {
     var files = Array.from(e.target.files || []);
     var msg = document.getElementById('image-upload-msg-' + product.id);
+    var successCount = 0;
+    var failureMessages = [];
     for (var i = 0; i < files.length; i++) {
       var file = files[i];
       var { data: existing } = await sb.from('product_images').select('sort_order').eq('product_id', product.id).order('sort_order', { ascending: false }).limit(1).maybeSingle();
       var nextSort = (existing ? existing.sort_order : -1) + 1;
       var storagePath = product.slug + '/' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
-      if (uploadError) { msg.style.color = '#ff3c1e'; msg.textContent = 'Upload failed: ' + uploadError.message; continue; }
+      if (uploadError) { failureMessages.push(file.name + ': ' + uploadError.message); continue; }
       var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort });
-      if (rowError) { msg.style.color = '#ff3c1e'; msg.textContent = 'Row insert failed: ' + rowError.message; continue; }
+      if (rowError) { failureMessages.push(file.name + ': ' + rowError.message); continue; }
+      successCount++;
     }
-    msg.style.color = '#8fd14f';
-    msg.textContent = 'Uploaded ' + files.length + ' image(s).';
+    if (failureMessages.length) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = 'Uploaded ' + successCount + ' of ' + files.length + ' image(s). Failures: ' + failureMessages.join('; ');
+    } else {
+      msg.style.color = '#8fd14f';
+      msg.textContent = 'Uploaded ' + successCount + ' image(s).';
+    }
     e.target.value = '';
     await refreshImagesGrid(product.id);
   });
@@ -313,6 +355,9 @@ async function refreshImagesGrid(productId) {
   });
 }
 
+var COLOR_GROUP_PALETTE = ['Black','White','Grey','Red','Blue','Green','Purple','Pink','Orange','Navy','Maroon','Gold','Brown','Cream','Denim','Uncategorized'];
+var HEX_PATTERN = /^#[0-9a-f]{6}$/i;
+
 async function renderColorsSection(product) {
   var container = document.getElementById('colors-section-' + product.id);
   var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
@@ -328,12 +373,15 @@ async function renderColorsSection(product) {
       var coverSelectOptions = coverOptions.map(function(img) {
         return '<option value="' + img.id + '"' + (img.id === c.cover_image_id ? ' selected' : '') + '>' + img.id.slice(0, 8) + '</option>';
       }).join('');
+      var groupSelectOptions = COLOR_GROUP_PALETTE.map(function(g) {
+        return '<option value="' + g + '"' + (g === c.color_group ? ' selected' : '') + '>' + g + '</option>';
+      }).join('');
       return '<div class="color-row" data-color-id="' + c.id + '" style="border:1px solid var(--border);padding:10px;margin-bottom:8px;">' +
         '<div class="btn-row" style="align-items:center;">' +
           '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;"></span>' +
           '<input type="text" class="color-label" value="' + esc(c.label) + '" style="width:120px;" />' +
           '<input type="text" class="color-hex" value="' + esc(c.hex || '') + '" placeholder="#rrggbb" style="width:90px;" />' +
-          '<span class="color-group-display" style="font-size:11px;color:var(--muted);">' + esc(c.color_group) + '</span>' +
+          '<select class="color-group-select" title="Color group (auto-suggested from label/hex on blur, editable)">' + groupSelectOptions + '</select>' +
           '<select class="color-cover-select">' + '<option value="">(no cover)</option>' + coverSelectOptions + '</select>' +
           '<button class="btn secondary save-color-btn">Save</button>' +
           '<button class="btn danger delete-color-btn">Delete</button>' +
@@ -356,9 +404,11 @@ async function renderColorsSection(product) {
       var colorId = row.dataset.colorId;
       var label = row.querySelector('.color-label').value.trim();
       var hex = row.querySelector('.color-hex').value.trim() || null;
-      var coverImageId = row.querySelector('.color-cover-select').value || null;
-      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, cover_image_id: coverImageId }).eq('id', colorId);
       var msg = document.getElementById('colors-msg-' + product.id);
+      if (hex && !HEX_PATTERN.test(hex)) { msg.style.color = '#ff3c1e'; msg.textContent = 'Hex must look like #rrggbb.'; return; }
+      var colorGroup = row.querySelector('.color-group-select').value;
+      var coverImageId = row.querySelector('.color-cover-select').value || null;
+      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, color_group: colorGroup, cover_image_id: coverImageId }).eq('id', colorId);
       if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
       else { msg.style.color = '#8fd14f'; msg.textContent = 'Color saved.'; renderColorsSection(product); }
     });
@@ -369,10 +419,10 @@ async function renderColorsSection(product) {
       var hex = input.value.trim();
       var row = input.closest('.color-row');
       var label = row.querySelector('.color-label').value.trim();
-      var display = row.querySelector('.color-group-display');
+      var groupSelect = row.querySelector('.color-group-select');
       if (!hex && !label) return;
       var { data: suggested, error } = await sb.rpc('classify_color_group', { hex: hex || null, label: label || null });
-      if (!error && suggested) { display.textContent = suggested + ' (suggested)'; }
+      if (!error && suggested && COLOR_GROUP_PALETTE.indexOf(suggested) !== -1) { groupSelect.value = suggested; }
     });
   });
 
@@ -381,21 +431,51 @@ async function renderColorsSection(product) {
     var hexInput = document.getElementById('new-color-hex-' + product.id);
     var label = labelInput.value.trim();
     var hex = hexInput.value.trim() || null;
+    var msg = document.getElementById('colors-msg-' + product.id);
     if (!label) { alert('Color label is required.'); return; }
+    if (hex && !HEX_PATTERN.test(hex)) { msg.style.color = '#ff3c1e'; msg.textContent = 'Hex must look like #rrggbb.'; return; }
     var colorGroup = 'Uncategorized';
     var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex, label: label });
     if (suggested) colorGroup = suggested;
-    var { error } = await sb.from('product_colors').insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup });
-    var msg = document.getElementById('colors-msg-' + product.id);
-    if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
-    else { labelInput.value = ''; hexInput.value = ''; renderColorsSection(product); }
+
+    // Inherit the product's first uploaded image as this color's cover, if one
+    // exists, rather than leaving it null -- a color with no cover image and
+    // (until an admin visits the stock grid below) no variant rows would make
+    // Publish's storefront card show a broken image and zero size buttons for
+    // the WHOLE product if this color happens to sort first. If the product
+    // has no images uploaded yet, leave cover_image_id null -- that's a more
+    // visible gap an admin using this tab would notice immediately.
+    var coverImageId = coverOptions.length ? coverOptions[0].id : null;
+
+    var { data: newColor, error } = await sb.from('product_colors')
+      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, cover_image_id: coverImageId })
+      .select('id').single();
+    if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; return; }
+
+    // Seed all 4 sizes as in-stock so this color is never in the zero-variant
+    // state that would otherwise persist until an admin manually visits its
+    // stock grid -- see the comment above about what publishing a zero-variant
+    // color does to the storefront card.
+    var { error: variantsError } = await sb.from('product_variants').insert(
+      ALL_SIZES.map(function(size) { return { product_id: product.id, color_id: newColor.id, size: size, in_stock: true }; })
+    );
+    if (variantsError) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = 'Color created, but stock rows failed to seed (' + variantsError.message + '). Check the stock grid below.';
+    } else {
+      labelInput.value = '';
+      hexInput.value = '';
+    }
+    renderColorsSection(product);
   });
 
   container.querySelectorAll('.delete-color-btn').forEach(function(btn) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this color and all its size/stock data?')) return;
       var colorId = btn.closest('.color-row').dataset.colorId;
-      await sb.from('product_colors').delete().eq('id', colorId);
+      var { error } = await sb.from('product_colors').delete().eq('id', colorId);
+      var msg = document.getElementById('colors-msg-' + product.id);
+      if (error) { if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: ' + error.message; } return; }
       renderColorsSection(product);
     });
   });
@@ -427,10 +507,12 @@ async function renderStockGrid(colorId, productId) {
       var variantId = cb.dataset.variantId;
       cb.disabled = true;
       if (variantId) {
-        await sb.from('product_variants').update({ in_stock: cb.checked }).eq('id', variantId);
+        var { error: updateError } = await sb.from('product_variants').update({ in_stock: cb.checked }).eq('id', variantId);
+        if (updateError) { alert('Stock update failed: ' + updateError.message); cb.checked = !cb.checked; }
       } else {
         var { data: newRow, error } = await sb.from('product_variants').insert({ product_id: productId, color_id: colorIdAttr, size: size, in_stock: cb.checked }).select('id').single();
-        if (!error && newRow) cb.dataset.variantId = newRow.id;
+        if (error) { alert('Stock update failed: ' + error.message); cb.checked = !cb.checked; }
+        else if (newRow) { cb.dataset.variantId = newRow.id; }
       }
       cb.disabled = false;
     });
