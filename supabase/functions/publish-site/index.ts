@@ -4,16 +4,30 @@ import { fetchCatalog } from "./data.ts";
 import { renderAllProductsPage } from "./render.ts";
 import { commitFiles } from "./github.ts";
 
+// The admin dashboard calls this function cross-origin with an Authorization
+// header, which is not a CORS-safelisted header — every browser sends a
+// preflight OPTIONS request first, and without these headers on both the
+// preflight response and the real response, the browser blocks the request
+// entirely before it ever reaches this handler's own auth/publish logic.
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS },
   });
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    return new Response("Method not allowed", { status: 405, headers: CORS_HEADERS });
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

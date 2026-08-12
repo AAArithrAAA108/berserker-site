@@ -147,14 +147,19 @@
   <!-- PRODUCTS -->
   <section class="panel" id="panel-products">
     <div class="panel-title">Products</div>
+    <div class="btn-row" style="margin-bottom:16px;">
+      <button class="btn" id="publish-btn">Publish Storefront</button>
+      <span class="msg" id="publish-status"></span>
+    </div>
+    <button class="btn secondary" id="show-add-product-btn" style="margin-bottom:16px;">+ Add New Product</button>
+    <div id="add-product-form-wrap" style="display:none;"></div>
     <div id="products-loading" class="loading-note">Loading products...</div>
     <div class="table-wrap" id="products-table-wrap" style="display:none;">
       <table>
-        <thead><tr><th>Brand</th><th>Name</th><th>Slug</th><th>Price (₹)</th><th>COD Advance (₹)</th><th>Colors</th><th>Actions</th></tr></thead>
+        <thead><tr><th>#</th><th>Image</th><th>Brand</th><th>Name</th><th>Category</th><th>Price (₹)</th><th>Colors</th><th>Actions</th></tr></thead>
         <tbody id="products-tbody"></tbody>
       </table>
     </div>
-    <p style="color:var(--muted);font-size:12px;margin-top:16px;max-width:640px;">Editing price/COD advance here updates the database record only — it does not change the live product page on the storefront. Update the site page separately to keep them in sync.</p>
   </section>
 
   <!-- ADMINS -->
@@ -183,6 +188,7 @@
 
 </main>
 
+<script src="products.js"></script>
 <script>
   var SUPABASE_URL = 'https://gvddahtgbhbqusyczxuo.supabase.co';
   var SUPABASE_ANON_KEY = 'sb_publishable_9eNluV7u_mGfSeFI7ssJjg_jeF7h0yK';
@@ -370,58 +376,6 @@
     }
   });
 
-  // ── PRODUCTS ──
-  async function loadProducts() {
-    var { data, error } = await sb
-      .from('products')
-      .select('*, product_colors(label, hex, image_index)')
-      .order('brand', { ascending: true });
-    document.getElementById('products-loading').style.display = 'none';
-    if (error) {
-      document.getElementById('products-loading').style.display = 'block';
-      document.getElementById('products-loading').textContent = 'Failed to load products: ' + error.message;
-      return;
-    }
-    document.getElementById('products-table-wrap').style.display = 'block';
-    var tbody = document.getElementById('products-tbody');
-    tbody.innerHTML = '';
-    data.forEach(function(p) {
-      var colorsHtml = (p.product_colors || []).map(function(c) {
-        return '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + (c.hex || '#333') + ';border:1px solid #444;margin-right:3px;" title="' + esc(c.label) + '"></span>';
-      }).join('');
-      var tr = document.createElement('tr');
-      tr.innerHTML =
-        '<td>' + esc(p.brand) + '</td>' +
-        '<td>' + esc(p.name) + '</td>' +
-        '<td style="color:var(--muted);font-size:11px;">' + esc(p.slug) + '</td>' +
-        '<td><input type="number" class="edit-price" data-id="' + p.id + '" value="' + p.price + '" style="width:90px;" /></td>' +
-        '<td><input type="number" class="edit-cod" data-id="' + p.id + '" value="' + p.cod_advance + '" style="width:90px;" /></td>' +
-        '<td>' + (colorsHtml || '<span style="color:var(--muted);">—</span>') + '</td>' +
-        '<td class="btn-row"><button class="btn save-product-btn" data-id="' + p.id + '">Save</button>' +
-          '<button class="btn danger delete-product-btn" data-id="' + p.id + '">Delete</button></td>';
-      tbody.appendChild(tr);
-    });
-    document.querySelectorAll('.save-product-btn').forEach(function(btn) {
-      btn.addEventListener('click', async function() {
-        var id = btn.dataset.id;
-        var price = parseFloat(document.querySelector('.edit-price[data-id="' + id + '"]').value);
-        var cod = parseFloat(document.querySelector('.edit-cod[data-id="' + id + '"]').value);
-        btn.disabled = true;
-        await sb.from('products').update({ price: price, cod_advance: cod, updated_at: new Date().toISOString() }).eq('id', id);
-        btn.disabled = false;
-        btn.textContent = 'Saved';
-        setTimeout(function() { btn.textContent = 'Save'; }, 1500);
-      });
-    });
-    document.querySelectorAll('.delete-product-btn').forEach(function(btn) {
-      btn.addEventListener('click', async function() {
-        if (!confirm('Delete this product record from the database? (Does not remove the live storefront page.)')) return;
-        await sb.from('products').delete().eq('id', btn.dataset.id);
-        loadProducts();
-      });
-    });
-  }
-
   // ── ADMINS ──
   async function loadAdmins() {
     var { data, error } = await sb.from('admin_profiles').select('*').order('created_at', { ascending: true });
@@ -488,7 +442,7 @@
     if (!ok) return;
     loadOrders();
     loadCoupons();
-    loadProducts();
+    initProducts();
     if (currentRole === 'super_admin') loadAdmins();
   })();
 </script>
