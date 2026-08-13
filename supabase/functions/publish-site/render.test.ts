@@ -1,6 +1,7 @@
 import { assertStringIncludes, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { renderProductCard, esc } from "./render.ts";
+import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage } from "./render.ts";
 import type { CatalogProduct } from "./data.ts";
+import type { Catalog } from "./data.ts";
 
 const sampleProduct: CatalogProduct = {
   id: "p1", brand: "Gymshark", name: "Onyx 5.0 Seamless Compression Half Sleeve",
@@ -173,5 +174,43 @@ Deno.test("renderProductCard: falls back to /all-products/ link when brand has n
   assertStringIncludes(html, 'href="/all-products/"');
   if (html.includes('href="/null/')) {
     throw new Error("must not emit a link to /null/...");
+  }
+});
+
+const sampleCatalog: Catalog = {
+  products: [
+    { ...twoColorProduct, id: "p1", position: 1, category: "compression", brand: "Gymshark" },
+    { ...twoColorProduct, id: "p2", position: 2, category: "jacket", brand: "YoungLA × Batman", slug: "yl-batman-jacket", name: "Batman Jacket" },
+    { ...twoColorProduct, id: "p3", position: 3, category: "pants", brand: "Gymshark", slug: "gs-joggers", name: "Joggers" },
+  ],
+};
+
+Deno.test("renderSliderCss: emits one @keyframes + hover rule per product, keyed to that product's own position", () => {
+  const css = renderSliderCss(sampleCatalog.products);
+  assertStringIncludes(css, "#product-1:hover .slider-track");
+  assertStringIncludes(css, "@keyframes slideProduct1");
+  assertStringIncludes(css, "#product-3:hover .slider-track");
+});
+
+Deno.test("renderListingPage: includes every product regardless of category/brand", () => {
+  const html = renderListingPage(sampleCatalog);
+  assertStringIncludes(html, "Onyx 5.0 Seamless Compression Half Sleeve");
+  assertStringIncludes(html, "Batman Jacket");
+  assertStringIncludes(html, "Joggers");
+});
+
+Deno.test("renderCollectionPage: jackets only includes the jacket-category product", () => {
+  const html = renderCollectionPage(sampleCatalog, "jackets");
+  assertStringIncludes(html, "Batman Jacket");
+  if (html.includes("Onyx 5.0") || html.includes("Joggers")) {
+    throw new Error("jackets collection should not include compression/pants products");
+  }
+});
+
+Deno.test("renderBrandPage: youngla includes the collab-brand product via prefix match", () => {
+  const html = renderBrandPage(sampleCatalog, "youngla");
+  assertStringIncludes(html, "Batman Jacket");
+  if (html.includes("Onyx 5.0") || html.includes("Joggers")) {
+    throw new Error("youngla brand page should only include YoungLA-prefixed products");
   }
 });

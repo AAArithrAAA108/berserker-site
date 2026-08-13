@@ -1,5 +1,6 @@
 import type { Catalog, CatalogProduct } from "./data.ts";
-import { brandFolderFor } from "./membership.ts";
+import { brandFolderFor, isInCollection, BRAND_PREFIX_MAP } from "./membership.ts";
+import { renderShell } from "./shell.ts";
 
 export function strikethroughPrice(price: number): number {
   return Math.ceil((price * 2.7) / 1000) * 1000 - 1;
@@ -71,4 +72,98 @@ export function renderAllProductsPage(catalog: Catalog): string {
     .map(renderProductCard)
     .join("\n");
   return cards; // wrapped into the full page shell in Task 12
+}
+
+// Hover-triggered slider animation CSS, one @keyframes + hover rule per
+// product, keyed to that product's own grid position (matches the
+// `#product-${position}` id renderProductCard emits). This is scoped to
+// ANIMATION TIMING ONLY -- it deliberately does not touch track/image width
+// sizing (see shell.ts's Task 2 comment and renderProductCard's Task 4
+// comment): those widths are now emitted inline per-card because color count
+// varies per product, so a shared/page-level CSS rule can no longer own them.
+//
+// Timing approach: a from-scratch reconstruction (not a byte-for-byte port
+// of the original hand-authored keyframes) using equal-duration steps()
+// through each color's slider image -- read against the real examples at
+// all-products/index.html:868-908 for structure. The original hand-tuned a
+// slide+pause percentage table per product (e.g. product-1's 8-image loop:
+// "1.86% -> 12.5%, pause to 14.29%, ..."), which is inconsistent from
+// product to product and encodes a fixed 8-image assumption; reproducing it
+// byte-for-byte isn't meaningful for products with a different color count.
+// steps(imgCount) reproduces the same instant-slide-then-pause visual
+// effect for any color count while staying simple to generate/verify. One
+// detail carried over from the original for fidelity: a non-hover
+// `#product-N .slider-track { transform: translateX(0); transition:
+// transform .4s ease; }` rule so the slider eases back to the first image on
+// mouse-leave instead of snapping instantly (all-products/index.html:897-899,
+// 905-908).
+export function renderSliderCss(products: CatalogProduct[]): string {
+  return products
+    .map((p) => {
+      const imgCount = p.colors.length;
+      if (imgCount <= 1) return "";
+      const framePercent = (100 / imgCount).toFixed(4);
+      const steps = p.colors
+        .map((_, i) => `${(i * Number(framePercent)).toFixed(4)}% { transform: translateX(-${i * 100}%); }`)
+        .join("\n    ");
+      return `
+  #product-${p.position}:hover .slider-track { animation: slideProduct${p.position} ${imgCount * 1.2}s steps(${imgCount}) infinite; }
+  @keyframes slideProduct${p.position} {
+    ${steps}
+    100% { transform: translateX(-${(imgCount - 1) * 100}%); }
+  }
+  #product-${p.position} .slider-track { transform: translateX(0); transition: transform 0.4s ease; }`;
+    })
+    .join("\n");
+}
+
+export function renderListingPage(catalog: Catalog): string {
+  const sorted = catalog.products.slice().sort((a, b) => a.position - b.position);
+  const cards = sorted.map(renderProductCard).join("\n");
+  const bodyContent = `
+<section class="section" id="all-products-grid">
+  <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
+  <div class="product-grid">${cards}</div>
+</section>`;
+  return renderShell({
+    title: "All Products — BERSERKER",
+    bodyContent,
+    perPageStyle: renderSliderCss(sorted),
+  });
+}
+
+export function renderCollectionPage(catalog: Catalog, slug: string): string {
+  const filtered = catalog.products
+    .filter((p) => isInCollection(p, slug))
+    .sort((a, b) => a.position - b.position);
+  const cards = filtered.map(renderProductCard).join("\n");
+  const heading = slug.replace(/-/g, " ").toUpperCase();
+  const bodyContent = `
+<section class="section" id="all-products-grid">
+  <h2 class="section-title">${esc(heading)}</h2>
+  <div class="product-grid">${cards}</div>
+</section>`;
+  return renderShell({
+    title: `${heading} — BERSERKER`,
+    bodyContent,
+    perPageStyle: renderSliderCss(filtered),
+  });
+}
+
+export function renderBrandPage(catalog: Catalog, folder: string): string {
+  const filtered = catalog.products
+    .filter((p) => brandFolderFor(p) === folder)
+    .sort((a, b) => a.position - b.position);
+  const cards = filtered.map(renderProductCard).join("\n");
+  const brandName = BRAND_PREFIX_MAP[folder] ?? folder;
+  const bodyContent = `
+<section class="section" id="all-products-grid">
+  <h2 class="section-title">${esc(brandName.toUpperCase())}</h2>
+  <div class="product-grid">${cards}</div>
+</section>`;
+  return renderShell({
+    title: `${brandName} — BERSERKER`,
+    bodyContent,
+    perPageStyle: renderSliderCss(filtered),
+  });
 }
