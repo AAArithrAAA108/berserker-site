@@ -1,4 +1,5 @@
 import type { Catalog, CatalogProduct } from "./data.ts";
+import { brandFolderFor } from "./membership.ts";
 
 export function strikethroughPrice(price: number): number {
   return Math.ceil((price * 2.7) / 1000) * 1000 - 1;
@@ -23,37 +24,41 @@ export function esc(s: string): string {
 
 export function renderProductCard(product: CatalogProduct): string {
   const wasPrice = strikethroughPrice(product.price);
-  const colorGroups = [...new Set(product.colors.map((c) => c.colorGroup))].map(esc).join(",");
-  const swatches = product.colors
+  const colorCount = product.colors.length;
+  // Original hand-authored cards hardcoded slider-track/img widths in shared
+  // CSS (800%/12.5%) because every card carried exactly 8 slider images.
+  // Real products carry one slider image per color and color count varies
+  // (2 to 10+ across the catalog), so those widths must be computed per card
+  // and set inline instead of relying on a fixed shared CSS rule (shell.ts
+  // Task 2 already dropped the old hardcoded rule). Guard colorCount === 0
+  // so a color-less product can't divide by zero -- render an empty track.
+  const trackStyle = colorCount > 0 ? ` style="width:${colorCount * 100}%;"` : "";
+  const imgWidthPct = colorCount > 0 ? 100 / colorCount : 0;
+  const sliderImgs = product.colors
     .map(
       (c) =>
-        `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-color-group="${esc(c.colorGroup)}"></div>`
+        `<img src="${esc(c.coverImageUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" />`
     )
     .join("");
-  const sizeButtons = (product.colors[0]?.variants ?? [])
+  const swatches = product.colors
     .map(
-      (v) =>
-        `<button class="size-btn" data-size="${v.size}" data-in-stock="${v.inStock}" ${v.inStock ? "" : "disabled"}>${v.size}</button>`
+      (c, i) =>
+        `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${i}"></div>`
     )
     .join("");
-  const coverImage = product.colors[0]?.coverImageUrl ?? "";
+  const brandFolder = brandFolderFor(product);
+  const pdpPath = brandFolder ? `/${brandFolder}/${product.slug}/` : "/all-products/";
 
   return `
-<div class="product-card fade-in" id="product-${product.position}"
-     data-category="${esc(product.category)}"
-     ${product.sleeveLength ? `data-sleeve="${esc(product.sleeveLength)}"` : ""}
-     data-colors="${colorGroups}"
-     data-price="${product.price}">
-  <div class="product-img"><img src="${esc(coverImage)}" alt="${esc(product.name)}" /></div>
+<div class="product-card fade-in" id="product-${product.position}">
+  <a href="${esc(pdpPath)}" class="product-img product-img-slider">
+    <div class="slider-track"${trackStyle}>${sliderImgs}</div>
+  </a>
   <div class="product-info">
     <div class="product-brand">${esc(product.brand)}</div>
-    <div class="product-name">${esc(product.name)}</div>
-    <div class="product-price">
-      <span class="price-now">${formatInr(product.price)}</span>
-      <span class="price-was">${formatInr(wasPrice)}</span>
-    </div>
+    <a href="${esc(pdpPath)}"><div class="product-name">${esc(product.name)}</div></a>
+    <div class="product-price">${formatInr(product.price)}<span class="original">${formatInr(wasPrice)}</span></div>
     <div class="product-swatches">${swatches}</div>
-    <div class="product-sizes">${sizeButtons}</div>
   </div>
   <button class="product-add">Add to Cart</button>
 </div>`.trim();
