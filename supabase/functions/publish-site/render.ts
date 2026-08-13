@@ -167,3 +167,227 @@ export function renderBrandPage(catalog: Catalog, folder: string): string {
     perPageStyle: renderSliderCss(filtered),
   });
 }
+
+// Real PDPs (e.g. gymshark/gymshark-onyx-5-half-sleeve/index.html:1280-1367,
+// 1750-1830) hand-author a `.pdp-grid` with a gallery column (main image +
+// caption + thumbnails) and an info column (brand/title/price/cod-advance/
+// swatches/size-grid/add-button/trust-badges/description), followed by a
+// PDP-specific <style> block and a third <script> that hardcodes per-product
+// `images[]`/`swatchList` arrays and calls `addToCart(brand, name, price,
+// imgSrc)` directly (no #size-modal — that shared modal, and its
+// openSizePicker()/confirmSize() flow, is only wired to `.product-add`
+// buttons on cards; the PDP has always had its own inline, direct-add flow).
+// `.size-btn` and `.modal-swatch` base styles, and `.trust-item`/`.trust-icon`,
+// are already shared in shell.ts (the "SIZE PICKER" and "TRUST STRIP"
+// sections) and are reused here unmodified rather than redefined.
+//
+// One reconciliation versus the real markup: the real PDP carries 2 gallery
+// images per color (8 images / 4 colors, swatch data-img-index jumping in
+// steps of 2) because the source photoshoots had multiple angles per
+// colorway. The catalog data model this project standardizes on (Task 4)
+// only carries one image per color (`cover_image_id`), matching the card
+// template's slider. So here every color maps to exactly one gallery/thumb
+// image at its own index (colors[i] -> images[i]), same simplification
+// already applied to renderProductCard's swatches -- not a richer
+// multi-image-per-color gallery the data model doesn't support.
+// JSON.stringify alone is safe to interpolate into HTML attribute/text
+// context (esc() handles that) but not into a raw `<script>` block: it does
+// not escape "<", so admin-editable text (product name, color label) that
+// happens to contain the literal sequence "</script>" would prematurely
+// close the script tag and let the rest turn into live, unescaped markup --
+// a stored-XSS route through the very same admin-editable columns esc()
+// exists to defend (see esc()'s doc comment above). Escaping "<" to its
+// unicode escape keeps the JSON valid JS while making that breakout
+// impossible.
+function jsonForScript(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
+export function renderPdpPage(product: CatalogProduct): string {
+  const images = product.colors.map((c) => c.coverImageUrl);
+  const firstColorLabel = product.colors[0]?.label ?? "";
+
+  const thumbs = product.colors
+    .map(
+      (c, i) =>
+        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(c.coverImageUrl)}" alt="View ${i + 1}" />`
+    )
+    .join("");
+
+  const swatches = product.colors
+    .map(
+      (c, i) =>
+        `<div class="modal-swatch${i === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${i}"></div>`
+    )
+    .join("");
+
+  // Real PDP hardcodes S/M/L/XL buttons regardless of stock; this rewrite
+  // instead derives buttons (and out-of-stock disabling) from the first
+  // color's real variant rows, same "drive markup from real data instead of
+  // a hand-authored constant" approach already used for renderProductCard.
+  const sizeButtons = (product.colors[0]?.variants ?? [])
+    .map(
+      (v) =>
+        `<button class="size-btn" data-size="${esc(v.size)}"${v.inStock ? "" : " disabled"}>${esc(v.size)}</button>`
+    )
+    .join("");
+
+  const wasPrice = strikethroughPrice(product.price);
+
+  const bodyContent = `
+<section class="section" id="product-detail" style="padding-top:48px;">
+  <div class="pdp-grid">
+    <div class="pdp-gallery">
+      <div class="pdp-main-img">
+        <img id="pdp-main-image" src="${esc(images[0] ?? "")}" alt="${esc(product.name)} — ${esc(firstColorLabel)}" />
+      </div>
+      <div class="pdp-image-label" id="pdp-image-label">${esc(firstColorLabel)}</div>
+      <div class="pdp-thumbs" id="pdp-thumbs">${thumbs}</div>
+    </div>
+    <div class="pdp-info">
+      <div class="product-brand">${esc(product.brand)}</div>
+      <h1 class="pdp-title">${esc(product.name)}</h1>
+      <div class="pdp-price">${formatInr(product.price)}<span class="original">${formatInr(wasPrice)}</span></div>
+      <div class="pdp-cod">COD Advance Amount: ${formatInr(product.codAdvance)}</div>
+
+      <div class="pdp-section-label">Color — <span id="pdp-color-label">${esc(firstColorLabel)}</span></div>
+      <div class="pdp-swatches" id="pdp-color-swatches">${swatches}</div>
+
+      <div class="pdp-section-label">Size</div>
+      <div class="pdp-size-grid" id="pdp-size-grid">${sizeButtons}</div>
+
+      <button class="btn-primary pdp-add-btn" id="pdp-add-btn">Select Size &amp; Color</button>
+
+      <div class="pdp-trust">
+        <div class="trust-item"><span class="trust-icon">🔍</span> Quality Verified Before Dispatch</div>
+        <div class="trust-item"><span class="trust-icon">🚚</span> Free Shipping, All Over India</div>
+        <div class="trust-item"><span class="trust-icon">↩️</span> 24-Hour Unboxing Video Required for Claims</div>
+      </div>
+
+      <div class="pdp-description">
+        <h3>Product Details</h3>
+        <p>${esc(product.description ?? "")} See <a href="/shipping-info/" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">Shipping Info</a> and <a href="/returns-and-refunds/" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">Returns &amp; Refunds</a> for full policy details.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  (function() {
+    var images = ${jsonForScript(images)};
+    var swatchList = ${jsonForScript(product.colors.map((c, i) => ({ label: c.label, imgIndex: i })))};
+    var mainImg = document.getElementById('pdp-main-image');
+    var imageLabel = document.getElementById('pdp-image-label');
+    var thumbs = document.querySelectorAll('.pdp-thumb');
+    var colorSwatches = document.querySelectorAll('#pdp-color-swatches .modal-swatch');
+    var colorLabel = document.getElementById('pdp-color-label');
+    var sizeBtns = document.querySelectorAll('#pdp-size-grid .size-btn');
+    var addBtn = document.getElementById('pdp-add-btn');
+
+    var selectedColor = swatchList.length ? swatchList[0] : null;
+    var selectedSizeLocal = null;
+
+    function setMainImage(index, label) {
+      mainImg.src = images[index];
+      thumbs.forEach(function(t) { t.classList.toggle('active', parseInt(t.dataset.index, 10) === index); });
+      if (imageLabel) imageLabel.textContent = label || '';
+    }
+
+    thumbs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var idx = parseInt(t.dataset.index, 10);
+        var sw = swatchList[idx];
+        setMainImage(idx, sw ? sw.label : '');
+      });
+    });
+
+    colorSwatches.forEach(function(sw) {
+      sw.addEventListener('click', function() {
+        colorSwatches.forEach(function(s) { s.classList.remove('selected'); });
+        sw.classList.add('selected');
+        var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        selectedColor = { label: sw.title, imgIndex: imgIndex };
+        colorLabel.textContent = sw.title;
+        setMainImage(imgIndex, sw.title);
+      });
+    });
+
+    function updateAddBtn() {
+      var ready = selectedSizeLocal && selectedColor;
+      addBtn.classList.toggle('ready', !!ready);
+      addBtn.textContent = ready ? 'Add to Cart' : 'Select Size & Color';
+    }
+
+    sizeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        sizeBtns.forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        selectedSizeLocal = btn.dataset.size;
+        updateAddBtn();
+      });
+    });
+
+    addBtn.addEventListener('click', function() {
+      if (!selectedSizeLocal) {
+        if (typeof showToast === 'function') showToast('Please select a size');
+        return;
+      }
+      if (!selectedColor) {
+        if (typeof showToast === 'function') showToast('Please select a color');
+        return;
+      }
+      var name = ${jsonForScript(product.name)} + ' — ' + selectedColor.label + ' / ' + selectedSizeLocal;
+      var imgSrc = images[selectedColor.imgIndex];
+      if (typeof addToCart === 'function') {
+        addToCart(${jsonForScript(product.brand)}, name, ${product.price}, imgSrc);
+        if (typeof openCart === 'function') openCart();
+      }
+    });
+
+    updateAddBtn();
+  })();
+</script>`;
+
+  // PDP-specific CSS, folded into perPageStyle rather than the shared shell
+  // (mirrors renderListingPage/renderCollectionPage/renderBrandPage using
+  // renderSliderCss for their own page-local CSS) since no other page type
+  // needs `.pdp-*` rules. Copied from the real page's inline <style> block
+  // (gymshark/gymshark-onyx-5-half-sleeve/index.html:1337-1367); `.size-btn`,
+  // `.modal-swatch`, `.trust-item`, and `.trust-icon` are deliberately NOT
+  // redefined here since shell.ts already carries those shared rules.
+  const perPageStyle = `
+  .pdp-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:start; }
+  .pdp-main-img { overflow:hidden; background:var(--mid); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; max-height:80vh; }
+  .pdp-main-img img { width:100%; height:auto; max-height:80vh; object-fit:contain; display:block; }
+  .pdp-thumbs { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .pdp-thumb { width:64px; height:80px; object-fit:contain; background:var(--mid); cursor:pointer; border:1px solid var(--border); opacity:.55; transition:opacity .2s, border-color .2s; }
+  .pdp-thumb:hover { opacity:.85; }
+  .pdp-thumb.active { opacity:1; border-color:var(--accent); }
+  .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:25px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--white); margin-top:14px; }
+  .pdp-title { font-family:var(--font-display); font-size:clamp(32px,3.5vw,48px); letter-spacing:.02em; line-height:1.05; color:var(--white); margin:10px 0 16px; }
+  .pdp-price { font-family:var(--font-display); font-size:36px; color:var(--white); letter-spacing:.03em; }
+  .pdp-cod { font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:6px; letter-spacing:.04em; }
+  .pdp-section-label { font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#888; margin:28px 0 12px; }
+  .pdp-swatches { display:flex; gap:10px; flex-wrap:wrap; }
+  .pdp-size-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; max-width:320px; }
+  .pdp-add-btn { width:100%; max-width:320px; margin-top:28px; opacity:.4; pointer-events:none; }
+  .pdp-add-btn.ready { opacity:1; pointer-events:auto; }
+  .pdp-trust { display:flex; flex-direction:column; gap:10px; margin-top:32px; padding-top:28px; border-top:1px solid var(--border); }
+  .pdp-description { margin-top:32px; padding-top:28px; border-top:1px solid var(--border); max-width:520px; }
+  .pdp-description h3 { font-family:var(--font-display); font-size:20px; letter-spacing:.04em; color:var(--white); margin-bottom:12px; }
+  .pdp-description p { color:#aaa; font-size:14px; line-height:1.8; }
+  @media(max-width:1100px) {
+    .pdp-grid { grid-template-columns:1fr; gap:32px; }
+    #product-detail { padding:60px 40px; }
+  }
+  @media(max-width:640px) {
+    #product-detail { padding:48px 24px; }
+    .pdp-thumb { width:52px; height:66px; }
+  }`;
+
+  // esc() here because renderShell (Task 2) interpolates `opts.title`
+  // straight into `<title>` with no escaping of its own -- product.name is
+  // admin-editable, so an unescaped title would be a stored-XSS route via
+  // the <title> tag (a hostile name containing `</title><script>` would
+  // otherwise break out of the tag).
+  return renderShell({ title: `${esc(product.name)} — BERSERKER`, bodyContent, perPageStyle });
+}

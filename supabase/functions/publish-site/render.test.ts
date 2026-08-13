@@ -1,5 +1,5 @@
 import { assertStringIncludes, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage } from "./render.ts";
+import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage } from "./render.ts";
 import type { CatalogProduct } from "./data.ts";
 import type { Catalog } from "./data.ts";
 
@@ -212,5 +212,68 @@ Deno.test("renderBrandPage: youngla includes the collab-brand product via prefix
   assertStringIncludes(html, "Batman Jacket");
   if (html.includes("Onyx 5.0") || html.includes("Joggers")) {
     throw new Error("youngla brand page should only include YoungLA-prefixed products");
+  }
+});
+
+Deno.test("renderPdpPage: includes product info, all color swatches, and a description", () => {
+  const withDescription: CatalogProduct = { ...twoColorProduct, description: "A great compression shirt." };
+  const html = renderPdpPage(withDescription);
+  assertStringIncludes(html, "Onyx 5.0 Seamless Compression Half Sleeve");
+  assertStringIncludes(html, "₹4,799");
+  assertStringIncludes(html, "Forest Green");
+  assertStringIncludes(html, "Stealth Black");
+  assertStringIncludes(html, "A great compression shirt.");
+  assertStringIncludes(html, "addToCart(");
+});
+
+Deno.test("renderPdpPage: handles a null description without crashing or emitting the literal word null", () => {
+  const html = renderPdpPage(twoColorProduct); // description is null in the shared fixture
+  if (html.includes(">null<") || html.includes("null.")) {
+    throw new Error("null description should render as empty, not the literal string 'null'");
+  }
+});
+
+Deno.test("renderPdpPage: preserves the direct addToCart(brand, name, price, imgSrc) call signature", () => {
+  const html = renderPdpPage(twoColorProduct);
+  assertStringIncludes(html, "addToCart(");
+  // Real PDP JS calls addToCart directly with 4 positional args, no #size-modal round-trip.
+  const match = html.match(/addToCart\(([^)]*)\)/);
+  if (!match) throw new Error("expected an addToCart(...) call in the rendered PDP script");
+  const argCount = match[1].split(",").length;
+  if (argCount !== 4) {
+    throw new Error(`expected addToCart to be called with 4 args (brand, name, price, imgSrc), got ${argCount}`);
+  }
+  // The shared shell script (openSizePicker/confirmSize) is always present on
+  // every page, so its mere presence isn't a signal; what matters is that the
+  // PDP's own #pdp-add-btn handler calls addToCart directly rather than
+  // routing through openSizePicker(...).
+  const addBtnHandler = html.slice(html.indexOf("addBtn.addEventListener"));
+  if (addBtnHandler.slice(0, addBtnHandler.indexOf("});")).includes("openSizePicker(")) {
+    throw new Error("PDP's add-to-cart button must call addToCart directly, not route through the shared #size-modal");
+  }
+});
+
+Deno.test("renderPdpPage: one gallery image per color, matching the card template's data model", () => {
+  const html = renderPdpPage(twoColorProduct);
+  const greenPos = html.indexOf("green.jpg");
+  const blackPos = html.indexOf("black.jpg");
+  if (greenPos === -1 || blackPos === -1 || greenPos > blackPos) {
+    throw new Error("expected green.jpg image before black.jpg image in gallery order");
+  }
+  const thumbMatches = [...html.matchAll(/<img class="pdp-thumb[^"]*"/g)];
+  assertEquals(thumbMatches.length, 2); // one thumb per color, not a richer multi-image gallery
+});
+
+Deno.test("renderPdpPage: escapes admin-editable text (brand, name, color label, description)", () => {
+  const hostile: CatalogProduct = {
+    ...twoColorProduct,
+    name: "<script>alert(1)</script>",
+    brand: "<b>Evil</b>",
+    description: '<img src=x onerror="alert(1)">',
+    colors: [{ ...twoColorProduct.colors[0], label: '"><b>x</b>' }, twoColorProduct.colors[1]],
+  };
+  const html = renderPdpPage(hostile);
+  if (html.includes("<script>alert(1)</script>") || html.includes("<b>x</b>") || html.includes('<img src=x onerror="alert(1)">')) {
+    throw new Error("admin-editable text must be HTML-escaped on the PDP");
   }
 });
