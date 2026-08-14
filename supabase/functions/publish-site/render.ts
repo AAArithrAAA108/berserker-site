@@ -232,8 +232,6 @@ export function renderPdpPage(product: CatalogProduct): string {
     )
     .join("");
 
-  const wasPrice = strikethroughPrice(product.price);
-
   const bodyContent = `
 <section class="section" id="product-detail" style="padding-top:48px;">
   <div class="pdp-grid">
@@ -243,11 +241,12 @@ export function renderPdpPage(product: CatalogProduct): string {
       </div>
       <div class="pdp-image-label" id="pdp-image-label">${esc(firstColorLabel)}</div>
       <div class="pdp-thumbs" id="pdp-thumbs">${thumbs}</div>
+      <p class="pdp-insta-note">Want to see real in-hand photos before you buy? DM us on Instagram <a href="https://instagram.com/berserker.in" target="_blank" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">@berserker.in</a> and we'll send them over.</p>
     </div>
     <div class="pdp-info">
       <div class="product-brand">${esc(product.brand)}</div>
       <h1 class="pdp-title">${esc(product.name)}</h1>
-      <div class="pdp-price">${formatInr(product.price)}<span class="original">${formatInr(wasPrice)}</span></div>
+      <div class="pdp-price">${formatInr(product.price)}</div>
       <div class="pdp-cod">COD Advance Amount: ${formatInr(product.codAdvance)}</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">${esc(firstColorLabel)}</span></div>
@@ -363,6 +362,7 @@ export function renderPdpPage(product: CatalogProduct): string {
   .pdp-thumb:hover { opacity:.85; }
   .pdp-thumb.active { opacity:1; border-color:var(--accent); }
   .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:25px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--white); margin-top:14px; }
+  .pdp-insta-note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; max-width:420px; }
   .pdp-title { font-family:var(--font-display); font-size:clamp(32px,3.5vw,48px); letter-spacing:.02em; line-height:1.05; color:var(--white); margin:10px 0 16px; }
   .pdp-price { font-family:var(--font-display); font-size:36px; color:var(--white); letter-spacing:.03em; }
   .pdp-cod { font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:6px; letter-spacing:.04em; }

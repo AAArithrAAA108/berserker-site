@@ -277,3 +277,26 @@ Deno.test("renderPdpPage: escapes admin-editable text (brand, name, color label,
     throw new Error("admin-editable text must be HTML-escaped on the PDP");
   }
 });
+
+Deno.test("renderPdpPage: price is a bare text node, no fabricated strikethrough (real PDPs render a single bare price)", () => {
+  const html = renderPdpPage(twoColorProduct);
+  assertStringIncludes(html, '<div class="pdp-price">₹4,799</div>');
+});
+
+Deno.test("renderPdpPage: includes the Instagram caption present on every real PDP", () => {
+  const html = renderPdpPage(twoColorProduct);
+  assertStringIncludes(html, 'class="pdp-insta-note"');
+  assertStringIncludes(html, "@berserker.in");
+});
+
+Deno.test("renderPdpPage: marks an out-of-stock size as disabled", () => {
+  const html = renderPdpPage(sampleProduct); // sampleProduct's only color has L: inStock:false
+  assertStringIncludes(html, 'data-size="L" disabled');
+});
+
+Deno.test("renderPdpPage: zero colors renders without crashing or dividing by zero", () => {
+  const noColors: CatalogProduct = { ...twoColorProduct, colors: [] };
+  const html = renderPdpPage(noColors);
+  assertStringIncludes(html, "Onyx 5.0 Seamless Compression Half Sleeve");
+  assertStringIncludes(html, 'id="pdp-thumbs"></div>');
+});
