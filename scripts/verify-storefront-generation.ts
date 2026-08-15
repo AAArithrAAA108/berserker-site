@@ -12,14 +12,15 @@
 //   SUPABASE_SERVICE_ROLE_KEY  service_role secret
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { fetchCatalog } from "../supabase/functions/publish-site/data.ts";
+import { fetchCatalog, fetchPrimaryBrands } from "../supabase/functions/publish-site/data.ts";
 import {
   renderListingPage,
   renderCollectionPage,
   renderBrandPage,
+  renderBrandsIndexPage,
   renderPdpPage,
 } from "../supabase/functions/publish-site/render.ts";
-import { COLLECTION_SLUGS, BRAND_FOLDERS, brandFolderFor } from "../supabase/functions/publish-site/membership.ts";
+import { COLLECTION_SLUGS, brandFolderFor } from "../supabase/functions/publish-site/membership.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -36,12 +37,19 @@ await Deno.writeTextFile(`${outDir}/all-products.html`, renderListingPage(catalo
 for (const slug of COLLECTION_SLUGS) {
   await Deno.writeTextFile(`${outDir}/collection-${slug}.html`, renderCollectionPage(catalog, slug));
 }
-for (const folder of BRAND_FOLDERS) {
-  await Deno.writeTextFile(`${outDir}/brand-${folder}.html`, renderBrandPage(catalog, folder));
+
+const primaryBrands = await fetchPrimaryBrands(supabase);
+console.log(`Fetched ${primaryBrands.length} primary brands.`);
+for (const brand of primaryBrands) {
+  await Deno.writeTextFile(`${outDir}/brand-${brand.folderSlug}.html`, renderBrandPage(catalog, brand.folderSlug, brand.name));
 }
+await Deno.writeTextFile(`${outDir}/brands.html`, renderBrandsIndexPage(primaryBrands));
+
 for (const product of catalog.products) {
   const folder = brandFolderFor(product) ?? "unknown";
   await Deno.writeTextFile(`${outDir}/pdp-${folder}-${product.slug}.html`, renderPdpPage(product));
 }
 
-console.log(`Wrote ${1 + COLLECTION_SLUGS.length + BRAND_FOLDERS.length + catalog.products.length} files to ${outDir}/`);
+console.log(
+  `Wrote ${1 + COLLECTION_SLUGS.length + primaryBrands.length + 1 + catalog.products.length} files to ${outDir}/`
+);
