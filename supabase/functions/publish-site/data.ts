@@ -89,13 +89,23 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
   const colorsByProduct = new Map<string, CatalogColor[]>();
   for (const c of colors ?? []) {
     const list = colorsByProduct.get(c.product_id) ?? [];
+    // A color's cover_image_id can be null (e.g. the color was created via
+    // the admin panel before any photo was uploaded for the product, and
+    // nothing retroactively links them once one is). Falling back to the
+    // product's own first uploaded photo -- a real photo of this exact
+    // product, not a placeholder -- beats emitting a broken <img src="">.
+    const productImages = imagesByProduct.get(c.product_id) ?? [];
+    const coverImageUrl =
+      (c.cover_image_id ? imageById.get(c.cover_image_id)?.url : undefined) ??
+      productImages[0]?.url ??
+      "";
     list.push({
       id: c.id,
       label: c.label,
       hex: c.hex,
       colorGroup: c.color_group,
-      coverImageUrl: c.cover_image_id ? (imageById.get(c.cover_image_id)?.url ?? "") : "",
-      images: imagesByProduct.get(c.product_id) ?? [],
+      coverImageUrl,
+      images: productImages,
       variants: variantsByColor.get(c.id) ?? [],
     });
     colorsByProduct.set(c.product_id, list);

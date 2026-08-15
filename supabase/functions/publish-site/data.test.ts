@@ -94,3 +94,23 @@ Deno.test("fetchCatalog: colors with a tied image_index (e.g. new admin-added co
   const labels = catalog.products[0].colors.map((c) => c.label);
   assertEquals(labels, ["First Added", "Second Added"]);
 });
+
+Deno.test("fetchCatalog: a color with no cover_image_id falls back to the product's first uploaded photo instead of an empty src (regression: broken-image icon on newly added products)", async () => {
+  const supabase = fakeSupabase({
+    products: [
+      { id: "p1", brand: "Skims", name: "Cotton Pant", slug: "skims-cotton-pants", price: 4000, cod_advance: 500, position: 1, category: "pants", sleeve_length: null, description: null },
+    ],
+    product_colors: [
+      // Color created before any photo was uploaded -- cover_image_id never got set.
+      { id: "c1", product_id: "p1", label: "Snow White", hex: null, image_index: 0, color_group: "White", cover_image_id: null },
+    ],
+    product_images: [
+      { id: "img1", product_id: "p1", storage_path: "skims-cotton-pants/photo.jpg", sort_order: 0 },
+    ],
+    product_variants: [],
+  });
+
+  const catalog = await fetchCatalog(supabase);
+  const color = catalog.products[0].colors[0];
+  assertEquals(color.coverImageUrl, "https://fake.test/skims-cotton-pants/photo.jpg");
+});
