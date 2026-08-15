@@ -895,7 +895,7 @@ function brandRow(b, isCollab) {
 }
 ```
 
-- [ ] **Step 2: Write brands.js — add primary brand form**
+- [ ] **Step 4: Write brands.js — add primary brand form**
 
 ```javascript
 document.getElementById('show-add-brand-btn').addEventListener('click', function() {
@@ -956,7 +956,7 @@ function renderAddBrandForm() {
 }
 ```
 
-- [ ] **Step 3: Write brands.js — add collab form**
+- [ ] **Step 5: Write brands.js — add collab form**
 
 ```javascript
 document.getElementById('show-add-collab-btn').addEventListener('click', function() {
@@ -999,7 +999,7 @@ function renderAddCollabForm() {
 }
 ```
 
-- [ ] **Step 4: Write brands.js — rename and thumbnail replace**
+- [ ] **Step 6: Write brands.js — rename and thumbnail replace**
 
 ```javascript
 function wireBrandRowButtons() {
@@ -1055,7 +1055,7 @@ function wireBrandRowButtons() {
 }
 ```
 
-- [ ] **Step 5: Mirror to Downloads and verify**
+- [ ] **Step 7: Mirror to Downloads and verify**
 
 Per the project's standing workflow (diff before overwriting, since the Downloads copy is sometimes edited independently):
 
@@ -1074,7 +1074,7 @@ diff --strip-trailing-cr "C:\Users\anind\Downloads\berserker\admin\dashboard\bra
 
 Expected: both print `MATCH`.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add admin/dashboard/index.html admin/dashboard/brands.js
