@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { isInCollection, brandFolderFor, COLLECTION_SLUGS, BRAND_FOLDERS } from "./membership.ts";
+import { isInCollection, brandFolderFor, COLLECTION_SLUGS } from "./membership.ts";
 
 Deno.test("isInCollection: t-shirts includes both t-shirt and compression", () => {
   assertEquals(isInCollection({ category: "t-shirt" }, "t-shirts"), true);
@@ -20,24 +20,10 @@ Deno.test("isInCollection: the other four collections are exact 1:1", () => {
   assertEquals(isInCollection({ category: "jacket" }, "pants"), false);
 });
 
-Deno.test("brandFolderFor: exact brand name matches its folder", () => {
-  assertEquals(brandFolderFor({ brand: "Gymshark" }), "gymshark");
-  assertEquals(brandFolderFor({ brand: "Skims" }), "skims");
+Deno.test("brandFolderFor: returns the product's own brandFolder field directly, no matching", () => {
+  assertEquals(brandFolderFor({ brandFolder: "youngla" }), "youngla");
 });
 
-Deno.test("brandFolderFor: collab brand text still matches via prefix", () => {
-  assertEquals(brandFolderFor({ brand: "YoungLA × Batman" }), "youngla");
-  assertEquals(brandFolderFor({ brand: "YoungLA × Superman" }), "youngla");
-  assertEquals(brandFolderFor({ brand: "YoungLA × Gold's Gym" }), "youngla");
-  assertEquals(brandFolderFor({ brand: "Chrome Hearts × Mastermind" }), "chromehearts");
-  assertEquals(brandFolderFor({ brand: "Cactus Jack x Travis Scott" }), "cactusjack");
-});
-
-Deno.test("brandFolderFor: unmatched brand returns null", () => {
-  assertEquals(brandFolderFor({ brand: "Some Random Brand" }), null);
-});
-
-Deno.test("COLLECTION_SLUGS and BRAND_FOLDERS have the expected counts", () => {
+Deno.test("COLLECTION_SLUGS has the expected count", () => {
   assertEquals(COLLECTION_SLUGS.length, 6);
-  assertEquals(BRAND_FOLDERS.length, 7);
 });
