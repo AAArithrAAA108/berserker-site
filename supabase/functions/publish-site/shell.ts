@@ -82,6 +82,13 @@ export function renderShell(opts: ShellOptions): string {
 
   html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
 
+  /* ── SCROLLBAR ── */
+  html { scrollbar-width: thin; scrollbar-color: var(--accent) var(--black); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #d4dc00; }
+
   body {
     background: var(--black);
     color: var(--white);

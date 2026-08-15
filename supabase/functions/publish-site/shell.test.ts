@@ -35,6 +35,13 @@ Deno.test("renderShell does not include the productLinks map or the all-products
   }
 });
 
+Deno.test("renderShell: yellow-on-black custom scrollbar applies site-wide (covers both the page and the cart sidebar, which share the same global rule)", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  assertStringIncludes(html, "scrollbar-color: var(--accent) var(--black)");
+  assertStringIncludes(html, "::-webkit-scrollbar-thumb { background: var(--accent)");
+  assertStringIncludes(html, "::-webkit-scrollbar-track { background: var(--black)");
+});
+
 Deno.test("renderShell's slider-track CSS has no hardcoded 800%/12.5% width (must be set per-card inline instead)", () => {
   const html = renderShell({ title: "Test", bodyContent: "" });
   if (html.includes("width: 800%") || html.includes("width: 12.5%")) {
