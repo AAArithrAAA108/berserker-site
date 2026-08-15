@@ -6,7 +6,7 @@ var productsCache = [];
 async function loadProductsList() {
   var { data, error } = await sb
     .from('products')
-    .select('*, product_colors(id, label, hex, color_group, cover_image_id)')
+    .select('*, brands(name), product_colors(id, label, hex, color_group, cover_image_id)')
     .order('position', { ascending: true });
   document.getElementById('products-loading').style.display = 'none';
   if (error) {
@@ -38,7 +38,7 @@ function renderProductsTable() {
     tr.innerHTML =
       '<td><input type="number" class="reorder-input" data-id="' + p.id + '" value="' + p.position + '" min="1" max="' + productsCache.length + '" style="width:56px;" /></td>' +
       '<td>' + (p.cover_thumb_url ? '<img src="' + esc(p.cover_thumb_url) + '" style="width:36px;height:36px;object-fit:cover;" />' : '<span style="color:var(--muted);">—</span>') + '</td>' +
-      '<td>' + esc(p.brand) + '</td>' +
+      '<td>' + esc(p.brands.name) + '</td>' +
       '<td>' + esc(p.name) + '</td>' +
       '<td>' + esc(p.category) + '</td>' +
       '<td>' + fmtMoney(p.price) + '</td>' +
@@ -125,7 +125,7 @@ var openProductId = null;
 
 function wireEditButtons() {
   document.querySelectorAll('.edit-product-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', async function() {
       var id = btn.dataset.id;
       var detail = document.getElementById('product-detail-' + id);
       if (openProductId === id) {
@@ -139,17 +139,29 @@ function wireEditButtons() {
       }
       openProductId = id;
       var product = productsCache.find(function(p) { return p.id === id; });
-      renderEditForm(product);
+      await renderEditForm(product);
       detail.classList.add('open');
     });
   });
 }
 
-function renderEditForm(product) {
+function brandOptions(selectedId) {
+  var primaries = brandsCache.filter(function(b) { return b.is_primary; });
+  return primaries.map(function(primary) {
+    var opts = '<option value="' + primary.id + '"' + (primary.id === selectedId ? ' selected' : '') + '>' + esc(primary.name) + '</option>';
+    opts += brandsCache.filter(function(b) { return !b.is_primary && b.folder_slug === primary.folder_slug; })
+      .map(function(collab) { return '<option value="' + collab.id + '"' + (collab.id === selectedId ? ' selected' : '') + '>&nbsp;&nbsp;↳ ' + esc(collab.name) + '</option>'; })
+      .join('');
+    return opts;
+  }).join('');
+}
+
+async function renderEditForm(product) {
+  if (!brandsCache.length) { await loadBrandsList(); }
   var detail = document.getElementById('product-detail-' + product.id);
   detail.innerHTML =
     '<form class="add-form" id="edit-form-' + product.id + '">' +
-      '<div class="field"><label>Brand</label><input type="text" name="brand" value="' + esc(product.brand) + '" required style="width:160px;" /></div>' +
+      '<div class="field"><label>Brand</label><select name="brand_id" required>' + brandOptions(product.brand_id) + '</select></div>' +
       '<div class="field"><label>Name</label><input type="text" name="name" value="' + esc(product.name) + '" required style="width:260px;" /></div>' +
       '<div class="field"><label>Price (₹)</label><input type="number" name="price" value="' + product.price + '" required style="width:100px;" /></div>' +
       '<div class="field"><label>COD Advance (₹)</label><input type="number" name="cod_advance" value="' + product.cod_advance + '" required style="width:100px;" /></div>' +
@@ -176,7 +188,7 @@ function renderEditForm(product) {
     var msg = document.getElementById('edit-msg-' + product.id);
     var sleeveVal = form.sleeve_length.value;
     var { error } = await sb.from('products').update({
-      brand: form.brand.value.trim(),
+      brand_id: form.brand_id.value,
       name: form.name.value.trim(),
       price: parseFloat(form.price.value),
       cod_advance: parseFloat(form.cod_advance.value),
@@ -209,11 +221,12 @@ document.getElementById('show-add-product-btn').addEventListener('click', functi
   }
 });
 
-function renderAddProductForm() {
+async function renderAddProductForm() {
+  if (!brandsCache.length) { await loadBrandsList(); }
   var wrap = document.getElementById('add-product-form-wrap');
   wrap.innerHTML =
     '<form class="add-form" id="add-product-form">' +
-      '<div class="field"><label>Brand</label><input type="text" name="brand" required style="width:160px;" /></div>' +
+      '<div class="field"><label>Brand</label><select name="brand_id" required>' + brandOptions(null) + '</select></div>' +
       '<div class="field"><label>Name</label><input type="text" name="name" required style="width:260px;" /></div>' +
       '<div class="field"><label>Slug</label><input type="text" name="slug" required placeholder="unique-url-slug" style="width:220px;" /></div>' +
       '<div class="field"><label>Price (₹)</label><input type="number" name="price" required style="width:100px;" /></div>' +
@@ -234,7 +247,7 @@ function renderAddProductForm() {
     var nextPosition = (maxRow ? maxRow.position : 0) + 1;
 
     var { error } = await sb.from('products').insert({
-      brand: form.brand.value.trim(),
+      brand_id: form.brand_id.value,
       name: form.name.value.trim(),
       slug: form.slug.value.trim(),
       price: parseFloat(form.price.value),
