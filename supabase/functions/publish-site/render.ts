@@ -232,21 +232,33 @@ function jsonForScript(value: unknown): string {
 }
 
 export function renderPdpPage(product: CatalogProduct): string {
-  const images = product.colors.map((c) => c.coverImageUrl);
-  const firstColorLabel = product.colors[0]?.label ?? "";
+  // Gallery/thumbs enumerate every uploaded photo for the product, not one
+  // per color -- a product can have more photos than colors (e.g. a single
+  // color with several angle shots), and those extra photos are real,
+  // already-uploaded data that a per-color-only gallery would silently hide.
+  // Swatches still jump the main image to that color's own designated cover
+  // shot (falling back to index 0 if a color has no cover_image_id set).
+  const images = product.images.map((img) => img.url);
+  const colorImgIndex = (c: CatalogProduct["colors"][number]) => {
+    const idx = images.indexOf(c.coverImageUrl);
+    return idx === -1 ? 0 : idx;
+  };
+  const firstColor =
+    product.colors.find((c) => colorImgIndex(c) === 0) ?? product.colors[0];
+  const firstColorLabel = firstColor?.label ?? "";
 
-  const thumbs = product.colors
+  const thumbs = images
     .map(
-      (c, i) =>
-        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(c.coverImageUrl)}" alt="View ${i + 1}" />`
+      (url, i) =>
+        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(url)}" alt="View ${i + 1}" />`
     )
     .join("");
 
   const swatches = product.colors
-    .map(
-      (c, i) =>
-        `<div class="modal-swatch${i === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${i}"></div>`
-    )
+    .map((c) => {
+      const imgIndex = colorImgIndex(c);
+      return `<div class="modal-swatch${imgIndex === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}"></div>`;
+    })
     .join("");
 
   // Real PDP hardcodes S/M/L/XL buttons regardless of stock; this rewrite
@@ -301,7 +313,7 @@ export function renderPdpPage(product: CatalogProduct): string {
 <script>
   (function() {
     var images = ${jsonForScript(images)};
-    var swatchList = ${jsonForScript(product.colors.map((c, i) => ({ label: c.label, imgIndex: i })))};
+    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c) })))};
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -319,19 +331,33 @@ export function renderPdpPage(product: CatalogProduct): string {
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
+    function selectSwatchForIndex(idx) {
+      colorSwatches.forEach(function(s) {
+        s.classList.toggle('selected', parseInt(s.dataset.imgIndex, 10) === idx);
+      });
+    }
+
     thumbs.forEach(function(t) {
       t.addEventListener('click', function() {
         var idx = parseInt(t.dataset.index, 10);
-        var sw = swatchList[idx];
-        setMainImage(idx, sw ? sw.label : '');
+        // A thumb isn't necessarily a color's cover shot (there can be more
+        // photos than colors) -- only relabel/reselect a swatch when this
+        // thumb IS one, otherwise keep showing the currently selected color.
+        var matches = swatchList.filter(function(s) { return s.imgIndex === idx; });
+        var match = matches.length ? matches[0] : null;
+        if (match) {
+          selectedColor = match;
+          colorLabel.textContent = match.label;
+          selectSwatchForIndex(idx);
+        }
+        setMainImage(idx, match ? match.label : (imageLabel ? imageLabel.textContent : ''));
       });
     });
 
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
-        colorSwatches.forEach(function(s) { s.classList.remove('selected'); });
-        sw.classList.add('selected');
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        selectSwatchForIndex(imgIndex);
         selectedColor = { label: sw.title, imgIndex: imgIndex };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);

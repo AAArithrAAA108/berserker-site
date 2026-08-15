@@ -429,6 +429,7 @@ export function renderShell(opts: ShellOptions): string {
   }
   .product-card:hover { transform: translateY(-4px); border-color: #444; }
   .product-img {
+    display: block;
     aspect-ratio: 3/4;
     overflow: hidden;
     background: var(--mid);

@@ -12,6 +12,13 @@ export interface CatalogProduct {
   price: number; codAdvance: number; position: number;
   category: string; sleeveLength: string | null; description: string | null;
   colors: CatalogColor[];
+  // Every image uploaded for this product (product_images), sorted by
+  // sort_order -- not filtered/deduped per color. A color's coverImageUrl is
+  // one entry from this same list (see product_colors.cover_image_id). The
+  // PDP gallery uses this full list so products with more photos than
+  // colors (e.g. one color, several angle shots) aren't reduced to a single
+  // thumbnail -- see render.ts's renderPdpPage.
+  images: CatalogImage[];
 }
 export interface Catalog { products: CatalogProduct[]; }
 
@@ -100,6 +107,7 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
       price: Number(p.price), codAdvance: Number(p.cod_advance), position: p.position,
       category: p.category, sleeveLength: p.sleeve_length, description: p.description,
       colors: colorsByProduct.get(p.id) ?? [],
+      images: imagesByProduct.get(p.id) ?? [],
     })),
   };
 }

@@ -18,6 +18,7 @@ const sampleProduct: CatalogProduct = {
       ],
     },
   ],
+  images: [{ url: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", sortOrder: 0 }],
 };
 
 Deno.test("renderProductCard includes brand, name, and strikethrough price", () => {
@@ -73,6 +74,10 @@ const twoColorProduct: CatalogProduct = {
       coverImageUrl: "https://example.supabase.co/.../black.jpg",
       images: [], variants: [{ size: "S", inStock: true }],
     },
+  ],
+  images: [
+    { url: "https://example.supabase.co/.../green.jpg", sortOrder: 0 },
+    { url: "https://example.supabase.co/.../black.jpg", sortOrder: 1 },
   ],
 };
 
@@ -335,8 +340,39 @@ Deno.test("renderPdpPage: marks an out-of-stock size as disabled", () => {
 });
 
 Deno.test("renderPdpPage: zero colors renders without crashing or dividing by zero", () => {
-  const noColors: CatalogProduct = { ...twoColorProduct, colors: [] };
+  const noColors: CatalogProduct = { ...twoColorProduct, colors: [], images: [] };
   const html = renderPdpPage(noColors);
   assertStringIncludes(html, "Onyx 5.0 Seamless Compression Half Sleeve");
   assertStringIncludes(html, 'id="pdp-thumbs"></div>');
+});
+
+Deno.test("renderPdpPage: gallery shows every uploaded product photo, not just one per color (regression: 1-color/multi-photo products lost extra photos)", () => {
+  const oneColorFourPhotos: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [twoColorProduct.colors[0]],
+    images: [
+      { url: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
+      { url: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
+    ],
+  };
+  const html = renderPdpPage(oneColorFourPhotos);
+  const thumbMatches = [...html.matchAll(/<img class="pdp-thumb/g)];
+  assertEquals(thumbMatches.length, 4);
+});
+
+Deno.test("renderPdpPage: a color swatch's data-img-index points at that color's cover photo within the full image list", () => {
+  const oneColorFourPhotos: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [{ ...twoColorProduct.colors[0], coverImageUrl: "https://example.supabase.co/.../3.jpg" }],
+    images: [
+      { url: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
+      { url: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
+    ],
+  };
+  const html = renderPdpPage(oneColorFourPhotos);
+  assertStringIncludes(html, 'data-img-index="2"');
 });

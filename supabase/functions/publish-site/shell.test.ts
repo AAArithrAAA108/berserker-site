@@ -41,3 +41,10 @@ Deno.test("renderShell's slider-track CSS has no hardcoded 800%/12.5% width (mus
     throw new Error("slider-track/img widths must not be hardcoded in the shared shell -- color count varies per product");
   }
 });
+
+Deno.test("renderShell: .product-img has display:block (regression: card template wraps it in an <a>, which is inline by default and ignores aspect-ratio)", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  const rule = html.match(/\.product-img\s*\{[^}]*\}/);
+  if (!rule) throw new Error(".product-img rule not found");
+  assertStringIncludes(rule[0], "display: block");
+});
