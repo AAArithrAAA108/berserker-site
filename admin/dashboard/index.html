@@ -102,6 +102,7 @@
   <button class="tab-btn active" data-tab="orders">Orders</button>
   <button class="tab-btn" data-tab="coupons">Coupons</button>
   <button class="tab-btn" data-tab="products">Products</button>
+  <button class="tab-btn" data-tab="brands">Brands</button>
   <button class="tab-btn" data-tab="admins" id="admins-tab-btn" style="display:none;">Admins</button>
 </div>
 
@@ -162,6 +163,22 @@
     </div>
   </section>
 
+  <!-- BRANDS -->
+  <section class="panel" id="panel-brands">
+    <div class="panel-title">Brands</div>
+    <button class="btn secondary" id="show-add-brand-btn" style="margin-bottom:16px;">+ Add New Brand</button>
+    <button class="btn secondary" id="show-add-collab-btn" style="margin-bottom:16px;">+ Add Collab</button>
+    <div id="add-brand-form-wrap" style="display:none;"></div>
+    <div id="add-collab-form-wrap" style="display:none;"></div>
+    <div id="brands-loading" class="loading-note">Loading brands...</div>
+    <div class="table-wrap" id="brands-table-wrap" style="display:none;">
+      <table>
+        <thead><tr><th>Thumbnail</th><th>Name</th><th>Folder</th><th>Actions</th></tr></thead>
+        <tbody id="brands-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- ADMINS -->
   <section class="panel" id="panel-admins">
     <div class="panel-title">Admins</div>
@@ -189,6 +206,7 @@
 </main>
 
 <script src="products.js"></script>
+<script src="brands.js"></script>
 <script>
   var SUPABASE_URL = 'https://gvddahtgbhbqusyczxuo.supabase.co';
   var SUPABASE_ANON_KEY = 'sb_publishable_9eNluV7u_mGfSeFI7ssJjg_jeF7h0yK';
@@ -443,6 +461,7 @@
     loadOrders();
     loadCoupons();
     initProducts();
+    loadBrandsList();
     if (currentRole === 'super_admin') loadAdmins();
   })();
 </script>
