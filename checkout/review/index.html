@@ -1639,6 +1639,14 @@
     };
 
     function codAdvanceFor(item) {
+      // Cart items added after this fix carry their own codAdvance (sourced
+      // live from the product's real cod_advance at add-to-cart time, so
+      // it's always correct -- including for every product added since
+      // this hardcoded table was last hand-updated, and every future one).
+      // COD_TABLE is kept only as a fallback for items already sitting in a
+      // shopper's localStorage cart from before this fix shipped, since
+      // those don't have codAdvance yet.
+      if (typeof item.codAdvance === 'number' && !isNaN(item.codAdvance)) return item.codAdvance;
       var baseName = item.name.split(' — ')[0];
       var advance = COD_TABLE[item.brand + '|' + baseName];
       return advance === undefined ? item.price : advance;
