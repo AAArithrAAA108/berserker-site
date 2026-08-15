@@ -82,35 +82,63 @@ export function renderAllProductsPage(catalog: Catalog): string {
 // comment): those widths are now emitted inline per-card because color count
 // varies per product, so a shared/page-level CSS rule can no longer own them.
 //
-// Timing approach: a from-scratch reconstruction (not a byte-for-byte port
-// of the original hand-authored keyframes) using equal-duration steps()
-// through each color's slider image -- read against the real examples at
-// all-products/index.html:868-908 for structure. The original hand-tuned a
-// slide+pause percentage table per product (e.g. product-1's 8-image loop:
-// "1.86% -> 12.5%, pause to 14.29%, ..."), which is inconsistent from
-// product to product and encodes a fixed 8-image assumption; reproducing it
-// byte-for-byte isn't meaningful for products with a different color count.
-// steps(imgCount) reproduces the same instant-slide-then-pause visual
-// effect for any color count while staying simple to generate/verify. One
-// detail carried over from the original for fidelity: a non-hover
+// Timing approach: reconstructed from-scratch to generalize to any color
+// count, but matched exactly (verified point-by-point) against the real
+// hand-authored keyframe table at all-products/index.html:871-895 for
+// product-1's 8-image loop -- a prior version of this function used
+// steps(imgCount) as the animation-timing-function instead of linear, which
+// is wrong: steps() subdivides *every* keyframe segment (not the animation
+// as a whole), so with multiple keyframes it produces many extra micro-jumps
+// per transition instead of one clean slide. That version also scaled
+// translateX by a flat `i * 100%` instead of `i * (100 / imgCount)%`, which
+// is wrong relative to the track's own width (the CSS %-basis for
+// translateX): with a track that's `imgCount * 100%` wide, a flat `i*100%`
+// overshoots by a factor of `imgCount`, throwing later images far outside
+// the visible, overflow:hidden container. Both bugs together produced fast,
+// erratic cycling that never visibly reached a slider's last couple of
+// images -- exactly the production symptom this rewrite fixes.
+//
+// Real pattern per image i (1-indexed arrival, i=1..imgCount-1): a short
+// SLIDE_SECONDS transition into image i, then a HOLD_SECONDS pause on it,
+// before sliding into i+1. Image 0 is already visible at t=0 with no lead-in
+// hold (matches the reference: 0% -> translateX(0) is immediately followed
+// by the first slide, not preceded by a pause). The last image's hold
+// extends to 100%, where the `infinite` loop cuts straight back to image 0
+// with no transition (matches the reference's "loop restarts here" comment).
+// One detail carried over from the original for fidelity: a non-hover
 // `#product-N .slider-track { transform: translateX(0); transition:
 // transform .4s ease; }` rule so the slider eases back to the first image on
 // mouse-leave instead of snapping instantly (all-products/index.html:897-899,
 // 905-908).
+const SLIDER_SLIDE_SECONDS = 0.3;
+const SLIDER_HOLD_SECONDS = 2.0;
+
 export function renderSliderCss(products: CatalogProduct[]): string {
   return products
     .map((p) => {
       const imgCount = p.colors.length;
       if (imgCount <= 1) return "";
-      const framePercent = (100 / imgCount).toFixed(4);
-      const steps = p.colors
-        .map((_, i) => `${(i * Number(framePercent)).toFixed(4)}% { transform: translateX(-${i * 100}%); }`)
-        .join("\n    ");
+
+      const transitions = imgCount - 1;
+      const unitSeconds = SLIDER_SLIDE_SECONDS + SLIDER_HOLD_SECONDS;
+      const totalSeconds = transitions * unitSeconds;
+      const slidePct = (SLIDER_SLIDE_SECONDS / totalSeconds) * 100;
+      const unitPct = 100 / transitions;
+
+      const keyframes = ["0% { transform: translateX(0); }"];
+      for (let i = 1; i < imgCount; i++) {
+        const arrivalPct = slidePct + (i - 1) * unitPct;
+        const value = `translateX(-${((i * 100) / imgCount).toFixed(4)}%)`;
+        keyframes.push(`${arrivalPct.toFixed(4)}% { transform: ${value}; }`);
+        const isLast = i === imgCount - 1;
+        const holdEndPct = isLast ? "100" : (arrivalPct + (unitPct - slidePct)).toFixed(4);
+        keyframes.push(`${holdEndPct}% { transform: ${value}; }`);
+      }
+
       return `
-  #product-${p.position}:hover .slider-track { animation: slideProduct${p.position} ${imgCount * 1.2}s steps(${imgCount}) infinite; }
+  #product-${p.position}:hover .slider-track { animation: slideProduct${p.position} ${totalSeconds.toFixed(4)}s linear infinite; }
   @keyframes slideProduct${p.position} {
-    ${steps}
-    100% { transform: translateX(-${(imgCount - 1) * 100}%); }
+    ${keyframes.join("\n    ")}
   }
   #product-${p.position} .slider-track { transform: translateX(0); transition: transform 0.4s ease; }`;
     })

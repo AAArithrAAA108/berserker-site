@@ -192,6 +192,46 @@ Deno.test("renderSliderCss: emits one @keyframes + hover rule per product, keyed
   assertStringIncludes(css, "#product-3:hover .slider-track");
 });
 
+Deno.test("renderSliderCss: uses linear easing, not steps() (regression: steps() re-subdivides every keyframe segment)", () => {
+  const css = renderSliderCss(sampleCatalog.products);
+  assertStringIncludes(css, "linear infinite");
+  if (css.includes("steps(")) {
+    throw new Error("must not use steps() timing -- it subdivides each keyframe segment into extra micro-jumps");
+  }
+});
+
+Deno.test("renderSliderCss: 2-color product gets a 2.3s loop (1 transition x 0.3s slide + 2.0s hold)", () => {
+  const css = renderSliderCss(sampleCatalog.products);
+  // sampleCatalog's products all use twoColorProduct's 2 colors.
+  assertStringIncludes(css, "animation: slideProduct1 2.3000s linear infinite");
+});
+
+Deno.test("renderSliderCss: translateX is scaled by 100/imgCount, not a flat 100% per step (regression: flat scaling overshoots the track)", () => {
+  const css = renderSliderCss(sampleCatalog.products);
+  // 2 colors: image 1 sits at -50% of the track's own width, not -100%.
+  assertStringIncludes(css, "translateX(-50.0000%)");
+  if (css.includes("translateX(-100%)") || css.includes("translateX(-100.0000%)")) {
+    throw new Error("2-color slider must not translateX by a full -100% (that's the 8-image-flat-scale bug)");
+  }
+});
+
+Deno.test("renderSliderCss: matches the real reference's exact keyframe percentages for an 8-image product (all-products/index.html:871-895)", () => {
+  const eightColorProduct: CatalogProduct = {
+    ...twoColorProduct,
+    position: 9,
+    colors: Array.from({ length: 8 }, (_, i) => ({ ...twoColorProduct.colors[0], id: `c${i}` })),
+  };
+  const css = renderSliderCss([eightColorProduct]);
+  assertStringIncludes(css, "animation: slideProduct9 16.1000s linear infinite");
+  // Verified point-by-point against the real hand-authored keyframes.
+  assertStringIncludes(css, "1.8634% { transform: translateX(-12.5000%); }");
+  assertStringIncludes(css, "14.2857% { transform: translateX(-12.5000%); }");
+  assertStringIncludes(css, "30.4348% { transform: translateX(-37.5000%); }");
+  assertStringIncludes(css, "42.8571% { transform: translateX(-37.5000%); }");
+  assertStringIncludes(css, "87.5776% { transform: translateX(-87.5000%); }");
+  assertStringIncludes(css, "100% { transform: translateX(-87.5000%); }");
+});
+
 Deno.test("renderListingPage: includes every product regardless of category/brand", () => {
   const html = renderListingPage(sampleCatalog);
   assertStringIncludes(html, "Onyx 5.0 Seamless Compression Half Sleeve");

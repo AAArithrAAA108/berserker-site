@@ -24,18 +24,21 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
     .order("position", { ascending: true });
   if (productsError) throw new Error(`fetchCatalog products: ${productsError.message}`);
 
-  // product_colors has no color-level ordering column (no "position"/"sort_order"
-  // on this table — see supabase/schema.sql), so without an explicit .order(...)
-  // Postgres may return these rows in a different sequence on every call even
-  // when the data is unchanged. renderProductCard() picks colors[0] as the card's
-  // hero image, so unordered rows mean the hero image (and the publish pipeline's
-  // diff/commit) can flip non-deterministically. Order by product_id (grouping
-  // stability) then id (the only remaining deterministic tiebreaker) so repeated
-  // calls with identical data always return identical row order.
+  // product_colors.image_index is the real, admin-authored ordering for a
+  // product's colors/variants (0-based; migration 20260809050957 confirms it's
+  // what the live storefront's data-img-index has always keyed off). It must
+  // be selected and ordered on explicitly -- without it, Postgres has no
+  // defined row order, so colors (and therefore which swatch is "first"/
+  // pre-selected, and which image each swatch points at) come back in
+  // essentially random order. Order by product_id (grouping stability), then
+  // image_index (the real intended sequence), then id as a final tiebreaker
+  // for rows that share an image_index (e.g. newly admin-added colors, which
+  // default to 0) so repeated calls with identical data return identical order.
   const { data: colors, error: colorsError } = await supabase
     .from("product_colors")
-    .select("id, product_id, label, hex, color_group, cover_image_id")
+    .select("id, product_id, label, hex, image_index, color_group, cover_image_id")
     .order("product_id", { ascending: true })
+    .order("image_index", { ascending: true })
     .order("id", { ascending: true });
   if (colorsError) throw new Error(`fetchCatalog colors: ${colorsError.message}`);
 
