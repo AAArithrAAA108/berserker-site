@@ -42,6 +42,15 @@ Deno.test("renderShell: yellow-on-black custom scrollbar applies site-wide (cove
   assertStringIncludes(html, "::-webkit-scrollbar-track { background: var(--black)");
 });
 
+Deno.test("renderShell: product card thumbnails use object-fit:contain, not cover (regression: oversized/wide product photos were cropped to fill the fixed 3:4 box)", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  const cardImgRule = html.match(/\.product-img img \{[^}]*\}/);
+  const sliderImgRule = html.match(/\.product-img-slider \.slider-track img \{[^}]*\}/);
+  if (!cardImgRule || !sliderImgRule) throw new Error("expected both .product-img img and .product-img-slider .slider-track img rules");
+  assertStringIncludes(cardImgRule[0], "object-fit: contain");
+  assertStringIncludes(sliderImgRule[0], "object-fit: contain");
+});
+
 Deno.test("renderShell's slider-track CSS has no hardcoded 800%/12.5% width (must be set per-card inline instead)", () => {
   const html = renderShell({ title: "Test", bodyContent: "" });
   if (html.includes("width: 800%") || html.includes("width: 12.5%")) {

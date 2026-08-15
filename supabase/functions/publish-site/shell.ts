@@ -444,7 +444,7 @@ export function renderShell(opts: ShellOptions): string {
   }
   .product-img img {
     width: 100%; height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform .5s ease;
   }
   .product-card:hover .product-img img { transform: scale(1.07); }
@@ -920,7 +920,7 @@ export function renderShell(opts: ShellOptions): string {
   }
   .product-img-slider .slider-track img {
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: top center;
     flex-shrink: 0;
     display: block;
