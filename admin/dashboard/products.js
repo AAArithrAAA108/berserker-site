@@ -36,7 +36,7 @@ function renderProductsTable() {
     }).join('');
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><input type="number" class="reorder-input" data-id="' + p.id + '" value="' + p.position + '" min="1" style="width:56px;" /></td>' +
+      '<td><input type="number" class="reorder-input" data-id="' + p.id + '" value="' + p.position + '" min="1" max="' + productsCache.length + '" style="width:56px;" /></td>' +
       '<td>' + (p.cover_thumb_url ? '<img src="' + esc(p.cover_thumb_url) + '" style="width:36px;height:36px;object-fit:cover;" />' : '<span style="color:var(--muted);">—</span>') + '</td>' +
       '<td>' + esc(p.brand) + '</td>' +
       '<td>' + esc(p.name) + '</td>' +
@@ -66,7 +66,11 @@ function wireReorderInputs() {
     input.addEventListener('change', async function() {
       var id = input.dataset.id;
       var newPos = parseInt(input.value, 10);
-      if (!newPos || newPos < 1) { input.value = productsCache.find(function(p) { return p.id === id; }).position; return; }
+      var currentPos = productsCache.find(function(p) { return p.id === id; }).position;
+      // The RPC itself is the authoritative check (a max attribute is only a
+      // UI hint, e.g. bypassable by direct input); this just avoids a round
+      // trip for an obviously-out-of-range value.
+      if (!newPos || newPos < 1 || newPos > productsCache.length) { input.value = currentPos; return; }
       input.disabled = true;
       var { error } = await sb.rpc('set_product_position', { p_product_id: id, p_new_position: newPos });
       input.disabled = false;
@@ -102,7 +106,11 @@ function wireDeleteButtons() {
         }
       }
 
-      var { error: deleteError } = await sb.from('products').delete().eq('id', btn.dataset.id);
+      // delete_product_and_renumber (not a plain .delete()) also shifts every
+      // product above this one's position down by one, so deleting product
+      // #39 makes #40 become #39, #41 become #40, and so on -- no gap left
+      // in the sequence for Publish's page ordering to inherit.
+      var { error: deleteError } = await sb.rpc('delete_product_and_renumber', { p_product_id: btn.dataset.id });
       if (deleteError) {
         alert('Delete failed: ' + deleteError.message + (images && images.length ? ' (note: this product\'s images were already removed from storage before this failure.)' : ''));
         btn.disabled = false;
