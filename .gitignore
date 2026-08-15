@@ -1,3 +1,5 @@
 .worktrees/
 .superpowers/
 supabase/.temp/
+.env.local
+scratch-generated-pages/
