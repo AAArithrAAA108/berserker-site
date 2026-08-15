@@ -1,7 +1,8 @@
 // supabase/functions/publish-site/index.ts
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { fetchCatalog } from "./data.ts";
-import { renderAllProductsPage } from "./render.ts";
+import { renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage } from "./render.ts";
+import { COLLECTION_SLUGS, BRAND_FOLDERS, brandFolderFor } from "./membership.ts";
 import { commitFiles } from "./github.ts";
 
 // The admin dashboard calls this function cross-origin with an Authorization
@@ -87,16 +88,42 @@ Deno.serve(async (req) => {
   // ── PUBLISH ──────────────────────────────────────────────────────────────
   try {
     const catalog = await fetchCatalog(supabase);
-    const allProductsHtml = renderAllProductsPage(catalog);
+
+    const files: Record<string, string> = {
+      "all-products/index.html": renderListingPage(catalog),
+    };
+    for (const slug of COLLECTION_SLUGS) {
+      files[`collections/${slug}/index.html`] = renderCollectionPage(catalog, slug);
+    }
+    for (const folder of BRAND_FOLDERS) {
+      files[`${folder}/index.html`] = renderBrandPage(catalog, folder);
+    }
+    for (const product of catalog.products) {
+      const folder = brandFolderFor(product);
+      if (!folder) continue; // defensive — Task 1 Step 5 confirmed this shouldn't happen for real data
+      files[`${folder}/${product.slug}/index.html`] = renderPdpPage(product);
+    }
+
+    let dryRun = false;
+    try {
+      const body = await req.json();
+      dryRun = body?.dryRun === true;
+    } catch {
+      // no JSON body sent — dryRun stays false, matches current behavior of a bodyless POST
+    }
+
+    if (dryRun) {
+      return json({ ok: true, dryRun: true, fileCount: Object.keys(files).length, filePaths: Object.keys(files) });
+    }
 
     const githubToken = Deno.env.get("GITHUB_TOKEN")!;
     const { commitSha } = await commitFiles(
-      { "all-products/index.generated.html": allProductsHtml },
-      `Publish: regenerate storefront from ${catalog.products.length} products`,
+      files,
+      `Publish: regenerate storefront from ${catalog.products.length} products (${Object.keys(files).length} files)`,
       githubToken
     );
 
-    return json({ ok: true, commitSha, productCount: catalog.products.length });
+    return json({ ok: true, commitSha, productCount: catalog.products.length, fileCount: Object.keys(files).length });
   } catch (err) {
     console.error(err);
     return json({ ok: false, error: String(err) }, 500);
