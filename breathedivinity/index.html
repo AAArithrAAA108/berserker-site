@@ -791,8 +791,13 @@
     cursor: pointer;
     transition: background .15s, border-color .15s, color .15s;
   }
-  .size-btn:hover { border-color: #888; }
+  .size-btn:hover:not(:disabled) { border-color: #888; }
   .size-btn.selected { background: #e8f000; color: #0a0a0a; border-color: #e8f000; }
+  .size-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+    color: #888;
+  }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1224,7 +1229,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-voidtech-nightfall-half-sleeve/"><div class="product-name">VoidTech Nightfall Compression Half Sleeve</div></a>
     <div class="product-price">₹4,299<span class="original">₹11,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#1a1a1a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#5a1a1a;" title="Crimson Red" data-img-index="1"></div><div class="swatch" style="background:#8a5a00;" title="Gold" data-img-index="2"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#1a1a1a;" title="White" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1a1a;" title="Crimson Red" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#8a5a00;" title="Gold" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="2500">Add to Cart</button>
 </div>
@@ -1236,7 +1241,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-voidtech-berserker/"><div class="product-name">VoidTech Berserker Compression</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="6"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="2500">Add to Cart</button>
 </div>
@@ -1248,7 +1253,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-voidtech-cyber-skeleton/"><div class="product-name">VoidTech Cyber Skeleton Compression</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#141414;" title="Black" data-img-index="0"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#141414;" title="Black" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1260,7 +1265,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-voidtech-immortal/"><div class="product-name">VoidTech Immortal Compression</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="0"></div><div class="swatch" style="background:#8a1c1c;" title="White Red" data-img-index="2"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="4"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="6"></div><div class="swatch" style="background:#1c8a3a;" title="Green" data-img-index="8"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#8a1c1c;" title="White Red" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c8a3a;" title="Green" data-img-index="8" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1272,7 +1277,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-voidtech-pulsefire/"><div class="product-name">VoidTech PulseFire Compression</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#a01c5a;" title="PulseFire" data-img-index="1"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="3"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="4"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c5a;" title="PulseFire" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1284,7 +1289,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-voidtech-infernal/"><div class="product-name">VoidTech Infernal Compression</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="0"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="6"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="9"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="9" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1296,7 +1301,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-hollow-souls/"><div class="product-name">Hollow Souls Oversized T-Shirt</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="0"></div><div class="swatch" style="background:#3a3a3a;" title="Charcoal" data-img-index="2"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="4"></div><div class="swatch" style="background:#1c8a3a;" title="Green" data-img-index="5"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="7"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="9"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="10"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="11"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="Charcoal" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c8a3a;" title="Green" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="9" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="10" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="11" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1308,7 +1313,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-bloodraven/"><div class="product-name">Bloodraven Oversized T-Shirt</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4"></div><div class="swatch" style="background:#8a1c1c;" title="Red White" data-img-index="6"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="8"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="10"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="12"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#8a1c1c;" title="Red White" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="8" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="10" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="12" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
@@ -1320,7 +1325,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-deathclaw/"><div class="product-name">Deathclaw Oversized T-Shirt</div></a>
     <div class="product-price">₹5,399<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#8a1c1c;" title="Red White" data-img-index="0"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#8a1c1c;" title="Red White" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
@@ -1332,7 +1337,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-dragon-blade/"><div class="product-name">Dragon Blade Oversized T-Shirt</div></a>
     <div class="product-price">₹5,399<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="0"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="6"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="8"></div><div class="swatch" style="background:#7a2c4a;" title="Red Blue" data-img-index="10"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="12"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="8" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#7a2c4a;" title="Red Blue" data-img-index="10" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="12" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
@@ -1344,7 +1349,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-gargoyle/"><div class="product-name">Gargoyle Oversized T-Shirt</div></a>
     <div class="product-price">₹5,399<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4"></div><div class="swatch" style="background:#8a1c1c;" title="Crimson" data-img-index="6"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#8a1c1c;" title="Crimson" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
@@ -1356,7 +1361,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-fallen-knight-long-sleeve/"><div class="product-name">Fallen Knight Long Sleeve Compression</div></a>
     <div class="product-price">₹5,499<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="0"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="2"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="4"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="6"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="8"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="8" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
@@ -1368,7 +1373,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-deathwing-oversized-hoodie/"><div class="product-name">Deathwing Oversized Hoodie</div></a>
     <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="0"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1380,7 +1385,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-blood-oath-sweatpants/"><div class="product-name">Blood Oath Sweatpants</div></a>
     <div class="product-price">₹5,099<span class="original">₹13,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="1"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="3"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="7"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3400">Add to Cart</button>
 </div>
@@ -1392,7 +1397,7 @@
     <div class="product-brand">BreatheDivinity</div>
     <a href="/breathedivinity/breathedivinity-eternal-wyvern-oversized-sweatpants/"><div class="product-name">Eternal Wyvern Oversized Sweatpants</div></a>
     <div class="product-price">₹5,099<span class="original">₹13,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#141414;" title="Black" data-img-index="0"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="1"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="7"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#141414;" title="Black" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3400">Add to Cart</button>
 </div></div>
@@ -1644,6 +1649,23 @@
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
+  // Stock is per color, not per product -- grey out (disable) whichever
+  // sizes are out of stock for the given color's variants, and drop the
+  // current size selection if it's no longer available after a color
+  // switch (rather than silently letting a shopper "confirm" a size that
+  // isn't actually in stock for the color they just picked).
+  function applySizeAvailability(variants) {
+    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
+      btn.disabled = !inStock;
+      if (!inStock && btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        selectedSize = null;
+      }
+    });
+  }
+
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
     pendingItem = { brand, name, price, codAdvance, imgSrc, allImgs };
     selectedSize = null;
@@ -1659,7 +1681,7 @@
     document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
@@ -1673,9 +1695,15 @@
         div.classList.add('selected');
         selectedColor = { label, imgIndex };
         document.getElementById('selected-color-label').textContent = label;
+        applySizeAvailability(variants);
+        checkConfirmReady();
       });
       swatchContainer.appendChild(div);
     });
+
+    // Default to the first color's stock before any swatch is clicked, same
+    // as the main image/label already default to the first color.
+    applySizeAvailability(colors[0]?.variants);
 
     document.getElementById('size-overlay').style.display = 'block';
     document.getElementById('size-modal').style.display = 'block';
@@ -1721,12 +1749,17 @@
 
     // Collect colors from swatches — with per-color image
     const allCardImgs = [...card.querySelectorAll('.product-img img')].map(i => i.src);
-    const colors = [...card.querySelectorAll('.swatch')].map(s => ({
-      bg: s.style.background,
-      label: s.title || s.style.background,
-      imgIndex: parseInt(s.dataset.imgIndex || '0'),
-      variant: s.dataset.variant || null
-    }));
+    const colors = [...card.querySelectorAll('.swatch')].map(s => {
+      let variants = [];
+      try { variants = JSON.parse(s.dataset.variants || '[]'); } catch (e) {}
+      return {
+        bg: s.style.background,
+        label: s.title || s.style.background,
+        imgIndex: parseInt(s.dataset.imgIndex || '0'),
+        variant: s.dataset.variant || null,
+        variants: variants
+      };
+    });
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();

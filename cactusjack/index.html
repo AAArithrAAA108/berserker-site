@@ -791,8 +791,13 @@
     cursor: pointer;
     transition: background .15s, border-color .15s, color .15s;
   }
-  .size-btn:hover { border-color: #888; }
+  .size-btn:hover:not(:disabled) { border-color: #888; }
   .size-btn.selected { background: #e8f000; color: #0a0a0a; border-color: #e8f000; }
+  .size-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+    color: #888;
+  }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1008,7 +1013,7 @@
     <div class="product-brand">Cactus Jack x Travis Scott</div>
     <a href="/cactusjack/cactusjack-oversized-tshirt/"><div class="product-name">Oversized T-Shirt</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="6"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="7"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1020,7 +1025,7 @@
     <div class="product-brand">Cactus Jack x Travis Scott</div>
     <a href="/cactusjack/cactusjack-astroworld-oversized-tshirt/"><div class="product-name">Astroworld Oversized T-Shirt</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="6"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="7"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 9" data-img-index="8"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 10" data-img-index="9"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 9" data-img-index="8" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 10" data-img-index="9" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1032,7 +1037,7 @@
     <div class="product-brand">Cactus Jack x Travis Scott x Fragment</div>
     <a href="/cactusjack/cactusjack-fragment-oversized-tshirt/"><div class="product-name">Oversized T-Shirt</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1044,7 +1049,7 @@
     <div class="product-brand">Cactus Jack x Travis Scott x McDonald&#39;s</div>
     <a href="/cactusjack/cactusjack-mcdonalds-oversized-tshirt/"><div class="product-name">Oversized T-Shirt</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="6"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="7"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 9" data-img-index="8"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 10" data-img-index="9"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 11" data-img-index="10"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 12" data-img-index="11"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 13" data-img-index="12"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 14" data-img-index="13"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 9" data-img-index="8" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 10" data-img-index="9" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 11" data-img-index="10" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 12" data-img-index="11" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 13" data-img-index="12" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 14" data-img-index="13" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1056,7 +1061,7 @@
     <div class="product-brand">Cactus Jack x Travis Scott x Playstation</div>
     <a href="/cactusjack/cactusjack-playstation-oversized-tshirt/"><div class="product-name">Oversized T-Shirt</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div></div>
@@ -1308,6 +1313,23 @@
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
+  // Stock is per color, not per product -- grey out (disable) whichever
+  // sizes are out of stock for the given color's variants, and drop the
+  // current size selection if it's no longer available after a color
+  // switch (rather than silently letting a shopper "confirm" a size that
+  // isn't actually in stock for the color they just picked).
+  function applySizeAvailability(variants) {
+    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
+      btn.disabled = !inStock;
+      if (!inStock && btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        selectedSize = null;
+      }
+    });
+  }
+
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
     pendingItem = { brand, name, price, codAdvance, imgSrc, allImgs };
     selectedSize = null;
@@ -1323,7 +1345,7 @@
     document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
@@ -1337,9 +1359,15 @@
         div.classList.add('selected');
         selectedColor = { label, imgIndex };
         document.getElementById('selected-color-label').textContent = label;
+        applySizeAvailability(variants);
+        checkConfirmReady();
       });
       swatchContainer.appendChild(div);
     });
+
+    // Default to the first color's stock before any swatch is clicked, same
+    // as the main image/label already default to the first color.
+    applySizeAvailability(colors[0]?.variants);
 
     document.getElementById('size-overlay').style.display = 'block';
     document.getElementById('size-modal').style.display = 'block';
@@ -1385,12 +1413,17 @@
 
     // Collect colors from swatches — with per-color image
     const allCardImgs = [...card.querySelectorAll('.product-img img')].map(i => i.src);
-    const colors = [...card.querySelectorAll('.swatch')].map(s => ({
-      bg: s.style.background,
-      label: s.title || s.style.background,
-      imgIndex: parseInt(s.dataset.imgIndex || '0'),
-      variant: s.dataset.variant || null
-    }));
+    const colors = [...card.querySelectorAll('.swatch')].map(s => {
+      let variants = [];
+      try { variants = JSON.parse(s.dataset.variants || '[]'); } catch (e) {}
+      return {
+        bg: s.style.background,
+        label: s.title || s.style.background,
+        imgIndex: parseInt(s.dataset.imgIndex || '0'),
+        variant: s.dataset.variant || null,
+        variants: variants
+      };
+    });
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
