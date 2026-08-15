@@ -66,7 +66,7 @@ export function renderProductCard(product: CatalogProduct): string {
     <div class="product-price">${formatInr(product.price)}<span class="original">${formatInr(wasPrice)}</span></div>
     <div class="product-swatches">${swatches}</div>
   </div>
-  <button class="product-add">Add to Cart</button>
+  <button class="product-add" data-cod-advance="${product.codAdvance}">Add to Cart</button>
 </div>`.trim();
 }
 
@@ -408,7 +408,7 @@ export function renderPdpPage(product: CatalogProduct): string {
       var name = ${jsonForScript(product.name)} + ' — ' + selectedColor.label + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
-        addToCart(${jsonForScript(product.brand)}, name, ${product.price}, imgSrc);
+        addToCart(${jsonForScript(product.brand)}, name, ${product.price}, ${product.codAdvance}, imgSrc);
         if (typeof openCart === 'function') openCart();
       }
     });

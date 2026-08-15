@@ -1169,13 +1169,13 @@ ${opts.bodyContent}
     t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
   }
 
-  function addToCart(brand, name, price, imgSrc) {
+  function addToCart(brand, name, price, codAdvance, imgSrc) {
     const existing = cartItems.find(i => i.name === name);
     if (existing) {
       if (existing.qty >= 5) { showToast("Can't add more than 5 of a product at a time"); return; }
       existing.qty++;
     } else {
-      cartItems.push({ brand, name, price, qty: 1, imgSrc });
+      cartItems.push({ brand, name, price, codAdvance, qty: 1, imgSrc });
     }
     updateCart();
   }
@@ -1195,8 +1195,8 @@ ${opts.bodyContent}
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
-  function openSizePicker(brand, name, price, imgSrc, colors, allImgs) {
-    pendingItem = { brand, name, price, imgSrc, allImgs };
+  function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
+    pendingItem = { brand, name, price, codAdvance, imgSrc, allImgs };
     selectedSize = null;
     selectedColor = null;
     document.getElementById('size-product-name').textContent = name;
@@ -1247,7 +1247,7 @@ ${opts.bodyContent}
     if (!selectedSize) { showToast('Please select size'); return; }
     const nameWithDetails = \`\${pendingItem.name} — \${selectedColor.label} / \${selectedSize}\`;
     const colorImg = pendingItem.allImgs[selectedColor.imgIndex] || pendingItem.imgSrc;
-    addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, colorImg);
+    addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, pendingItem.codAdvance, colorImg);
     closeSizePicker();
   }
 
@@ -1267,6 +1267,7 @@ ${opts.bodyContent}
     const name  = card.querySelector('.product-name')?.textContent.trim() || '';
     const priceStr = card.querySelector('.product-price')?.childNodes[0]?.textContent.trim() || '0';
     const price = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
+    const codAdvance = parseInt(btn.dataset.codAdvance || '0') || price;
     const imgSrc = card.querySelector('.product-img img')?.src || '';
 
     // Collect colors from swatches — with per-color image
@@ -1280,7 +1281,7 @@ ${opts.bodyContent}
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      openSizePicker(brand, name, price, imgSrc, colors, allCardImgs);
+      openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allCardImgs);
     });
   });
 

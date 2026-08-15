@@ -132,6 +132,11 @@ Deno.test("renderProductCard: slider shows every uploaded photo, and swatches po
   assertStringIncludes(html, 'title="Stealth Black" data-img-index="1"');
 });
 
+Deno.test("renderProductCard: Add to Cart button carries the real codAdvance (regression: checkout charged full price for any product missing from a hardcoded table)", () => {
+  const html = renderProductCard(twoColorProduct);
+  assertStringIncludes(html, `data-cod-advance="${twoColorProduct.codAdvance}"`);
+});
+
 Deno.test("renderProductCard: price is a bare text node, strikethrough price in .original span", () => {
   const html = renderProductCard(twoColorProduct);
   assertStringIncludes(html, '<div class="product-price">₹4,799<span class="original">₹12,999</span></div>');
@@ -307,15 +312,15 @@ Deno.test("renderPdpPage: handles a null description without crashing or emittin
   }
 });
 
-Deno.test("renderPdpPage: preserves the direct addToCart(brand, name, price, imgSrc) call signature", () => {
+Deno.test("renderPdpPage: preserves the direct addToCart(brand, name, price, codAdvance, imgSrc) call signature", () => {
   const html = renderPdpPage(twoColorProduct);
   assertStringIncludes(html, "addToCart(");
-  // Real PDP JS calls addToCart directly with 4 positional args, no #size-modal round-trip.
+  // Real PDP JS calls addToCart directly with 5 positional args, no #size-modal round-trip.
   const match = html.match(/addToCart\(([^)]*)\)/);
   if (!match) throw new Error("expected an addToCart(...) call in the rendered PDP script");
   const argCount = match[1].split(",").length;
-  if (argCount !== 4) {
-    throw new Error(`expected addToCart to be called with 4 args (brand, name, price, imgSrc), got ${argCount}`);
+  if (argCount !== 5) {
+    throw new Error(`expected addToCart to be called with 5 args (brand, name, price, codAdvance, imgSrc), got ${argCount}`);
   }
   // The shared shell script (openSizePicker/confirmSize) is always present on
   // every page, so its mere presence isn't a signal; what matters is that the
