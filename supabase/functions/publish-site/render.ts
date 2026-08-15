@@ -25,27 +25,32 @@ export function esc(s: string): string {
 
 export function renderProductCard(product: CatalogProduct): string {
   const wasPrice = strikethroughPrice(product.price);
-  const colorCount = product.colors.length;
+  // The hover-slider cycles through every uploaded photo (not one per
+  // color) -- a color can own more than one photo (e.g. front/back shots;
+  // see fetchCatalog's range comment), and those extra photos are real,
+  // already-uploaded data a per-color-only slider would permanently hide.
+  const imgCount = product.images.length;
   // Original hand-authored cards hardcoded slider-track/img widths in shared
   // CSS (800%/12.5%) because every card carried exactly 8 slider images.
-  // Real products carry one slider image per color and color count varies
-  // (2 to 10+ across the catalog), so those widths must be computed per card
-  // and set inline instead of relying on a fixed shared CSS rule (shell.ts
-  // Task 2 already dropped the old hardcoded rule). Guard colorCount === 0
-  // so a color-less product can't divide by zero -- render an empty track.
-  const trackStyle = colorCount > 0 ? ` style="width:${colorCount * 100}%;"` : "";
-  const imgWidthPct = colorCount > 0 ? 100 / colorCount : 0;
-  const sliderImgs = product.colors
+  // Image count varies per product, so those widths must be computed per
+  // card and set inline instead of relying on a fixed shared CSS rule
+  // (shell.ts Task 2 already dropped the old hardcoded rule). Guard
+  // imgCount === 0 so an image-less product can't divide by zero -- render
+  // an empty track.
+  const trackStyle = imgCount > 0 ? ` style="width:${imgCount * 100}%;"` : "";
+  const imgWidthPct = imgCount > 0 ? 100 / imgCount : 0;
+  const sliderImgs = product.images
     .map(
-      (c) =>
-        `<img src="${esc(c.coverImageUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" />`
+      (img) =>
+        `<img src="${esc(img.url)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" />`
     )
     .join("");
+  const images = product.images.map((img) => img.url);
   const swatches = product.colors
-    .map(
-      (c, i) =>
-        `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${i}"></div>`
-    )
+    .map((c) => {
+      const idx = images.indexOf(c.coverImageUrl);
+      return `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}"></div>`;
+    })
     .join("");
   const brandFolder = brandFolderFor(product);
   const pdpPath = brandFolder ? `/${brandFolder}/${product.slug}/` : "/all-products/";
@@ -116,7 +121,7 @@ const SLIDER_HOLD_SECONDS = 2.0;
 export function renderSliderCss(products: CatalogProduct[]): string {
   return products
     .map((p) => {
-      const imgCount = p.colors.length;
+      const imgCount = p.images.length;
       if (imgCount <= 1) return "";
 
       const transitions = imgCount - 1;
@@ -243,6 +248,11 @@ export function renderPdpPage(product: CatalogProduct): string {
     const idx = images.indexOf(c.coverImageUrl);
     return idx === -1 ? 0 : idx;
   };
+  // A color can own more than one consecutive image (see fetchCatalog's
+  // range comment) -- e.g. a front and back shot of the same color. Thumb
+  // clicks need to know a color's full range, not just its starting index,
+  // so browsing any of its photos still shows and selects the right color.
+  const colorImgCount = (c: CatalogProduct["colors"][number]) => Math.max(1, c.images.length);
   const firstColor =
     product.colors.find((c) => colorImgIndex(c) === 0) ?? product.colors[0];
   const firstColorLabel = firstColor?.label ?? "";
@@ -257,7 +267,7 @@ export function renderPdpPage(product: CatalogProduct): string {
   const swatches = product.colors
     .map((c) => {
       const imgIndex = colorImgIndex(c);
-      return `<div class="modal-swatch${imgIndex === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}"></div>`;
+      return `<div class="modal-swatch${imgIndex === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-count="${colorImgCount(c)}"></div>`;
     })
     .join("");
 
@@ -313,7 +323,7 @@ export function renderPdpPage(product: CatalogProduct): string {
 <script>
   (function() {
     var images = ${jsonForScript(images)};
-    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c) })))};
+    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), count: colorImgCount(c) })))};
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -331,34 +341,41 @@ export function renderPdpPage(product: CatalogProduct): string {
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
+    // A color can own more than one consecutive photo (e.g. front/back
+    // shots), so "does this thumb belong to this color" is a range check,
+    // not an exact index match against the color's own cover/start index.
+    function colorForIndex(idx) {
+      var matches = swatchList.filter(function(s) { return idx >= s.imgIndex && idx < s.imgIndex + s.count; });
+      return matches.length ? matches[0] : null;
+    }
+
     function selectSwatchForIndex(idx) {
       colorSwatches.forEach(function(s) {
-        s.classList.toggle('selected', parseInt(s.dataset.imgIndex, 10) === idx);
+        var start = parseInt(s.dataset.imgIndex, 10);
+        var count = parseInt(s.dataset.imgCount, 10) || 1;
+        s.classList.toggle('selected', idx >= start && idx < start + count);
       });
     }
 
     thumbs.forEach(function(t) {
       t.addEventListener('click', function() {
         var idx = parseInt(t.dataset.index, 10);
-        // A thumb isn't necessarily a color's cover shot (there can be more
-        // photos than colors) -- only relabel/reselect a swatch when this
-        // thumb IS one, otherwise keep showing the currently selected color.
-        var matches = swatchList.filter(function(s) { return s.imgIndex === idx; });
-        var match = matches.length ? matches[0] : null;
-        if (match) {
-          selectedColor = match;
-          colorLabel.textContent = match.label;
+        var owner = colorForIndex(idx);
+        if (owner) {
+          selectedColor = owner;
+          colorLabel.textContent = owner.label;
           selectSwatchForIndex(idx);
         }
-        setMainImage(idx, match ? match.label : (imageLabel ? imageLabel.textContent : ''));
+        setMainImage(idx, owner ? owner.label : (imageLabel ? imageLabel.textContent : ''));
       });
     });
 
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        var count = parseInt(sw.dataset.imgCount, 10) || 1;
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, count: count };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });

@@ -108,6 +108,30 @@ Deno.test("renderProductCard: swatch data-img-index matches that color's slider 
   }
 });
 
+Deno.test("renderProductCard: slider shows every uploaded photo, and swatches point at each color's own start position, not its array index (regression: extra angle shots weren't mapped to their own color)", () => {
+  const multiPhotoProduct: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      // Forest Green owns 1 photo, Stealth Black owns 2 -- variable per-color counts.
+      { ...twoColorProduct.colors[0], id: "c1", coverImageUrl: "https://example.com/green-1.jpg" },
+      { ...twoColorProduct.colors[1], id: "c2", coverImageUrl: "https://example.com/black-1.jpg" },
+    ],
+    images: [
+      { url: "https://example.com/green-1.jpg", sortOrder: 0 },
+      { url: "https://example.com/black-1.jpg", sortOrder: 1 },
+      { url: "https://example.com/black-2.jpg", sortOrder: 2 },
+    ],
+  };
+  const html = renderProductCard(multiPhotoProduct);
+  const sliderImgCount = [...html.matchAll(/<img src="https:\/\/example\.com\//g)].length;
+  assertEquals(sliderImgCount, 3);
+  assertStringIncludes(html, "black-2.jpg"); // the extra angle shot is actually reachable
+  // Forest Green's swatch points at index 0 (its own photo); Stealth Black's
+  // swatch points at index 1 (its first photo), not "1" by array coincidence.
+  assertStringIncludes(html, 'title="Forest Green" data-img-index="0"');
+  assertStringIncludes(html, 'title="Stealth Black" data-img-index="1"');
+});
+
 Deno.test("renderProductCard: price is a bare text node, strikethrough price in .original span", () => {
   const html = renderProductCard(twoColorProduct);
   assertStringIncludes(html, '<div class="product-price">₹4,799<span class="original">₹12,999</span></div>');
@@ -144,24 +168,28 @@ Deno.test("renderProductCard: slider track/img widths are inline, computed from 
   assertEquals(imgMatches.length, 2);
 });
 
-Deno.test("renderProductCard: slider track/img widths are inline, computed from color count (4 colors)", () => {
-  const fourColorProduct: CatalogProduct = {
+Deno.test("renderProductCard: slider track/img widths are inline, computed from total image count (4 images)", () => {
+  const fourImageProduct: CatalogProduct = {
     ...twoColorProduct,
     colors: [
       { ...twoColorProduct.colors[0], id: "c1", coverImageUrl: "https://example.com/1.jpg" },
       { ...twoColorProduct.colors[1], id: "c2", coverImageUrl: "https://example.com/2.jpg" },
-      { ...twoColorProduct.colors[0], id: "c3", coverImageUrl: "https://example.com/3.jpg" },
-      { ...twoColorProduct.colors[1], id: "c4", coverImageUrl: "https://example.com/4.jpg" },
+    ],
+    images: [
+      { url: "https://example.com/1.jpg", sortOrder: 0 },
+      { url: "https://example.com/2.jpg", sortOrder: 1 },
+      { url: "https://example.com/3.jpg", sortOrder: 2 },
+      { url: "https://example.com/4.jpg", sortOrder: 3 },
     ],
   };
-  const html = renderProductCard(fourColorProduct);
+  const html = renderProductCard(fourImageProduct);
   assertStringIncludes(html, 'class="slider-track" style="width:400%;"');
   const imgMatches = [...html.matchAll(/<img[^>]*style="width:25%;"[^>]*>/g)];
   assertEquals(imgMatches.length, 4);
 });
 
-Deno.test("renderProductCard: zero colors renders an empty slider track without dividing by zero", () => {
-  const zeroColorProduct: CatalogProduct = { ...twoColorProduct, colors: [] };
+Deno.test("renderProductCard: zero images renders an empty slider track without dividing by zero", () => {
+  const zeroColorProduct: CatalogProduct = { ...twoColorProduct, colors: [], images: [] };
   const html = renderProductCard(zeroColorProduct);
   assertStringIncludes(html, 'class="slider-track"');
   // No <img> tags inside an empty slider, and no NaN/Infinity leaking into style attrs.
@@ -225,6 +253,7 @@ Deno.test("renderSliderCss: matches the real reference's exact keyframe percenta
     ...twoColorProduct,
     position: 9,
     colors: Array.from({ length: 8 }, (_, i) => ({ ...twoColorProduct.colors[0], id: `c${i}` })),
+    images: Array.from({ length: 8 }, (_, i) => ({ url: `https://example.com/${i}.jpg`, sortOrder: i })),
   };
   const css = renderSliderCss([eightColorProduct]);
   assertStringIncludes(css, "animation: slideProduct9 16.1000s linear infinite");

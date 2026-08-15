@@ -64,9 +64,9 @@ Deno.test("fetchCatalog: orders a product's colors by image_index, not by row id
       // Row id order (alphabetical) is the exact reverse of the real
       // intended image_index order -- this is what a random-looking UUID
       // sort produced in production.
-      { id: "zzz-row", product_id: "p1", label: "Variant 3", hex: null, image_index: 2, color_group: "Black", cover_image_id: null },
-      { id: "mmm-row", product_id: "p1", label: "Variant 2", hex: null, image_index: 1, color_group: "Black", cover_image_id: null },
-      { id: "aaa-row", product_id: "p1", label: "Variant 1", hex: null, image_index: 0, color_group: "Black", cover_image_id: null },
+      { id: "zzz-row", product_id: "p1", label: "Variant 3", hex: null, image_index: 2, color_group: "Black" },
+      { id: "mmm-row", product_id: "p1", label: "Variant 2", hex: null, image_index: 1, color_group: "Black" },
+      { id: "aaa-row", product_id: "p1", label: "Variant 1", hex: null, image_index: 0, color_group: "Black" },
     ],
     product_images: [],
     product_variants: [],
@@ -83,8 +83,8 @@ Deno.test("fetchCatalog: colors with a tied image_index (e.g. new admin-added co
       { id: "p1", brand: "Gymshark", name: "New Product", slug: "gs-new", price: 1999, cod_advance: 200, position: 1, category: "t-shirt", sleeve_length: null, description: null },
     ],
     product_colors: [
-      { id: "b-row", product_id: "p1", label: "Second Added", hex: null, image_index: 0, color_group: "Black", cover_image_id: null },
-      { id: "a-row", product_id: "p1", label: "First Added", hex: null, image_index: 0, color_group: "Black", cover_image_id: null },
+      { id: "b-row", product_id: "p1", label: "Second Added", hex: null, image_index: 0, color_group: "Black" },
+      { id: "a-row", product_id: "p1", label: "First Added", hex: null, image_index: 0, color_group: "Black" },
     ],
     product_images: [],
     product_variants: [],
@@ -95,14 +95,15 @@ Deno.test("fetchCatalog: colors with a tied image_index (e.g. new admin-added co
   assertEquals(labels, ["First Added", "Second Added"]);
 });
 
-Deno.test("fetchCatalog: a color with no cover_image_id falls back to the product's first uploaded photo instead of an empty src (regression: broken-image icon on newly added products)", async () => {
+Deno.test("fetchCatalog: a color with no photos yet still gets a real cover from the product's first uploaded photo, not a broken src", async () => {
   const supabase = fakeSupabase({
     products: [
       { id: "p1", brand: "Skims", name: "Cotton Pant", slug: "skims-cotton-pants", price: 4000, cod_advance: 500, position: 1, category: "pants", sleeve_length: null, description: null },
     ],
     product_colors: [
-      // Color created before any photo was uploaded -- cover_image_id never got set.
-      { id: "c1", product_id: "p1", label: "Snow White", hex: null, image_index: 0, color_group: "White", cover_image_id: null },
+      // Color created before any photo was uploaded -- image_index points
+      // at position 0, which now exists.
+      { id: "c1", product_id: "p1", label: "Snow White", hex: null, image_index: 0, color_group: "White" },
     ],
     product_images: [
       { id: "img1", product_id: "p1", storage_path: "skims-cotton-pants/photo.jpg", sort_order: 0 },
@@ -113,4 +114,39 @@ Deno.test("fetchCatalog: a color with no cover_image_id falls back to the produc
   const catalog = await fetchCatalog(supabase);
   const color = catalog.products[0].colors[0];
   assertEquals(color.coverImageUrl, "https://fake.test/skims-cotton-pants/photo.jpg");
+});
+
+Deno.test("fetchCatalog: each color owns every image up to the next color's image_index -- variable counts per color (regression: extra angle shots weren't mapped to their own color's swatch)", async () => {
+  const supabase = fakeSupabase({
+    products: [
+      { id: "p1", brand: "Chrome Hearts", name: "Retro Hoodie", slug: "ch-hoodie", price: 4799, cod_advance: 500, position: 1, category: "hoodie", sleeve_length: null, description: null },
+    ],
+    product_colors: [
+      // 1 image, 3 images, 2 images -- not a fixed count per color.
+      { id: "c1", product_id: "p1", label: "Black", hex: null, image_index: 0, color_group: "Black" },
+      { id: "c2", product_id: "p1", label: "Green", hex: null, image_index: 1, color_group: "Green" },
+      { id: "c3", product_id: "p1", label: "Grey", hex: null, image_index: 4, color_group: "Grey" },
+    ],
+    product_images: Array.from({ length: 6 }, (_, i) => ({
+      id: `img${i}`, product_id: "p1", storage_path: `ch-hoodie/${i}.jpg`, sort_order: i,
+    })),
+    product_variants: [],
+  });
+
+  const catalog = await fetchCatalog(supabase);
+  const [black, green, grey] = catalog.products[0].colors;
+  assertEquals(black.images.map((im) => im.url), ["https://fake.test/ch-hoodie/0.jpg"]);
+  assertEquals(green.images.map((im) => im.url), [
+    "https://fake.test/ch-hoodie/1.jpg",
+    "https://fake.test/ch-hoodie/2.jpg",
+    "https://fake.test/ch-hoodie/3.jpg",
+  ]);
+  assertEquals(grey.images.map((im) => im.url), [
+    "https://fake.test/ch-hoodie/4.jpg",
+    "https://fake.test/ch-hoodie/5.jpg",
+  ]);
+  // Each color's cover is its own first image, not another color's.
+  assertEquals(black.coverImageUrl, "https://fake.test/ch-hoodie/0.jpg");
+  assertEquals(green.coverImageUrl, "https://fake.test/ch-hoodie/1.jpg");
+  assertEquals(grey.coverImageUrl, "https://fake.test/ch-hoodie/4.jpg");
 });
