@@ -1,8 +1,8 @@
 // supabase/functions/publish-site/index.ts
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { fetchCatalog } from "./data.ts";
-import { renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage } from "./render.ts";
-import { COLLECTION_SLUGS, BRAND_FOLDERS, brandFolderFor } from "./membership.ts";
+import { fetchCatalog, fetchPrimaryBrands } from "./data.ts";
+import { renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage, renderBrandsIndexPage } from "./render.ts";
+import { COLLECTION_SLUGS, brandFolderFor } from "./membership.ts";
 import { commitFiles } from "./github.ts";
 
 // The admin dashboard calls this function cross-origin with an Authorization
@@ -95,9 +95,11 @@ Deno.serve(async (req) => {
     for (const slug of COLLECTION_SLUGS) {
       files[`collections/${slug}/index.html`] = renderCollectionPage(catalog, slug);
     }
-    for (const folder of BRAND_FOLDERS) {
-      files[`${folder}/index.html`] = renderBrandPage(catalog, folder);
+    const primaryBrands = await fetchPrimaryBrands(supabase);
+    for (const brand of primaryBrands) {
+      files[`${brand.folderSlug}/index.html`] = renderBrandPage(catalog, brand.folderSlug, brand.name);
     }
+    files["brands/index.html"] = renderBrandsIndexPage(primaryBrands);
     for (const product of catalog.products) {
       const folder = brandFolderFor(product);
       if (!folder) continue; // defensive — Task 1 Step 5 confirmed this shouldn't happen for real data
@@ -105,22 +107,37 @@ Deno.serve(async (req) => {
     }
 
     let dryRun = false;
+    let renameFrom: string | undefined;
+    let renameTo: string | undefined;
     try {
       const body = await req.json();
       dryRun = body?.dryRun === true;
+      renameFrom = typeof body?.renameFrom === "string" ? body.renameFrom : undefined;
+      renameTo = typeof body?.renameTo === "string" ? body.renameTo : undefined;
     } catch {
-      // no JSON body sent — dryRun stays false, matches current behavior of a bodyless POST
+      // no JSON body sent — dryRun stays false, renameFrom/renameTo stay undefined
     }
 
     if (dryRun) {
       return json({ ok: true, dryRun: true, fileCount: Object.keys(files).length, filePaths: Object.keys(files) });
     }
 
+    const deletePaths: string[] = [];
+    if (renameFrom && renameTo) {
+      deletePaths.push(`${renameFrom}/index.html`);
+      for (const product of catalog.products) {
+        if (product.brandFolder === renameTo) {
+          deletePaths.push(`${renameFrom}/${product.slug}/index.html`);
+        }
+      }
+    }
+
     const githubToken = Deno.env.get("GITHUB_TOKEN")!;
     const { commitSha } = await commitFiles(
       files,
       `Publish: regenerate storefront from ${catalog.products.length} products (${Object.keys(files).length} files)`,
-      githubToken
+      githubToken,
+      deletePaths
     );
 
     return json({ ok: true, commitSha, productCount: catalog.products.length, fileCount: Object.keys(files).length });
