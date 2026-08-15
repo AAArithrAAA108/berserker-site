@@ -564,7 +564,9 @@ git push origin feature/live-storefront-generation
 
 ---
 
-## Task 8: `render.ts` — renderBrandsIndexPage
+## Task 8: `render.ts` — renderBrandsIndexPage, and stop hardcoding brand-page headings
+
+**Ruling (added mid-execution, after Task 6+7):** `renderBrandPage` (existing function, not touched by the original plan) derives its page heading via `BRAND_PREFIX_MAP[folder] ?? folder` — the same hardcoded map Task 6 was supposed to retire. Left as-is, a newly admin-created brand's page would show its raw folder slug as the heading instead of its real name, and `render.ts` would keep importing `BRAND_PREFIX_MAP` forever, so it could never actually be deleted from `membership.ts` (contradicting this plan's own stated architecture: "a new brands table replaces the hardcoded BRAND_PREFIX_MAP"). This task now also fixes that, via a signature change kept backward-compatible with `index.ts`'s existing 2-argument call site until Task 10 (two tasks later, with independent Task 9 in between) upgrades it to 3 arguments — so `deno check` stays green after every task's commit, not just after Task 10's.
 
 **Files:**
 - Modify: `supabase/functions/publish-site/render.ts`
@@ -572,9 +574,52 @@ git push origin feature/live-storefront-generation
 
 **Interfaces:**
 - Consumes: `PrimaryBrand[]` (Task 7), `esc()`, `renderShell()` (existing).
-- Produces: `export function renderBrandsIndexPage(brands: PrimaryBrand[]): string`.
+- Produces: `export function renderBrandsIndexPage(brands: PrimaryBrand[]): string`. Also changes existing `renderBrandPage(catalog: Catalog, folder: string): string` to `renderBrandPage(catalog: Catalog, folder: string, brandName: string = folder): string` — the default keeps `index.ts`'s current 2-argument call compiling and working (showing the raw slug as a fallback heading) until Task 10 passes the real name.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Fix renderBrandPage's heading source**
+
+Read the current function first — it's at `supabase/functions/publish-site/render.ts`, look for `export function renderBrandPage`. Change:
+
+```typescript
+export function renderBrandPage(catalog: Catalog, folder: string): string {
+  const filtered = catalog.products
+    .filter((p) => brandFolderFor(p) === folder)
+    .sort((a, b) => a.position - b.position);
+  const cards = filtered.map(renderProductCard).join("\n");
+  const brandName = BRAND_PREFIX_MAP[folder] ?? folder;
+```
+
+to:
+
+```typescript
+export function renderBrandPage(catalog: Catalog, folder: string, brandName: string = folder): string {
+  const filtered = catalog.products
+    .filter((p) => brandFolderFor(p) === folder)
+    .sort((a, b) => a.position - b.position);
+  const cards = filtered.map(renderProductCard).join("\n");
+```
+
+(the rest of the function body is unchanged — it already just uses the `brandName` variable, which is now the parameter instead of a locally-derived one).
+
+Remove `BRAND_PREFIX_MAP` from this file's `import { brandFolderFor, isInCollection, BRAND_PREFIX_MAP } from "./membership.ts";` line (it becomes `import { brandFolderFor, isInCollection } from "./membership.ts";`) — this file no longer references it anywhere.
+
+Add a test confirming the new parameter works and the default is sane:
+
+```typescript
+// render.test.ts -- add:
+Deno.test("renderBrandPage: uses the passed brandName for its heading, falling back to the folder slug if omitted", () => {
+  const withName = renderBrandPage(sampleCatalog, "youngla", "YoungLA");
+  assertStringIncludes(withName, "YOUNGLA"); // heading is .toUpperCase()'d
+  assertStringIncludes(withName, "<title>YoungLA — BERSERKER</title>");
+
+  const withoutName = renderBrandPage(sampleCatalog, "youngla");
+  assertStringIncludes(withoutName, "YOUNGLA");
+});
+```
+
+Run `deno test render.test.ts` — both new assertions should pass immediately (this is additive, not TDD-failing-first, since the function already produces a heading; only its *source* changed). Then run the full suite (`deno test`) to confirm nothing else broke — `render.ts`'s only other caller of `renderBrandPage` in this file's own tests should still pass unmodified, since the 2-argument call form still works via the default parameter.
+
+- [ ] **Step 2: Write the failing test**
 
 ```typescript
 // render.test.ts -- add:
@@ -593,12 +638,12 @@ Deno.test("renderBrandsIndexPage: one .cat-card per brand, linking to its folder
 });
 ```
 
-- [ ] **Step 2: Run it to see it fail**
+- [ ] **Step 3: Run it to see it fail**
 
 Run: `deno test render.test.ts`
 Expected: FAIL — `renderBrandsIndexPage` is not defined.
 
-- [ ] **Step 3: Implement**
+- [ ] **Step 4: Implement**
 
 Add near the other page-level render functions (`renderListingPage`, `renderCollectionPage`, `renderBrandPage`):
 
@@ -624,12 +669,12 @@ export function renderBrandsIndexPage(brands: PrimaryBrand[]): string {
 
 Add `PrimaryBrand` to the existing `import type { CatalogProduct, ... } from "./data.ts"` line at the top of the file.
 
-- [ ] **Step 4: Run it to see it pass**
+- [ ] **Step 5: Run it to see it pass**
 
 Run: `deno test render.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add supabase/functions/publish-site/render.ts supabase/functions/publish-site/render.test.ts
@@ -685,27 +730,68 @@ git push origin feature/live-storefront-generation
 
 ---
 
-## Task 10: `index.ts` — generate brands/index.html; handle folder-rename cleanup
+## Task 10: `index.ts` — generate brands/index.html from real data; handle folder-rename cleanup
+
+**Ruling (added mid-execution, after Task 6+7):** the plan's original Task 10 never actually replaced `index.ts`'s `for (const folder of BRAND_FOLDERS)` loop (the hardcoded 7-folder list from `membership.ts`) with a DB-derived list. Left as written, a newly admin-created brand's folder would **never get its `index.html` generated at all** on Publish — the entire point of this feature — even though `create_primary_brand` (Task 2) would happily create the row. This task now also fixes that as its first step, and finishes deleting `BRAND_PREFIX_MAP`/`BRAND_FOLDERS` from `membership.ts` (Task 6 kept them only because this exact gap existed; now that both of this file's remaining callers — `render.ts`'s heading lookup (Task 8) and this loop — are gone, nothing references them anymore).
 
 **Files:**
 - Modify: `supabase/functions/publish-site/index.ts`
+- Modify: `supabase/functions/publish-site/membership.ts`
 
 **Interfaces:**
-- Consumes: `fetchPrimaryBrands` (Task 7), `renderBrandsIndexPage` (Task 8), `commitFiles(..., deletePaths?)` (Task 9).
-- Produces: the publish handler's request body gains two optional fields, `renameFrom?: string` and `renameTo?: string`; when both are present, the response's file list still reflects the normal generation, but the commit additionally deletes the old folder's files.
+- Consumes: `fetchPrimaryBrands` (Task 7), `renderBrandsIndexPage` and the updated 3-argument `renderBrandPage` (Task 8), `commitFiles(..., deletePaths?)` (Task 9).
+- Produces: the publish handler's request body gains two optional fields, `renameFrom?: string` and `renameTo?: string`; when both are present, the response's file list still reflects the normal generation, but the commit additionally deletes the old folder's files. `membership.ts` no longer exports `BRAND_PREFIX_MAP`/`BRAND_FOLDERS`.
 
-- [ ] **Step 1: Add the brands page to the generated file set**
+- [ ] **Step 1: Replace the hardcoded BRAND_FOLDERS loop with the real primary-brands list**
 
-In the file-generation block (after the existing PDP loop), add:
+Find the existing block:
+
+```typescript
+for (const folder of BRAND_FOLDERS) {
+  files[`${folder}/index.html`] = renderBrandPage(catalog, folder);
+}
+```
+
+Replace it with (fetching brands once, reusing the same list for both the brand pages and the brands index page from Step 2 below):
 
 ```typescript
 const primaryBrands = await fetchPrimaryBrands(supabase);
+for (const brand of primaryBrands) {
+  files[`${brand.folderSlug}/index.html`] = renderBrandPage(catalog, brand.folderSlug, brand.name);
+}
+```
+
+Update the import line `import { COLLECTION_SLUGS, BRAND_FOLDERS, brandFolderFor } from "./membership.ts";` to drop `BRAND_FOLDERS` (still-needed `COLLECTION_SLUGS`/`brandFolderFor` stay): `import { COLLECTION_SLUGS, brandFolderFor } from "./membership.ts";`.
+
+- [ ] **Step 2: Add the brands page to the generated file set**
+
+Immediately after Step 1's loop, add (reusing the `primaryBrands` already fetched above — do not fetch it twice):
+
+```typescript
 files["brands/index.html"] = renderBrandsIndexPage(primaryBrands);
 ```
 
 Add `fetchPrimaryBrands` to the existing `import { fetchCatalog } from "./data.ts";` line and `renderBrandsIndexPage` to the existing `import { renderListingPage, ... } from "./render.ts";` line.
 
-- [ ] **Step 2: Add rename-cleanup support**
+- [ ] **Step 3: Delete BRAND_PREFIX_MAP/BRAND_FOLDERS from membership.ts**
+
+Now that Step 1 removed `index.ts`'s only remaining use of `BRAND_FOLDERS`, and Task 8 removed `render.ts`'s only use of `BRAND_PREFIX_MAP`, nothing in the codebase references either export. Delete both from `supabase/functions/publish-site/membership.ts` (the comment above them, added in Task 6, explains this is exactly the later task it was waiting for — delete that comment too):
+
+```typescript
+// Superseded by brands.folder_slug (via CatalogProduct.brandFolder, see
+// data.ts) now that brand is a real foreign key -- brandFolderFor no longer
+// needs this. Still exported because index.ts's publish handler iterates
+// BRAND_FOLDERS to know which brand pages to generate; that call site moves
+// to a DB-derived list of primary brands in a later task, at which point
+// this hardcoded map is removed entirely.
+export const BRAND_PREFIX_MAP: Record<string, string> = { ... };
+
+export const BRAND_FOLDERS = Object.keys(BRAND_PREFIX_MAP);
+```
+
+Run `deno test membership.test.ts` — should still pass (no test in that file references either export; confirmed when Task 6 updated the test file).
+
+- [ ] **Step 4: Add rename-cleanup support**
 
 `req.json()` can only be consumed once per request, so `renameFrom`/`renameTo` must be read from the *same* `try { const body = await req.json(); ... }` block that already parses `dryRun` — not a second call. Replace the existing block:
 
@@ -751,16 +837,16 @@ if (renameFrom && renameTo) {
 
 Change the `commitFiles` call from `commitFiles(files, ..., githubToken)` to `commitFiles(files, ..., githubToken, deletePaths)`.
 
-- [ ] **Step 3: Type-check**
+- [ ] **Step 5: Type-check**
 
 Run: `deno check supabase/functions/publish-site/index.ts`
-Expected: no errors.
+Expected: no errors. Also run `cd supabase/functions/publish-site && deno test` to confirm `membership.test.ts` (Step 3's deletion) and everything else still passes.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add supabase/functions/publish-site/index.ts
-git commit -m "Generate brands/index.html; delete a renamed brand's old folder in the same commit"
+git add supabase/functions/publish-site/index.ts supabase/functions/publish-site/membership.ts
+git commit -m "Generate all brand pages + brands/index.html from real data; delete a renamed brand's old folder in the same commit"
 git push origin feature/live-storefront-generation
 ```
 
