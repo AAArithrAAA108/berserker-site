@@ -8,7 +8,7 @@ export interface CatalogColor {
   coverImageUrl: string; images: CatalogImage[]; variants: CatalogVariant[];
 }
 export interface CatalogProduct {
-  id: string; brand: string; name: string; slug: string;
+  id: string; brand: string; brandFolder: string; name: string; slug: string;
   price: number; codAdvance: number; position: number;
   category: string; sleeveLength: string | null; description: string | null;
   colors: CatalogColor[];
@@ -27,9 +27,16 @@ const STORAGE_BASE = "product-images";
 export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
   const { data: products, error: productsError } = await supabase
     .from("products")
-    .select("id, brand, name, slug, price, cod_advance, position, category, sleeve_length, description")
+    .select("id, brand_id, name, slug, price, cod_advance, position, category, sleeve_length, description")
     .order("position", { ascending: true });
   if (productsError) throw new Error(`fetchCatalog products: ${productsError.message}`);
+
+  const { data: brands, error: brandsError } = await supabase
+    .from("brands")
+    .select("id, name, folder_slug");
+  if (brandsError) throw new Error(`fetchCatalog brands: ${brandsError.message}`);
+
+  const brandById = new Map((brands ?? []).map((b) => [b.id, b]));
 
   // product_colors.image_index is the real, admin-authored ordering for a
   // product's colors/variants (0-based; migration 20260809050957 confirms it's
@@ -131,11 +138,34 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
 
   return {
     products: (products ?? []).map((p) => ({
-      id: p.id, brand: p.brand, name: p.name, slug: p.slug,
+      id: p.id,
+      brand: brandById.get(p.brand_id)?.name ?? "",
+      brandFolder: brandById.get(p.brand_id)?.folder_slug ?? "",
+      name: p.name, slug: p.slug,
       price: Number(p.price), codAdvance: Number(p.cod_advance), position: p.position,
       category: p.category, sleeveLength: p.sleeve_length, description: p.description,
       colors: colorsByProduct.get(p.id) ?? [],
       images: imagesByProduct.get(p.id) ?? [],
     })),
   };
+}
+
+export interface PrimaryBrand { name: string; folderSlug: string; thumbnailUrl: string }
+
+export async function fetchPrimaryBrands(supabase: SupabaseClient): Promise<PrimaryBrand[]> {
+  const { data, error } = await supabase
+    .from("brands")
+    .select("name, folder_slug, thumbnail_storage_path")
+    .eq("is_primary", true)
+    .order("name", { ascending: true });
+  if (error) throw new Error(`fetchPrimaryBrands: ${error.message}`);
+
+  const publicUrl = (path: string) =>
+    supabase.storage.from(STORAGE_BASE).getPublicUrl(path).data.publicUrl;
+
+  return (data ?? []).map((b) => ({
+    name: b.name,
+    folderSlug: b.folder_slug,
+    thumbnailUrl: b.thumbnail_storage_path ? publicUrl(b.thumbnail_storage_path) : "",
+  }));
 }

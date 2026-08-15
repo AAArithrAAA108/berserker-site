@@ -4,7 +4,7 @@ import type { CatalogProduct } from "./data.ts";
 import type { Catalog } from "./data.ts";
 
 const sampleProduct: CatalogProduct = {
-  id: "p1", brand: "Gymshark", name: "Onyx 5.0 Seamless Compression Half Sleeve",
+  id: "p1", brand: "Gymshark", brandFolder: "gymshark", name: "Onyx 5.0 Seamless Compression Half Sleeve",
   slug: "gymshark-onyx-5-half-sleeve", price: 4799, codAdvance: 500, position: 1,
   category: "compression", sleeveLength: "half", description: null,
   colors: [
@@ -60,7 +60,7 @@ Deno.test("renderProductCard escapes admin-editable text instead of emitting raw
 });
 
 const twoColorProduct: CatalogProduct = {
-  id: "p1", brand: "Gymshark", name: "Onyx 5.0 Seamless Compression Half Sleeve",
+  id: "p1", brand: "Gymshark", brandFolder: "gymshark", name: "Onyx 5.0 Seamless Compression Half Sleeve",
   slug: "gymshark-onyx-5-half-sleeve", price: 4799, codAdvance: 500, position: 1,
   category: "compression", sleeveLength: "half", description: null,
   colors: [
@@ -227,7 +227,11 @@ Deno.test("renderProductCard: zero images renders an empty slider track without 
 });
 
 Deno.test("renderProductCard: falls back to /all-products/ link when brand has no known folder", () => {
-  const unknownBrandProduct: CatalogProduct = { ...twoColorProduct, brand: "Some Unlisted Brand" };
+  // brand and brandFolder are independent now that brand is a real FK
+  // (brand is just display text; brandFolder is the joined folder_slug) --
+  // an empty brandFolder is what triggers the fallback, not an unrecognized
+  // brand string.
+  const unknownBrandProduct: CatalogProduct = { ...twoColorProduct, brandFolder: "" };
   const html = renderProductCard(unknownBrandProduct);
   assertStringIncludes(html, 'href="/all-products/"');
   if (html.includes('href="/null/')) {
@@ -238,7 +242,7 @@ Deno.test("renderProductCard: falls back to /all-products/ link when brand has n
 const sampleCatalog: Catalog = {
   products: [
     { ...twoColorProduct, id: "p1", position: 1, category: "compression", brand: "Gymshark" },
-    { ...twoColorProduct, id: "p2", position: 2, category: "jacket", brand: "YoungLA × Batman", slug: "yl-batman-jacket", name: "Batman Jacket" },
+    { ...twoColorProduct, id: "p2", position: 2, category: "jacket", brand: "YoungLA × Batman", brandFolder: "youngla", slug: "yl-batman-jacket", name: "Batman Jacket" },
     { ...twoColorProduct, id: "p3", position: 3, category: "pants", brand: "Gymshark", slug: "gs-joggers", name: "Joggers" },
   ],
 };
@@ -306,7 +310,7 @@ Deno.test("renderCollectionPage: jackets only includes the jacket-category produ
   }
 });
 
-Deno.test("renderBrandPage: youngla includes the collab-brand product via prefix match", () => {
+Deno.test("renderBrandPage: youngla includes the collab-brand product via its own brandFolder", () => {
   const html = renderBrandPage(sampleCatalog, "youngla");
   assertStringIncludes(html, "Batman Jacket");
   if (html.includes("Onyx 5.0") || html.includes("Joggers")) {
