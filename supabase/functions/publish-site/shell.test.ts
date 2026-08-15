@@ -49,6 +49,8 @@ Deno.test("renderShell: product card thumbnails use object-fit:contain, not cove
   if (!cardImgRule || !sliderImgRule) throw new Error("expected both .product-img img and .product-img-slider .slider-track img rules");
   assertStringIncludes(cardImgRule[0], "object-fit: contain");
   assertStringIncludes(sliderImgRule[0], "object-fit: contain");
+  // Centered, not top-anchored -- letterboxed space splits evenly above/below.
+  assertStringIncludes(sliderImgRule[0], "object-position: center");
 });
 
 Deno.test("renderShell's slider-track CSS has no hardcoded 800%/12.5% width (must be set per-card inline instead)", () => {

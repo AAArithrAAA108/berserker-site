@@ -921,7 +921,7 @@ export function renderShell(opts: ShellOptions): string {
   .product-img-slider .slider-track img {
     height: 100%;
     object-fit: contain;
-    object-position: top center;
+    object-position: center;
     flex-shrink: 0;
     display: block;
   }
