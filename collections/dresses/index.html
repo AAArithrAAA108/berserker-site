@@ -862,12 +862,13 @@
     display: block;
   }
 
-  #product-40:hover .slider-track { animation: slideProduct40 3.5999999999999996s steps(3) infinite; }
+  #product-40:hover .slider-track { animation: slideProduct40 4.6000s linear infinite; }
   @keyframes slideProduct40 {
-    0.0000% { transform: translateX(-0%); }
-    33.3333% { transform: translateX(-100%); }
-    66.6666% { transform: translateX(-200%); }
-    100% { transform: translateX(-200%); }
+    0% { transform: translateX(0); }
+    6.5217% { transform: translateX(-33.3333%); }
+    50.0000% { transform: translateX(-33.3333%); }
+    56.5217% { transform: translateX(-66.6667%); }
+    100% { transform: translateX(-66.6667%); }
   }
   #product-40 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
 </style>
