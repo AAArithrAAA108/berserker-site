@@ -327,6 +327,14 @@ Deno.test("renderBrandPage: uses the passed brandName for its heading, falling b
   assertStringIncludes(withoutName, "YOUNGLA");
 });
 
+Deno.test("renderBrandPage: escapes admin-editable brandName in the <title> tag (regression)", () => {
+  const html = renderBrandPage(sampleCatalog, "youngla", `<script>alert(1)</script>`);
+  if (html.includes("<title><script>alert(1)</script> — BERSERKER</title>")) {
+    throw new Error("brandName must be HTML-escaped in the <title> tag");
+  }
+  assertStringIncludes(html, "&lt;script&gt;alert(1)&lt;/script&gt; — BERSERKER</title>");
+});
+
 Deno.test("renderPdpPage: includes product info, all color swatches, and a description", () => {
   const withDescription: CatalogProduct = { ...twoColorProduct, description: "A great compression shirt." };
   const html = renderPdpPage(withDescription);

@@ -199,7 +199,7 @@ export function renderBrandPage(catalog: Catalog, folder: string, brandName: str
   <div class="product-grid">${cards}</div>
 </section>`;
   return renderShell({
-    title: `${brandName} — BERSERKER`,
+    title: `${esc(brandName)} — BERSERKER`,
     bodyContent,
     perPageStyle: renderSliderCss(filtered),
   });
