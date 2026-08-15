@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark" />
-<title>Compressions — BERSERKER</title>
-<link rel="icon" type="image/png" href="images/img-0001.png" />
+<title>COMPRESSIONS — BERSERKER</title>
+<link rel="icon" type="image/png" href="/all-products/images/img-0001.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -851,986 +851,139 @@
   }
   .product-img-slider .slider-track {
     display: flex;
-    width: 800%;
     height: 100%;
     transition: none;
   }
   .product-img-slider .slider-track img {
-    width: 12.5%;   /* 100% / 8 */
     height: 100%;
     object-fit: cover;
     object-position: top center;
     flex-shrink: 0;
     display: block;
   }
-  /* On hover: slide through all 8 images in order, pause on each, then loop back to img1 */
-  /* 7 transitions × (0.3s slide + 2s pause) = 16.1s per full loop, repeats while hovered */
-  #product-1:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
+
+  #product-1:hover .slider-track { animation: slideProduct1 4.8s steps(4) infinite; }
   @keyframes slideProduct1 {
-    /* img1 → img2 */
-    0%      { transform: translateX(0); }
-    1.86%   { transform: translateX(-12.5%); }
-    14.29%  { transform: translateX(-12.5%); }
-    /* img2 → img3 */
-    16.15%  { transform: translateX(-25%); }
-    28.57%  { transform: translateX(-25%); }
-    /* img3 → img4 */
-    30.43%  { transform: translateX(-37.5%); }
-    42.86%  { transform: translateX(-37.5%); }
-    /* img4 → img5 */
-    44.72%  { transform: translateX(-50%); }
-    57.14%  { transform: translateX(-50%); }
-    /* img5 → img6 */
-    59.01%  { transform: translateX(-62.5%); }
-    71.43%  { transform: translateX(-62.5%); }
-    /* img6 → img7 */
-    73.29%  { transform: translateX(-75%); }
-    85.71%  { transform: translateX(-75%); }
-    /* img7 → img8 */
-    87.58%  { transform: translateX(-87.5%); }
-    100%    { transform: translateX(-87.5%); }
-    /* loop restarts here — jumps straight back to img1 */
+    0.0000% { transform: translateX(-0%); }
+    25.0000% { transform: translateX(-100%); }
+    50.0000% { transform: translateX(-200%); }
+    75.0000% { transform: translateX(-300%); }
+    100% { transform: translateX(-300%); }
   }
-  /* Snap back to first image on mouse-leave */
-  #product-1 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
+  #product-1 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-2:hover .slider-track { animation: slideProduct2 4.8s steps(4) infinite; }
+  @keyframes slideProduct2 {
+    0.0000% { transform: translateX(-0%); }
+    25.0000% { transform: translateX(-100%); }
+    50.0000% { transform: translateX(-200%); }
+    75.0000% { transform: translateX(-300%); }
+    100% { transform: translateX(-300%); }
   }
-  /* Product-2 reuses the same 8-image loop timing as product-1 */
-  #product-2:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-2 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-3 slider (6 images — Sleeveless) */
-  .product3-track {
-    width: 600% !important;
-  }
-  .product3-track img {
-    width: 16.6667% !important;
-  }
-  /* 5 transitions × (0.3s slide + 2s pause) = 11.5s per full loop, repeats while hovered */
-  #product-3:hover .slider-track {
-    animation: slideProduct3 11.5s linear infinite;
-  }
+  #product-2 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-3:hover .slider-track { animation: slideProduct3 3.5999999999999996s steps(3) infinite; }
   @keyframes slideProduct3 {
-    /* img1 → img2 */
-    0%      { transform: translateX(0); }
-    2.61%   { transform: translateX(-16.6667%); }
-    20%     { transform: translateX(-16.6667%); }
-    /* img2 → img3 */
-    22.61%  { transform: translateX(-33.3333%); }
-    40%     { transform: translateX(-33.3333%); }
-    /* img3 → img4 */
-    42.61%  { transform: translateX(-50%); }
-    60%     { transform: translateX(-50%); }
-    /* img4 → img5 */
-    62.61%  { transform: translateX(-66.6667%); }
-    80%     { transform: translateX(-66.6667%); }
-    /* img5 → img6 */
-    82.61%  { transform: translateX(-83.3333%); }
-    100%    { transform: translateX(-83.3333%); }
-    /* loop restarts here — jumps straight back to img1 */
+    0.0000% { transform: translateX(-0%); }
+    33.3333% { transform: translateX(-100%); }
+    66.6666% { transform: translateX(-200%); }
+    100% { transform: translateX(-200%); }
   }
-  #product-3 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
+  #product-3 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-6:hover .slider-track { animation: slideProduct6 3.5999999999999996s steps(3) infinite; }
+  @keyframes slideProduct6 {
+    0.0000% { transform: translateX(-0%); }
+    33.3333% { transform: translateX(-100%); }
+    66.6666% { transform: translateX(-200%); }
+    100% { transform: translateX(-200%); }
   }
-  /* Product-4 slider (5 images — Founder Edition Hoodie) */
-  .product4-track {
-    width: 500% !important;
-  }
-  .product4-track img {
-    width: 20% !important;
-  }
-  /* 4 transitions × (0.3s slide + 2s pause) = 9.2s per full loop, repeats while hovered */
-  #product-4:hover .slider-track {
-    animation: slideProduct4 9.2s linear infinite;
-  }
-  @keyframes slideProduct4 {
-    /* img1 → img2 */
-    0%      { transform: translateX(0); }
-    3.26%   { transform: translateX(-20%); }
-    25%     { transform: translateX(-20%); }
-    /* img2 → img3 */
-    28.26%  { transform: translateX(-40%); }
-    50%     { transform: translateX(-40%); }
-    /* img3 → img4 */
-    53.26%  { transform: translateX(-60%); }
-    75%     { transform: translateX(-60%); }
-    /* img4 → img5 */
-    78.26%  { transform: translateX(-80%); }
-    100%    { transform: translateX(-80%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-4 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-5 slider (12 images — Lifting Essential Joggers) */
-  .product5-track {
-    width: 1200% !important;
-  }
-  .product5-track img {
-    width: 8.3333% !important;
-    object-position: top center !important;
-  }
-  /* 11 transitions × (0.3s slide + 2s pause) = 25.3s per full loop, repeats while hovered */
-  #product-5:hover .slider-track {
-    animation: slideProduct5 25.3s linear infinite;
-  }
-  @keyframes slideProduct5 {
-    0%      { transform: translateX(0); }
-    1.19%   { transform: translateX(-8.3333%); }
-    9.09%   { transform: translateX(-8.3333%); }
-    10.28%  { transform: translateX(-16.6667%); }
-    18.18%  { transform: translateX(-16.6667%); }
-    19.37%  { transform: translateX(-25%); }
-    27.27%  { transform: translateX(-25%); }
-    28.46%  { transform: translateX(-33.3333%); }
-    36.36%  { transform: translateX(-33.3333%); }
-    37.55%  { transform: translateX(-41.6667%); }
-    45.45%  { transform: translateX(-41.6667%); }
-    46.64%  { transform: translateX(-50%); }
-    54.55%  { transform: translateX(-50%); }
-    55.74%  { transform: translateX(-58.3333%); }
-    63.64%  { transform: translateX(-58.3333%); }
-    64.83%  { transform: translateX(-66.6667%); }
-    72.73%  { transform: translateX(-66.6667%); }
-    73.92%  { transform: translateX(-75%); }
-    81.82%  { transform: translateX(-75%); }
-    83.01%  { transform: translateX(-83.3333%); }
-    90.91%  { transform: translateX(-83.3333%); }
-    92.10%  { transform: translateX(-91.6667%); }
-    100%    { transform: translateX(-91.6667%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-5 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-6 reuses the same 5-image track sizing/timing as product-4 */
-  #product-6:hover .slider-track {
-    animation: slideProduct4 9.2s linear infinite;
-  }
-  #product-6 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-7 slider (3 images — YoungLA x Superman) */
-  .product7-track {
-    width: 300% !important;
-  }
-  .product7-track img {
-    width: 33.3333% !important;
-  }
-  /* 2 transitions × (0.3s slide + 2s pause) = 4.6s per full loop, repeats while hovered */
-  #product-7:hover .slider-track {
-    animation: slideProduct7 4.6s linear infinite;
-  }
+  #product-6 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-7:hover .slider-track { animation: slideProduct7 3.5999999999999996s steps(3) infinite; }
   @keyframes slideProduct7 {
-    0%      { transform: translateX(0); }
-    6.52%   { transform: translateX(-33.3333%); }
-    50%     { transform: translateX(-33.3333%); }
-    56.52%  { transform: translateX(-66.6667%); }
-    100%    { transform: translateX(-66.6667%); }
-    /* loop restarts here — jumps straight back to img1 */
+    0.0000% { transform: translateX(-0%); }
+    33.3333% { transform: translateX(-100%); }
+    66.6666% { transform: translateX(-200%); }
+    100% { transform: translateX(-200%); }
   }
-  #product-7 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
+  #product-7 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-13:hover .slider-track { animation: slideProduct13 3.5999999999999996s steps(3) infinite; }
+  @keyframes slideProduct13 {
+    0.0000% { transform: translateX(-0%); }
+    33.3333% { transform: translateX(-100%); }
+    66.6666% { transform: translateX(-200%); }
+    100% { transform: translateX(-200%); }
   }
-  /* Product-8 slider (5 images — reuses product-4's track sizing/timing) */
-  #product-8:hover .slider-track {
-    animation: slideProduct4 9.2s linear infinite;
+  #product-13 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-14:hover .slider-track { animation: slideProduct14 4.8s steps(4) infinite; }
+  @keyframes slideProduct14 {
+    0.0000% { transform: translateX(-0%); }
+    25.0000% { transform: translateX(-100%); }
+    50.0000% { transform: translateX(-200%); }
+    75.0000% { transform: translateX(-300%); }
+    100% { transform: translateX(-300%); }
   }
-  #product-8 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
+  #product-14 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-15:hover .slider-track { animation: slideProduct15 2.4s steps(2) infinite; }
+  @keyframes slideProduct15 {
+    0.0000% { transform: translateX(-0%); }
+    50.0000% { transform: translateX(-100%); }
+    100% { transform: translateX(-100%); }
   }
-  /* Product-9 slider (9 images — YoungLA Drip Oversized T-Shirt) */
-  .product9-track {
-    width: 900% !important;
-  }
-  .product9-track img {
-    width: 11.1111% !important;
-  }
-  /* 8 transitions × (0.3s slide + 2s pause) = 18.4s per full loop, repeats while hovered */
-  #product-9:hover .slider-track {
-    animation: slideProduct9 18.4s linear infinite;
-  }
-  @keyframes slideProduct9 {
-    0%      { transform: translateX(0); }
-    1.63%   { transform: translateX(-11.1111%); }
-    12.5%   { transform: translateX(-11.1111%); }
-    14.13%  { transform: translateX(-22.2222%); }
-    25%     { transform: translateX(-22.2222%); }
-    26.63%  { transform: translateX(-33.3333%); }
-    37.5%   { transform: translateX(-33.3333%); }
-    39.13%  { transform: translateX(-44.4444%); }
-    50%     { transform: translateX(-44.4444%); }
-    51.63%  { transform: translateX(-55.5556%); }
-    62.5%   { transform: translateX(-55.5556%); }
-    64.13%  { transform: translateX(-66.6667%); }
-    75%     { transform: translateX(-66.6667%); }
-    76.63%  { transform: translateX(-77.7778%); }
-    87.5%   { transform: translateX(-77.7778%); }
-    89.13%  { transform: translateX(-88.8889%); }
-    100%    { transform: translateX(-88.8889%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-9 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-10 slider (4 images — YoungLA Revenge Hoodie) */
-  .product10-track {
-    width: 400% !important;
-  }
-  .product10-track img {
-    width: 25% !important;
-  }
-  /* 3 transitions × (0.3s slide + 2s pause) = 6.9s per full loop, repeats while hovered */
-  #product-10:hover .slider-track {
-    animation: slideProduct10 6.9s linear infinite;
-  }
-  @keyframes slideProduct10 {
-    0%      { transform: translateX(0); }
-    4.35%   { transform: translateX(-25%); }
-    33.33%  { transform: translateX(-25%); }
-    37.68%  { transform: translateX(-50%); }
-    66.67%  { transform: translateX(-50%); }
-    71.02%  { transform: translateX(-75%); }
-    100%    { transform: translateX(-75%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-10 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-11 reuses the base 8-image track sizing and product-1's loop timing */
-  #product-11:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-11 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-12 reuses product-3's 6-image track sizing/timing */
-  #product-12:hover .slider-track {
-    animation: slideProduct3 11.5s linear infinite;
-  }
-  #product-12 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-13 reuses product-7's 3-image track sizing/timing */
-  #product-13:hover .slider-track {
-    animation: slideProduct7 4.6s linear infinite;
-  }
-  #product-13 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-14 reuses the base 8-image track sizing and product-1's loop timing */
-  #product-14:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-14 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-15 reuses product-10's 4-image track sizing/timing */
-  #product-15:hover .slider-track {
-    animation: slideProduct10 6.9s linear infinite;
-  }
-  #product-15 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-16 slider (10 images — VoidTech Immortal Compression) */
-  .product16-track {
-    width: 1000% !important;
-  }
-  .product16-track img {
-    width: 10% !important;
-  }
-  /* 9 transitions × (0.3s slide + 2s pause) = 20.7s per full loop, repeats while hovered */
-  #product-16:hover .slider-track {
-    animation: slideProduct16 20.7s linear infinite;
-  }
+  #product-15 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+
+  #product-16:hover .slider-track { animation: slideProduct16 6s steps(5) infinite; }
   @keyframes slideProduct16 {
-    0%      { transform: translateX(0); }
-    1.45%   { transform: translateX(-10%); }
-    11.11%  { transform: translateX(-10%); }
-    12.56%  { transform: translateX(-20%); }
-    22.22%  { transform: translateX(-20%); }
-    23.67%  { transform: translateX(-30%); }
-    33.33%  { transform: translateX(-30%); }
-    34.78%  { transform: translateX(-40%); }
-    44.44%  { transform: translateX(-40%); }
-    45.89%  { transform: translateX(-50%); }
-    55.56%  { transform: translateX(-50%); }
-    57.01%  { transform: translateX(-60%); }
-    66.67%  { transform: translateX(-60%); }
-    68.12%  { transform: translateX(-70%); }
-    77.78%  { transform: translateX(-70%); }
-    79.23%  { transform: translateX(-80%); }
-    88.89%  { transform: translateX(-80%); }
-    90.34%  { transform: translateX(-90%); }
-    100%    { transform: translateX(-90%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-16 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-17 reuses product-4's 5-image track sizing/timing */
-  #product-17:hover .slider-track {
-    animation: slideProduct4 9.2s linear infinite;
-  }
-  #product-17 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-18 reuses product-16's 10-image track sizing/timing */
-  #product-18:hover .slider-track {
-    animation: slideProduct16 20.7s linear infinite;
-  }
-  #product-18 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-19 reuses product-5's 12-image track sizing/timing */
-  #product-19:hover .slider-track {
-    animation: slideProduct5 25.3s linear infinite;
-  }
-  #product-19 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-20 slider (14 images — Bloodraven Oversized T-Shirt) */
-  .product20-track {
-    width: 1400% !important;
-  }
-  .product20-track img {
-    width: 7.1429% !important;
-  }
-  /* 13 transitions × (0.3s slide + 2s pause) = 29.9s per full loop, repeats while hovered */
-  #product-20:hover .slider-track {
-    animation: slideProduct20 29.9s linear infinite;
-  }
-  @keyframes slideProduct20 {
-    0%      { transform: translateX(0); }
-    1.00%   { transform: translateX(-7.1429%); }
-    7.69%   { transform: translateX(-7.1429%); }
-    8.70%   { transform: translateX(-14.2857%); }
-    15.38%  { transform: translateX(-14.2857%); }
-    16.39%  { transform: translateX(-21.4286%); }
-    23.08%  { transform: translateX(-21.4286%); }
-    24.08%  { transform: translateX(-28.5714%); }
-    30.77%  { transform: translateX(-28.5714%); }
-    31.77%  { transform: translateX(-35.7143%); }
-    38.46%  { transform: translateX(-35.7143%); }
-    39.47%  { transform: translateX(-42.8571%); }
-    46.15%  { transform: translateX(-42.8571%); }
-    47.16%  { transform: translateX(-50%); }
-    53.85%  { transform: translateX(-50%); }
-    54.85%  { transform: translateX(-57.1429%); }
-    61.54%  { transform: translateX(-57.1429%); }
-    62.54%  { transform: translateX(-64.2857%); }
-    69.23%  { transform: translateX(-64.2857%); }
-    70.24%  { transform: translateX(-71.4286%); }
-    76.92%  { transform: translateX(-71.4286%); }
-    77.93%  { transform: translateX(-78.5714%); }
-    84.62%  { transform: translateX(-78.5714%); }
-    85.62%  { transform: translateX(-85.7143%); }
-    92.31%  { transform: translateX(-85.7143%); }
-    93.31%  { transform: translateX(-92.8571%); }
-    100%    { transform: translateX(-92.8571%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-20 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-21 reuses product-10's 4-image track sizing/timing */
-  #product-21:hover .slider-track {
-    animation: slideProduct10 6.9s linear infinite;
-  }
-  #product-21 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-22 reuses product-20's 14-image track sizing/timing */
-  #product-22:hover .slider-track {
-    animation: slideProduct20 29.9s linear infinite;
-  }
-  #product-22 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-23 reuses the base 8-image track sizing and product-1's loop timing */
-  #product-23:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-23 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-24 reuses product-16's 10-image track sizing/timing */
-  #product-24:hover .slider-track {
-    animation: slideProduct16 20.7s linear infinite;
-  }
-  #product-24 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-25 reuses product-4's 5-image track sizing/timing */
-  #product-25:hover .slider-track {
-    animation: slideProduct4 9.2s linear infinite;
-  }
-  #product-25 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-26 reuses product-5's 12-image track sizing/timing */
-  #product-26:hover .slider-track {
-    animation: slideProduct5 25.3s linear infinite;
-  }
-  #product-26 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-27 reuses product-16's 10-image track sizing/timing */
-  #product-27:hover .slider-track {
-    animation: slideProduct16 20.7s linear infinite;
-  }
-  #product-27 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-28 slider (40 images — Chrome Hearts Retro Oversized T-Shirt, 20 variants) */
-  .product28-track {
-    width: 4000% !important;
-  }
-  .product28-track img {
-    width: 2.5% !important;
-  }
-  /* 39 transitions x (0.3s slide + 2s pause) = 89.7s per full loop, repeats while hovered */
-  #product-28:hover .slider-track {
-    animation: slideProduct28 89.7s linear infinite;
-  }
-  @keyframes slideProduct28 {
-    0%      { transform: translateX(0); }
-    0.3344% { transform: translateX(-2.5000%); }
-    2.5641% { transform: translateX(-2.5000%); }
-    2.8986% { transform: translateX(-5.0000%); }
-    5.1282% { transform: translateX(-5.0000%); }
-    5.4627% { transform: translateX(-7.5000%); }
-    7.6923% { transform: translateX(-7.5000%); }
-    8.0268% { transform: translateX(-10.0000%); }
-    10.2564%{ transform: translateX(-10.0000%); }
-    10.5909%{ transform: translateX(-12.5000%); }
-    12.8205%{ transform: translateX(-12.5000%); }
-    13.1550%{ transform: translateX(-15.0000%); }
-    15.3846%{ transform: translateX(-15.0000%); }
-    15.7191%{ transform: translateX(-17.5000%); }
-    17.9487%{ transform: translateX(-17.5000%); }
-    18.2832%{ transform: translateX(-20.0000%); }
-    20.5128%{ transform: translateX(-20.0000%); }
-    20.8473%{ transform: translateX(-22.5000%); }
-    23.0769%{ transform: translateX(-22.5000%); }
-    23.4114%{ transform: translateX(-25.0000%); }
-    25.6410%{ transform: translateX(-25.0000%); }
-    25.9755%{ transform: translateX(-27.5000%); }
-    28.2051%{ transform: translateX(-27.5000%); }
-    28.5396%{ transform: translateX(-30.0000%); }
-    30.7692%{ transform: translateX(-30.0000%); }
-    31.1037%{ transform: translateX(-32.5000%); }
-    33.3333%{ transform: translateX(-32.5000%); }
-    33.6678%{ transform: translateX(-35.0000%); }
-    35.8974%{ transform: translateX(-35.0000%); }
-    36.2319%{ transform: translateX(-37.5000%); }
-    38.4615%{ transform: translateX(-37.5000%); }
-    38.7960%{ transform: translateX(-40.0000%); }
-    41.0256%{ transform: translateX(-40.0000%); }
-    41.3601%{ transform: translateX(-42.5000%); }
-    43.5897%{ transform: translateX(-42.5000%); }
-    43.9242%{ transform: translateX(-45.0000%); }
-    46.1538%{ transform: translateX(-45.0000%); }
-    46.4883%{ transform: translateX(-47.5000%); }
-    48.7179%{ transform: translateX(-47.5000%); }
-    49.0524%{ transform: translateX(-50.0000%); }
-    51.2821%{ transform: translateX(-50.0000%); }
-    51.6165%{ transform: translateX(-52.5000%); }
-    53.8462%{ transform: translateX(-52.5000%); }
-    54.1806%{ transform: translateX(-55.0000%); }
-    56.4103%{ transform: translateX(-55.0000%); }
-    56.7447%{ transform: translateX(-57.5000%); }
-    58.9744%{ transform: translateX(-57.5000%); }
-    59.3088%{ transform: translateX(-60.0000%); }
-    61.5385%{ transform: translateX(-60.0000%); }
-    61.8729%{ transform: translateX(-62.5000%); }
-    64.1026%{ transform: translateX(-62.5000%); }
-    64.4370%{ transform: translateX(-65.0000%); }
-    66.6667%{ transform: translateX(-65.0000%); }
-    67.0011%{ transform: translateX(-67.5000%); }
-    69.2308%{ transform: translateX(-67.5000%); }
-    69.5652%{ transform: translateX(-70.0000%); }
-    71.7949%{ transform: translateX(-70.0000%); }
-    72.1293%{ transform: translateX(-72.5000%); }
-    74.3590%{ transform: translateX(-72.5000%); }
-    74.6934%{ transform: translateX(-75.0000%); }
-    76.9231%{ transform: translateX(-75.0000%); }
-    77.2575%{ transform: translateX(-77.5000%); }
-    79.4872%{ transform: translateX(-77.5000%); }
-    79.8216%{ transform: translateX(-80.0000%); }
-    82.0513%{ transform: translateX(-80.0000%); }
-    82.3857%{ transform: translateX(-82.5000%); }
-    84.6154%{ transform: translateX(-82.5000%); }
-    84.9498%{ transform: translateX(-85.0000%); }
-    87.1795%{ transform: translateX(-85.0000%); }
-    87.5139%{ transform: translateX(-87.5000%); }
-    89.7436%{ transform: translateX(-87.5000%); }
-    90.0780%{ transform: translateX(-90.0000%); }
-    92.3077%{ transform: translateX(-90.0000%); }
-    92.6421%{ transform: translateX(-92.5000%); }
-    94.8718%{ transform: translateX(-92.5000%); }
-    95.2062%{ transform: translateX(-95.0000%); }
-    97.4359%{ transform: translateX(-95.0000%); }
-    97.7703%{ transform: translateX(-97.5000%); }
-    100%    { transform: translateX(-97.5000%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-28 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-29 reuses product-9's 9-image track sizing/timing */
-  #product-29:hover .slider-track {
-    animation: slideProduct9 18.4s linear infinite;
-  }
-  #product-29 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-30 slider (42 images -- Chrome Hearts Retro Hoodie, 21 variants) */
-  .product30-track {
-    width: 4200% !important;
-  }
-  .product30-track img {
-    width: 2.381% !important;
-  }
-  /* 41 transitions x (0.3s slide + 2s pause) = 94.3s per full loop, repeats while hovered */
-  #product-30:hover .slider-track {
-    animation: slideProduct30 94.3s linear infinite;
-  }
-  @keyframes slideProduct30 {
-    0%      { transform: translateX(0); }
-    0.3181% { transform: translateX(-2.3810%); }
-    2.4390% { transform: translateX(-2.3810%); }
-    2.7572% { transform: translateX(-4.7619%); }
-    4.8780% { transform: translateX(-4.7619%); }
-    5.1962% { transform: translateX(-7.1429%); }
-    7.3171% { transform: translateX(-7.1429%); }
-    7.6352% { transform: translateX(-9.5238%); }
-    9.7561% { transform: translateX(-9.5238%); }
-    10.0742%{ transform: translateX(-11.9048%); }
-    12.1951%{ transform: translateX(-11.9048%); }
-    12.5133%{ transform: translateX(-14.2857%); }
-    14.6341%{ transform: translateX(-14.2857%); }
-    14.9523%{ transform: translateX(-16.6667%); }
-    17.0732%{ transform: translateX(-16.6667%); }
-    17.3913%{ transform: translateX(-19.0476%); }
-    19.5122%{ transform: translateX(-19.0476%); }
-    19.8303%{ transform: translateX(-21.4286%); }
-    21.9512%{ transform: translateX(-21.4286%); }
-    22.2694%{ transform: translateX(-23.8095%); }
-    24.3902%{ transform: translateX(-23.8095%); }
-    24.7084%{ transform: translateX(-26.1905%); }
-    26.8293%{ transform: translateX(-26.1905%); }
-    27.1474%{ transform: translateX(-28.5714%); }
-    29.2683%{ transform: translateX(-28.5714%); }
-    29.5864%{ transform: translateX(-30.9524%); }
-    31.7073%{ transform: translateX(-30.9524%); }
-    32.0255%{ transform: translateX(-33.3333%); }
-    34.1463%{ transform: translateX(-33.3333%); }
-    34.4645%{ transform: translateX(-35.7143%); }
-    36.5854%{ transform: translateX(-35.7143%); }
-    36.9035%{ transform: translateX(-38.0952%); }
-    39.0244%{ transform: translateX(-38.0952%); }
-    39.3425%{ transform: translateX(-40.4762%); }
-    41.4634%{ transform: translateX(-40.4762%); }
-    41.7815%{ transform: translateX(-42.8571%); }
-    43.9024%{ transform: translateX(-42.8571%); }
-    44.2206%{ transform: translateX(-45.2381%); }
-    46.3415%{ transform: translateX(-45.2381%); }
-    46.6596%{ transform: translateX(-47.6190%); }
-    48.7805%{ transform: translateX(-47.6190%); }
-    49.0986%{ transform: translateX(-50.0000%); }
-    51.2195%{ transform: translateX(-50.0000%); }
-    51.5376%{ transform: translateX(-52.3810%); }
-    53.6585%{ transform: translateX(-52.3810%); }
-    53.9767%{ transform: translateX(-54.7619%); }
-    56.0976%{ transform: translateX(-54.7619%); }
-    56.4157%{ transform: translateX(-57.1429%); }
-    58.5366%{ transform: translateX(-57.1429%); }
-    58.8547%{ transform: translateX(-59.5238%); }
-    60.9756%{ transform: translateX(-59.5238%); }
-    61.2937%{ transform: translateX(-61.9048%); }
-    63.4146%{ transform: translateX(-61.9048%); }
-    63.7328%{ transform: translateX(-64.2857%); }
-    65.8537%{ transform: translateX(-64.2857%); }
-    66.1718%{ transform: translateX(-66.6667%); }
-    68.2927%{ transform: translateX(-66.6667%); }
-    68.6108%{ transform: translateX(-69.0476%); }
-    70.7317%{ transform: translateX(-69.0476%); }
-    71.0498%{ transform: translateX(-71.4286%); }
-    73.1707%{ transform: translateX(-71.4286%); }
-    73.4889%{ transform: translateX(-73.8095%); }
-    75.6098%{ transform: translateX(-73.8095%); }
-    75.9279%{ transform: translateX(-76.1905%); }
-    78.0488%{ transform: translateX(-76.1905%); }
-    78.3669%{ transform: translateX(-78.5714%); }
-    80.4878%{ transform: translateX(-78.5714%); }
-    80.8059%{ transform: translateX(-80.9524%); }
-    82.9268%{ transform: translateX(-80.9524%); }
-    83.2450%{ transform: translateX(-83.3333%); }
-    85.3659%{ transform: translateX(-83.3333%); }
-    85.6840%{ transform: translateX(-85.7143%); }
-    87.8049%{ transform: translateX(-85.7143%); }
-    88.1230%{ transform: translateX(-88.0952%); }
-    90.2439%{ transform: translateX(-88.0952%); }
-    90.5620%{ transform: translateX(-90.4762%); }
-    92.6829%{ transform: translateX(-90.4762%); }
-    93.0011%{ transform: translateX(-92.8571%); }
-    95.1220%{ transform: translateX(-92.8571%); }
-    95.4401%{ transform: translateX(-95.2381%); }
-    97.5610%{ transform: translateX(-95.2381%); }
-    97.8791%{ transform: translateX(-97.6190%); }
-    100%    { transform: translateX(-97.6190%); }
-    /* loop restarts here — jumps straight back to img1 */
-  }
-  #product-30 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-31 and Product-32 reuse product-10's 4-image track sizing/timing */
-  #product-31:hover .slider-track {
-    animation: slideProduct10 6.9s linear infinite;
-  }
-  #product-31 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  #product-32:hover .slider-track {
-    animation: slideProduct10 6.9s linear infinite;
-  }
-  #product-32 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-33 reuses product-3's 6-image track sizing/timing */
-  #product-33:hover .slider-track {
-    animation: slideProduct3 11.5s linear infinite;
-  }
-  #product-33 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-33's source photos are pre-composed flat-lays with built-in whitespace — contain instead of cover so nothing gets cropped */
-  #product-33 .slider-track img {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-  /* Product-34 reuses the base 8-image track sizing and product-1's loop timing */
-  #product-34:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-34 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-34's source photos are pre-composed flat-lays with built-in whitespace — contain instead of cover so nothing gets cropped */
-  #product-34 .slider-track img {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-  /* Product-35 reuses product-16's 10-image track sizing/timing; same flat-lay photo style as product-34 */
-  #product-35:hover .slider-track {
-    animation: slideProduct16 20.7s linear infinite;
-  }
-  #product-35 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  #product-35 .slider-track img {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-  /* Product-36 reuses product-3's 6-image track sizing/timing; same flat-lay photo style */
-  #product-36:hover .slider-track {
-    animation: slideProduct3 11.5s linear infinite;
-  }
-  #product-36 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  #product-36 .slider-track img {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-  /* Product-37 reuses product-20's 14-image track sizing/timing; same flat-lay photo style */
-  #product-37:hover .slider-track {
-    animation: slideProduct20 29.9s linear infinite;
-  }
-  #product-37 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  #product-37 .slider-track img {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-  /* Product-38 reuses product-7's 3-image track sizing/timing; same flat-lay photo style */
-  #product-38:hover .slider-track {
-    animation: slideProduct7 4.6s linear infinite;
-  }
-  #product-38 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-39 reuses the base 8-image track sizing and product-1's loop timing */
-  #product-39:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-39 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-40 reuses product-4's 5-image track sizing/timing */
-  #product-40:hover .slider-track {
-    animation: slideProduct4 9.2s linear infinite;
-  }
-  #product-40 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  /* Product-41 reuses the base 8-image track sizing and product-1's loop timing */
-  #product-41:hover .slider-track {
-    animation: slideProduct1 16.1s linear infinite;
-  }
-  #product-41 .slider-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-  #product-38 .slider-track img {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-  #voidtech-card:hover
-  @keyframes slide3 {
-    0%      { transform: translateX(0); }
-    6.52%   { transform: translateX(-33.333%); }
-    56.52%  { transform: translateX(-33.333%); }
-    63.04%  { transform: translateX(-66.666%); }
-    100%    { transform: translateX(-66.666%); }
-  }
-  #voidtech-card
+    0.0000% { transform: translateX(-0%); }
+    20.0000% { transform: translateX(-100%); }
+    40.0000% { transform: translateX(-200%); }
+    60.0000% { transform: translateX(-300%); }
+    80.0000% { transform: translateX(-400%); }
+    100% { transform: translateX(-400%); }
+  }
+  #product-16 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
 
+  #product-17:hover .slider-track { animation: slideProduct17 6s steps(5) infinite; }
+  @keyframes slideProduct17 {
+    0.0000% { transform: translateX(-0%); }
+    20.0000% { transform: translateX(-100%); }
+    40.0000% { transform: translateX(-200%); }
+    60.0000% { transform: translateX(-300%); }
+    80.0000% { transform: translateX(-400%); }
+    100% { transform: translateX(-400%); }
+  }
+  #product-17 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
 
-  /* ── VOIDTECH SLIDER (3 images) ── */
-  .voidtech-track {
-    width: 300% !important;
+  #product-18:hover .slider-track { animation: slideProduct18 6s steps(5) infinite; }
+  @keyframes slideProduct18 {
+    0.0000% { transform: translateX(-0%); }
+    20.0000% { transform: translateX(-100%); }
+    40.0000% { transform: translateX(-200%); }
+    60.0000% { transform: translateX(-300%); }
+    80.0000% { transform: translateX(-400%); }
+    100% { transform: translateX(-400%); }
   }
-  .voidtech-track img {
-    width: 33.333% !important;
-    object-fit: cover !important;
-    object-position: center 30% !important;
-  }
-  #voidtech-card:hover .voidtech-track {
-    animation: slide3 4.6s ease forwards;
-  }
-  @keyframes slide3 {
-    0%      { transform: translateX(0); }
-    6.52%   { transform: translateX(-33.333%); }
-    56.52%  { transform: translateX(-33.333%); }
-    63.04%  { transform: translateX(-66.666%); }
-    100%    { transform: translateX(-66.666%); }
-  }
-  #voidtech-card .voidtech-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
+  #product-18 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
 
-
-  /* ── HERO IMAGE BRAND LABELS ── */
-  .hero-brand-label {
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-    right: 0;
-    background: none;
-    color: #fff;
-    font-family: var(--font-display);
-    font-size: 28px;
-    letter-spacing: .12em;
-    text-align: center;
-    padding: 0;
-    line-height: 1;
-    text-shadow: 0 2px 8px rgba(0,0,0,.8);
+  #product-24:hover .slider-track { animation: slideProduct24 6s steps(5) infinite; }
+  @keyframes slideProduct24 {
+    0.0000% { transform: translateX(-0%); }
+    20.0000% { transform: translateX(-100%); }
+    40.0000% { transform: translateX(-200%); }
+    60.0000% { transform: translateX(-300%); }
+    80.0000% { transform: translateX(-400%); }
+    100% { transform: translateX(-400%); }
   }
-
-
-  /* ── INSTAGRAM ── */
-  .instagram-section { padding: 100px 80px; }
-  .insta-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    margin-top: 56px;
-  }
-  .insta-cell {
-    aspect-ratio: 1;
-    background: var(--mid);
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-  }
-  .insta-cell img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform .4s, filter .3s;
-    filter: grayscale(30%);
-  }
-  .insta-cell:hover img { transform: scale(1.1); filter: grayscale(0%); }
-  .insta-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0);
-    display: flex; align-items: center; justify-content: center;
-    transition: background .3s;
-  }
-  .insta-cell:hover .insta-overlay { background: rgba(0,0,0,.4); }
-  .insta-handle {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: .1em;
-    color: #fff;
-    opacity: 0;
-    transition: opacity .3s;
-  }
-  .insta-cell:hover .insta-handle { opacity: 1; }
-
-  /* ── BATMAN SLIDER (5 images) ── */
-  .batman-track {
-    width: 500% !important;
-  }
-  .batman-track img {
-    width: 20% !important;
-    object-fit: cover !important;
-    object-position: top center !important;
-  }
-  #batman-card:hover .batman-track {
-    animation: slide5 9.2s ease forwards;
-  }
-  @keyframes slide5 {
-    0%      { transform: translateX(0); }
-    3.26%   { transform: translateX(-20%); }
-    28.26%  { transform: translateX(-20%); }
-    31.52%  { transform: translateX(-40%); }
-    56.52%  { transform: translateX(-40%); }
-    59.78%  { transform: translateX(-60%); }
-    84.78%  { transform: translateX(-60%); }
-    88.04%  { transform: translateX(-80%); }
-    100%    { transform: translateX(-80%); }
-  }
-  #batman-card .batman-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-
-
-  /* ── CHROME HEARTS SLIDER (4 images) ── */
-  .chrome-track {
-    width: 400% !important;
-  }
-  .chrome-track img {
-    width: 25% !important;
-    object-fit: cover !important;
-    object-position: center center !important;
-  }
-  #chrome-card:hover .chrome-track {
-    animation: slide4 6.9s ease forwards;
-  }
-  @keyframes slide4 {
-    0%      { transform: translateX(0); }
-    4.35%   { transform: translateX(-25%); }
-    37.68%  { transform: translateX(-25%); }
-    42.03%  { transform: translateX(-50%); }
-    75.36%  { transform: translateX(-50%); }
-    79.71%  { transform: translateX(-75%); }
-    100%    { transform: translateX(-75%); }
-  }
-  #chrome-card .chrome-track {
-    transform: translateX(0);
-    transition: transform 0.4s ease;
-  }
-
-
-  /* ── BRAND LOGO IMAGES IN MARQUEE ── */
-  .brands-track-wrap {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-  }
-  .brand-logo-item {
-    display: inline-flex;
-    align-items: center;
-    height: 96px;
-    vertical-align: middle;
-  }
-  .brand-logo-png {
-    height: 72px;
-    width: auto;
-    max-width: 200px;
-    object-fit: contain;
-    filter: none;
-    opacity: 1;
-    transition: opacity .2s;
-    vertical-align: middle;
-  }
-  .brand-logo-png:hover { opacity: 1; }
-  .brand-name-text {
-    font-family: var(--font-display);
-    font-size: 56px;
-    letter-spacing: .1em;
-    color: #1a1a1a;
-    opacity: .65;
-    transition: opacity .2s;
-    line-height: 1;
-  }
-  .brand-name-text:hover { opacity: 1; }
-  .brand-sep {
-    font-family: var(--font-display);
-    font-size: 24px;
-    color: #999;
-    display: inline-flex;
-    align-items: center;
-    height: 96px;
-    vertical-align: middle;
-  }
-
+  #product-24 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
 </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav>
-  <a href="/" class="nav-logo-img"><img src="images/img-0002.jpg" alt="BERSERKER" class="brand-logo-img" /></a>
+  <a href="/" class="nav-logo-img"><img src="/all-products/images/img-0002.jpg" alt="BERSERKER" class="brand-logo-img" /></a>
   <div class="nav-right">
     <div class="cart-icon">
       🛒
@@ -1841,7 +994,6 @@
     </button>
   </div>
 </nav>
-
 <div id="nav-menu-overlay" onclick="closeNavMenu()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;"></div>
 <div id="nav-menu-sidebar" style="position:fixed;top:0;right:-100%;width:82%;max-width:360px;height:100%;background:#141414;border-left:1px solid #2a2a2a;z-index:201;transition:right .35s ease;display:flex;flex-direction:column;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 28px;border-bottom:1px solid #2a2a2a;">
@@ -1861,331 +1013,162 @@
   </div>
 </div>
 
-<section class="section" id="all-products-grid" style="padding-top:48px;">
-  <div class="section-header">
-    <h2 class="section-title">COMPRESSIONS<br><span>COLLECTION</span></h2>
+<section class="section" id="all-products-grid">
+  <h2 class="section-title">COMPRESSIONS</h2>
+  <div class="product-grid"><div class="product-card fade-in" id="product-1">
+  <a href="/gymshark/gymshark-onyx-5-half-sleeve/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0005.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0007.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0003.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0009.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:25%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">Gymshark</div>
+    <a href="/gymshark/gymshark-onyx-5-half-sleeve/"><div class="product-name">Onyx 5.0 Seamless Compression Half Sleeve</div></a>
+    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a1a5a;" title="Deep Purple" data-img-index="0"></div><div class="swatch" style="background:#1a1a1a;" title="Stealth Black" data-img-index="1"></div><div class="swatch" style="background:#1a4a1a;" title="Forest Green" data-img-index="2"></div><div class="swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="3"></div></div>
   </div>
-  <div class="product-grid">
-    <div class="product-card fade-in" id="product-1">
-      <div class="product-img product-img-slider">
-        <div class="slider-track">
-        <img src="images/img-0003.jpg" />
-        <img src="images/img-0004.jpg" />
-        <img src="images/img-0005.jpg" />
-        <img src="images/img-0006.jpg" />
-        <img src="images/img-0007.jpg" />
-        <img src="images/img-0008.jpg" />
-        <img src="images/img-0009.jpg" />
-        <img src="images/img-0010.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">Gymshark</div>
-        <div class="product-name">Onyx 5.0 Seamless Compression Half Sleeve</div>
-        <div class="product-price">₹4,799</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#1a4a1a;" title="Forest Green" data-img-index="0"></div>
-          <div class="swatch" style="background:#3a1a5a;" title="Deep Purple" data-img-index="2"></div>
-          <div class="swatch" style="background:#1a1a1a;" title="Stealth Black" data-img-index="4"></div>
-          <div class="swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="6"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-2">
-      <div class="product-img product-img-slider">
-        <div class="slider-track">
-        <img src="images/img-0011.jpg" />
-        <img src="images/img-0012.jpg" />
-        <img src="images/img-0013.jpg" />
-        <img src="images/img-0014.jpg" />
-        <img src="images/img-0015.jpg" />
-        <img src="images/img-0016.jpg" />
-        <img src="images/img-0017.jpg" />
-        <img src="images/img-0018.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">Gymshark</div>
-        <div class="product-name">Onyx 5.0 Seamless Compression Full Sleeve</div>
-        <div class="product-price">₹4,799</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#1a1a1a;" title="Black" data-img-index="0"></div>
-          <div class="swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="2"></div>
-          <div class="swatch" style="background:#1a4a4a;" title="Teal" data-img-index="4"></div>
-          <div class="swatch" style="background:#4a4a4a;" title="Gray" data-img-index="6"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-3">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product3-track">
-        <img src="images/img-0019.jpg" />
-        <img src="images/img-0020.jpg" />
-        <img src="images/img-0021.jpg" />
-        <img src="images/img-0022.jpg" />
-        <img src="images/img-0023.jpg" />
-        <img src="images/img-0024.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">Gymshark</div>
-        <div class="product-name">Onyx 5.0 Seamless Compression Sleeveless</div>
-        <div class="product-price">₹4,799</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#1a1a1a;" title="Black" data-img-index="0"></div>
-          <div class="swatch" style="background:#3a1a5a;" title="Purple" data-img-index="2"></div>
-          <div class="swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="4"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-6">
-      <div class="product-img product-img-slider">
-        <span class="product-badge pre">COLLAB</span>
-        <div class="slider-track product4-track">
-        <img src="images/img-0042.jpg" alt="YoungLA Batman view 1" />
-        <img src="images/img-0043.jpg" alt="YoungLA Batman view 2" />
-        <img src="images/img-0044.jpg" alt="YoungLA Batman view 3" />
-        <img src="images/img-0045.jpg" alt="YoungLA Batman view 4" />
-        <img src="images/img-0046.jpg" alt="YoungLA Batman view 5" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">YoungLA × Batman</div>
-        <div class="product-name">Compression Half Sleeve</div>
-        <div class="product-price">₹4,799</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#1a1a2e;" title="Dark Knight" data-img-index="0"></div>
-          <div class="swatch" style="background:#2a2a2a;" title="Stealth" data-img-index="2"></div>
-          <div class="swatch" style="background:#e8e8e8;" title="White" data-img-index="3"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-7">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product7-track">
-        <img src="images/img-0047.jpg" />
-        <img src="images/img-0048.jpg" />
-        <img src="images/img-0049.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">YoungLA × Superman</div>
-        <div class="product-name">Compression Half Sleeve</div>
-        <div class="product-price">₹4,799</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#12141c;" title="Black" data-img-index="0"></div>
-          <div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="1"></div>
-          <div class="swatch" style="background:#1e3fc4;" title="Blue" data-img-index="2"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-13">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product7-track">
-        <img src="images/img-0082.jpg" alt="BreatheDivinity VoidTech view 1" />
-        <img src="images/img-0083.jpg" alt="BreatheDivinity VoidTech view 2" />
-        <img src="images/img-0084.jpg" alt="BreatheDivinity VoidTech view 3" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">VoidTech Nightfall Compression Half Sleeve</div>
-        <div class="product-price">₹4,299</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#1a1a1a;" title="White" data-img-index="0"></div>
-          <div class="swatch" style="background:#5a1a1a;" title="Crimson Red" data-img-index="1"></div>
-          <div class="swatch" style="background:#8a5a00;" title="Gold" data-img-index="2"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-14">
-      <div class="product-img product-img-slider">
-        <div class="slider-track">
-        <img src="images/img-0085.jpg" />
-        <img src="images/img-0086.jpg" />
-        <img src="images/img-0087.jpg" />
-        <img src="images/img-0088.png" />
-        <img src="images/img-0089.jpg" />
-        <img src="images/img-0090.jpg" />
-        <img src="images/img-0091.jpg" />
-        <img src="images/img-0092.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">VoidTech Berserker Compression</div>
-        <div class="product-price">₹4,799</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div>
-          <div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2"></div>
-          <div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4"></div>
-          <div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="6"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-15">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product10-track">
-        <img src="images/img-0093.jpg" />
-        <img src="images/img-0094.jpg" />
-        <img src="images/img-0095.jpg" />
-        <img src="images/img-0096.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">VoidTech Cyber Skeleton Compression</div>
-        <div class="product-price">₹5,299</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#141414;" title="Black" data-img-index="0"></div>
-          <div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-16">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product16-track">
-        <img src="images/img-0097.jpg" />
-        <img src="images/img-0098.jpg" />
-        <img src="images/img-0099.jpg" />
-        <img src="images/img-0100.jpg" />
-        <img src="images/img-0101.jpg" />
-        <img src="images/img-0102.jpg" />
-        <img src="images/img-0103.jpg" />
-        <img src="images/img-0104.jpg" />
-        <img src="images/img-0105.jpg" />
-        <img src="images/img-0106.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">VoidTech Immortal Compression</div>
-        <div class="product-price">₹5,299</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="0"></div>
-          <div class="swatch" style="background:#8a1c1c;" title="White Red" data-img-index="2"></div>
-          <div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="4"></div>
-          <div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="6"></div>
-          <div class="swatch" style="background:#1c8a3a;" title="Green" data-img-index="8"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-17">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product4-track">
-        <img src="images/img-0107.jpg" />
-        <img src="images/img-0108.jpg" />
-        <img src="images/img-0109.jpg" />
-        <img src="images/img-0110.jpg" />
-        <img src="images/img-0111.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">VoidTech PulseFire Compression</div>
-        <div class="product-price">₹5,299</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div>
-          <div class="swatch" style="background:#a01c5a;" title="PulseFire" data-img-index="1"></div>
-          <div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2"></div>
-          <div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="3"></div>
-          <div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="4"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-18">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product16-track">
-        <img src="images/img-0112.jpg" />
-        <img src="images/img-0113.jpg" />
-        <img src="images/img-0114.jpg" />
-        <img src="images/img-0115.jpg" />
-        <img src="images/img-0116.jpg" />
-        <img src="images/img-0117.jpg" />
-        <img src="images/img-0118.jpg" />
-        <img src="images/img-0119.jpg" />
-        <img src="images/img-0120.jpg" />
-        <img src="images/img-0121.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">VoidTech Infernal Compression</div>
-        <div class="product-price">₹5,299</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="0"></div>
-          <div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2"></div>
-          <div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div>
-          <div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="6"></div>
-          <div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="9"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-
-    <div class="product-card fade-in" id="product-24">
-      <div class="product-img product-img-slider">
-        <div class="slider-track product16-track">
-        <img src="images/img-0174.jpg" />
-        <img src="images/img-0175.jpg" />
-        <img src="images/img-0176.jpg" />
-        <img src="images/img-0177.jpg" />
-        <img src="images/img-0178.jpg" />
-        <img src="images/img-0179.jpg" />
-        <img src="images/img-0180.jpg" />
-        <img src="images/img-0181.jpg" />
-        <img src="images/img-0182.jpg" />
-        <img src="images/img-0183.jpg" />
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">BreatheDivinity</div>
-        <div class="product-name">Fallen Knight Long Sleeve Compression</div>
-        <div class="product-price">₹5,499</div>
-        <div class="product-swatches">
-          <div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="0"></div>
-          <div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="2"></div>
-          <div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="4"></div>
-          <div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="6"></div>
-          <div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="8"></div>
-        </div>
-      </div>
-      <button class="product-add">Add to Cart</button>
-    </div>
-  
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-2">
+  <a href="/gymshark/gymshark-onyx-5-long-sleeve/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-long-sleeve/img-0013.jpg" alt="Onyx 5.0 Seamless Compression Full Sleeve" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-long-sleeve/img-0017.jpg" alt="Onyx 5.0 Seamless Compression Full Sleeve" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-long-sleeve/img-0011.jpg" alt="Onyx 5.0 Seamless Compression Full Sleeve" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-long-sleeve/img-0015.jpg" alt="Onyx 5.0 Seamless Compression Full Sleeve" style="width:25%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">Gymshark</div>
+    <a href="/gymshark/gymshark-onyx-5-long-sleeve/"><div class="product-name">Onyx 5.0 Seamless Compression Full Sleeve</div></a>
+    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="0"></div><div class="swatch" style="background:#4a4a4a;" title="Gray" data-img-index="1"></div><div class="swatch" style="background:#1a1a1a;" title="Black" data-img-index="2"></div><div class="swatch" style="background:#1a4a4a;" title="Teal" data-img-index="3"></div></div>
   </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-3">
+  <a href="/gymshark/gymshark-onyx-5-sleeveless/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0019.jpg" alt="Onyx 5.0 Seamless Compression Sleeveless" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0021.jpg" alt="Onyx 5.0 Seamless Compression Sleeveless" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0023.jpg" alt="Onyx 5.0 Seamless Compression Sleeveless" style="width:33.333333333333336%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">Gymshark</div>
+    <a href="/gymshark/gymshark-onyx-5-sleeveless/"><div class="product-name">Onyx 5.0 Seamless Compression Sleeveless</div></a>
+    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#1a1a1a;" title="Black" data-img-index="0"></div><div class="swatch" style="background:#3a1a5a;" title="Purple" data-img-index="1"></div><div class="swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="2"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-6">
+  <a href="/youngla/youngla-batman-half-sleeve/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0045.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0042.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0044.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">YoungLA × Batman</div>
+    <a href="/youngla/youngla-batman-half-sleeve/"><div class="product-name">Compression Half Sleeve</div></a>
+    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#e8e8e8;" title="White" data-img-index="0"></div><div class="swatch" style="background:#1a1a2e;" title="Dark Knight" data-img-index="1"></div><div class="swatch" style="background:#2a2a2a;" title="Stealth" data-img-index="2"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-7">
+  <a href="/youngla/youngla-superman-half-sleeve/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-superman-half-sleeve/img-0048.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-superman-half-sleeve/img-0049.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-superman-half-sleeve/img-0047.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">YoungLA × Superman</div>
+    <a href="/youngla/youngla-superman-half-sleeve/"><div class="product-name">Compression Half Sleeve</div></a>
+    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="0"></div><div class="swatch" style="background:#1e3fc4;" title="Blue" data-img-index="1"></div><div class="swatch" style="background:#12141c;" title="Black" data-img-index="2"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-13">
+  <a href="/breathedivinity/breathedivinity-voidtech-nightfall-half-sleeve/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-nightfall-half-sleeve/img-0084.jpg" alt="VoidTech Nightfall Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-nightfall-half-sleeve/img-0082.jpg" alt="VoidTech Nightfall Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-nightfall-half-sleeve/img-0083.jpg" alt="VoidTech Nightfall Compression Half Sleeve" style="width:33.333333333333336%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-voidtech-nightfall-half-sleeve/"><div class="product-name">VoidTech Nightfall Compression Half Sleeve</div></a>
+    <div class="product-price">₹4,299<span class="original">₹11,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#8a5a00;" title="Gold" data-img-index="0"></div><div class="swatch" style="background:#1a1a1a;" title="White" data-img-index="1"></div><div class="swatch" style="background:#5a1a1a;" title="Crimson Red" data-img-index="2"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-14">
+  <a href="/breathedivinity/breathedivinity-voidtech-berserker/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0085.jpg" alt="VoidTech Berserker Compression" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0089.jpg" alt="VoidTech Berserker Compression" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0087.jpg" alt="VoidTech Berserker Compression" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0091.jpg" alt="VoidTech Berserker Compression" style="width:25%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-voidtech-berserker/"><div class="product-name">VoidTech Berserker Compression</div></a>
+    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="1"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="2"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="3"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-15">
+  <a href="/breathedivinity/breathedivinity-voidtech-cyber-skeleton/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0095.jpg" alt="VoidTech Cyber Skeleton Compression" style="width:50%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0093.jpg" alt="VoidTech Cyber Skeleton Compression" style="width:50%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-voidtech-cyber-skeleton/"><div class="product-name">VoidTech Cyber Skeleton Compression</div></a>
+    <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="0"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="1"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-16">
+  <a href="/breathedivinity/breathedivinity-voidtech-immortal/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0101.jpg" alt="VoidTech Immortal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0105.jpg" alt="VoidTech Immortal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0099.jpg" alt="VoidTech Immortal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0103.jpg" alt="VoidTech Immortal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0097.jpg" alt="VoidTech Immortal Compression" style="width:20%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-voidtech-immortal/"><div class="product-name">VoidTech Immortal Compression</div></a>
+    <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="0"></div><div class="swatch" style="background:#1c8a3a;" title="Green" data-img-index="1"></div><div class="swatch" style="background:#8a1c1c;" title="White Red" data-img-index="2"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="3"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-17">
+  <a href="/breathedivinity/breathedivinity-voidtech-pulsefire/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0110.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0108.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0107.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0111.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0109.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-voidtech-pulsefire/"><div class="product-name">VoidTech PulseFire Compression</div></a>
+    <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="0"></div><div class="swatch" style="background:#a01c5a;" title="PulseFire" data-img-index="1"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="2"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="3"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-18">
+  <a href="/breathedivinity/breathedivinity-voidtech-infernal/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0116.jpg" alt="VoidTech Infernal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0118.jpg" alt="VoidTech Infernal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0121.jpg" alt="VoidTech Infernal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0114.jpg" alt="VoidTech Infernal Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0112.jpg" alt="VoidTech Infernal Compression" style="width:20%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-voidtech-infernal/"><div class="product-name">VoidTech Infernal Compression</div></a>
+    <div class="product-price">₹5,299<span class="original">₹14,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="0"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="1"></div><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="2"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="3"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="4"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div>
+<div class="product-card fade-in" id="product-24">
+  <a href="/breathedivinity/breathedivinity-fallen-knight-long-sleeve/" class="product-img product-img-slider">
+    <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0176.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0178.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0174.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0180.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0182.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:20%;" /></div>
+  </a>
+  <div class="product-info">
+    <div class="product-brand">BreatheDivinity</div>
+    <a href="/breathedivinity/breathedivinity-fallen-knight-long-sleeve/"><div class="product-name">Fallen Knight Long Sleeve Compression</div></a>
+    <div class="product-price">₹5,499<span class="original">₹14,999</span></div>
+    <div class="product-swatches"><div class="swatch" style="background:#c41e8a;" title="Pink" data-img-index="0"></div><div class="swatch" style="background:#1c4aa0;" title="Blue" data-img-index="1"></div><div class="swatch" style="background:#c46a1e;" title="Orange" data-img-index="2"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="3"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4"></div></div>
+  </div>
+  <button class="product-add">Add to Cart</button>
+</div></div>
 </section>
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <div class="logo-img-wrap"><img src="images/img-0378.jpg" alt="BERSERKER" class="brand-logo-img" /></div>
+      <div class="logo-img-wrap"><img src="/all-products/images/img-0378.jpg" alt="BERSERKER" class="brand-logo-img" /></div>
       <p>India's most affordable destination for premium activewear. Quality-checked, community-verified, delivered to your door.</p>
       <div class="footer-social">
-        
-        
-        
+
+
+
       </div>
     </div>
 
@@ -2220,10 +1203,7 @@
     </div>
   </div>
 </footer>
-<!-- BACK TO TOP -->
 <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-
-
 
 <!-- SIZE PICKER MODAL -->
 <div id="size-overlay" onclick="closeSizePicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;"></div>
@@ -2516,58 +1496,6 @@
     });
   });
 
-  // Product cell click-through to respective product pages
-  const productLinks = {
-    'product-1': 'https://www.berserker.in/gymshark/gymshark-onyx-5-half-sleeve',
-    'product-2': 'https://www.berserker.in/gymshark/gymshark-onyx-5-long-sleeve',
-    'product-3': 'https://www.berserker.in/gymshark/gymshark-onyx-5-sleeveless',
-    'product-4': 'https://www.berserker.in/gymshark/gymshark-founder-hoodie',
-    'product-5': 'https://www.berserker.in/gymshark/gymshark-lifting-essential-joggers',
-    'product-6': 'https://www.berserker.in/youngla/youngla-batman-half-sleeve',
-    'product-7': 'https://www.berserker.in/youngla/youngla-superman-half-sleeve',
-    'product-8': "https://www.berserker.in/youngla/youngla-gold's-gym-tshirt",
-    'product-9': 'https://www.berserker.in/youngla/youngla-drip-oversized-tshirt',
-    'product-10': 'https://www.berserker.in/youngla/youngla-revenge-hoodie',
-    'product-11': 'https://www.berserker.in/youngla/youngla-revenge-joggers',
-    'product-12': 'https://www.berserker.in/youngla/youngla-divine-sweats',
-    'product-13': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-nightfall-half-sleeve',
-    'product-14': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-berserker',
-    'product-15': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-cyber-skeleton',
-    'product-16': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-immortal',
-    'product-17': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-pulsefire',
-    'product-18': 'https://www.berserker.in/breathedivinity/breathedivinity-voidtech-infernal',
-    'product-19': 'https://www.berserker.in/breathedivinity/breathedivinity-hollow-souls',
-    'product-20': 'https://www.berserker.in/breathedivinity/breathedivinity-bloodraven',
-    'product-21': 'https://www.berserker.in/breathedivinity/breathedivinity-deathclaw',
-    'product-22': 'https://www.berserker.in/breathedivinity/breathedivinity-dragon-blade',
-    'product-23': 'https://www.berserker.in/breathedivinity/breathedivinity-gargoyle',
-    'product-24': 'https://www.berserker.in/breathedivinity/breathedivinity-fallen-knight-long-sleeve',
-    'product-25': 'https://www.berserker.in/breathedivinity/breathedivinity-deathwing-oversized-hoodie',
-    'product-26': 'https://www.berserker.in/breathedivinity/breathedivinity-blood-oath-sweatpants',
-    'product-27': 'https://www.berserker.in/breathedivinity/breathedivinity-eternal-wyvern-oversized-sweatpants',
-    'product-28': 'https://www.berserker.in/chromehearts/chromehearts-retro-oversized-tshirt',
-    'product-29': 'https://www.berserker.in/chromehearts/chromehearts-vintage-oversized-tshirt',
-    'product-30': 'https://www.berserker.in/chromehearts/chromehearts-retro-hoodie',
-    'product-31': 'https://www.berserker.in/chromehearts/chromehearts-forever-denim-jacket',
-    'product-32': 'https://www.berserker.in/chromehearts/chromehearts-mastermind-ripped-denim-jacket',
-    'product-33': 'https://www.berserker.in/chromehearts/chromehearts-retro-jeans',
-    'product-34': 'https://www.berserker.in/cactusjack/cactusjack-oversized-tshirt',
-    'product-35': 'https://www.berserker.in/cactusjack/cactusjack-astroworld-oversized-tshirt',
-    'product-36': 'https://www.berserker.in/cactusjack/cactusjack-fragment-oversized-tshirt',
-    'product-37': 'https://www.berserker.in/cactusjack/cactusjack-mcdonalds-oversized-tshirt',
-    'product-38': 'https://www.berserker.in/cactusjack/cactusjack-playstation-oversized-tshirt',
-    'product-39': 'https://www.berserker.in/skims/skims-cotton-jersey-tshirt',
-    'product-40': 'https://www.berserker.in/skims/skims-rhinestone-logo-mini-dress',
-    'product-41': 'https://www.berserker.in/lululemon/lululemon-define-nulu-align-yoga-set'
-  };
-  document.querySelectorAll('.product-card').forEach(card => {
-    const url = productLinks[card.id];
-    if (!url) return;
-    card.addEventListener('click', () => {
-      window.location.href = url;
-    });
-  });
-
   // Init
   updateCart();
 
@@ -2578,8 +1506,6 @@
   });
 
 </script>
-
-
 <script>
   (function() {
     var menuToggle = document.getElementById('menu-toggle');
@@ -2608,6 +1534,5 @@
     }
   })();
 </script>
-
 </body>
 </html>
