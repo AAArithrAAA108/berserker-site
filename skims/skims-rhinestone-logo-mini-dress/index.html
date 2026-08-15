@@ -943,7 +943,7 @@
       <div class="pdp-cod">COD Advance Amount: ₹4,900</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">Black</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#141414;" title="Black" data-img-index="0"></div><div class="modal-swatch" style="background:#e8a8cf;" title="Pink" data-img-index="2"></div><div class="modal-swatch" style="background:#f0ede8;" title="White" data-img-index="4"></div></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#141414;" title="Black" data-img-index="0" data-img-count="2"></div><div class="modal-swatch" style="background:#e8a8cf;" title="Pink" data-img-index="2" data-img-count="2"></div><div class="modal-swatch" style="background:#f0ede8;" title="White" data-img-index="4" data-img-count="1"></div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -966,7 +966,7 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0365.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0366.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0367.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0368.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0369.jpg"];
-    var swatchList = [{"label":"Black","imgIndex":0},{"label":"Pink","imgIndex":2},{"label":"White","imgIndex":4}];
+    var swatchList = [{"label":"Black","imgIndex":0,"count":2},{"label":"Pink","imgIndex":2,"count":2},{"label":"White","imgIndex":4,"count":1}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -984,34 +984,41 @@
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
+    // A color can own more than one consecutive photo (e.g. front/back
+    // shots), so "does this thumb belong to this color" is a range check,
+    // not an exact index match against the color's own cover/start index.
+    function colorForIndex(idx) {
+      var matches = swatchList.filter(function(s) { return idx >= s.imgIndex && idx < s.imgIndex + s.count; });
+      return matches.length ? matches[0] : null;
+    }
+
     function selectSwatchForIndex(idx) {
       colorSwatches.forEach(function(s) {
-        s.classList.toggle('selected', parseInt(s.dataset.imgIndex, 10) === idx);
+        var start = parseInt(s.dataset.imgIndex, 10);
+        var count = parseInt(s.dataset.imgCount, 10) || 1;
+        s.classList.toggle('selected', idx >= start && idx < start + count);
       });
     }
 
     thumbs.forEach(function(t) {
       t.addEventListener('click', function() {
         var idx = parseInt(t.dataset.index, 10);
-        // A thumb isn't necessarily a color's cover shot (there can be more
-        // photos than colors) -- only relabel/reselect a swatch when this
-        // thumb IS one, otherwise keep showing the currently selected color.
-        var matches = swatchList.filter(function(s) { return s.imgIndex === idx; });
-        var match = matches.length ? matches[0] : null;
-        if (match) {
-          selectedColor = match;
-          colorLabel.textContent = match.label;
+        var owner = colorForIndex(idx);
+        if (owner) {
+          selectedColor = owner;
+          colorLabel.textContent = owner.label;
           selectSwatchForIndex(idx);
         }
-        setMainImage(idx, match ? match.label : (imageLabel ? imageLabel.textContent : ''));
+        setMainImage(idx, owner ? owner.label : (imageLabel ? imageLabel.textContent : ''));
       });
     });
 
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        var count = parseInt(sw.dataset.imgCount, 10) || 1;
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, count: count };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
