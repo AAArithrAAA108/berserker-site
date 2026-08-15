@@ -18,7 +18,8 @@ async function parseGithubResponse(res: Response, label: string): Promise<any> {
 export async function commitFiles(
   files: Record<string, string>,
   message: string,
-  githubToken: string
+  githubToken: string,
+  deletePaths: string[] = []
 ): Promise<{ commitSha: string }> {
   const api = (path: string) =>
     fetch(`https://api.github.com/repos/${OWNER}/${REPO}${path}`, {
@@ -50,10 +51,12 @@ export async function commitFiles(
     })
   );
 
+  const deleteEntries = deletePaths.map((path) => ({ path, mode: "100644", type: "blob" as const, sha: null }));
+
   const treeRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees`, {
     method: "POST",
     headers: { Authorization: `Bearer ${githubToken}`, Accept: "application/vnd.github+json" },
-    body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries }),
+    body: JSON.stringify({ base_tree: baseTreeSha, tree: [...treeEntries, ...deleteEntries] }),
   });
   const newTree = await parseGithubResponse(treeRes, "create tree");
 
