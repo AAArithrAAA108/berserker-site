@@ -1,5 +1,5 @@
-import type { Catalog, CatalogProduct } from "./data.ts";
-import { brandFolderFor, isInCollection, BRAND_PREFIX_MAP } from "./membership.ts";
+import type { Catalog, CatalogProduct, PrimaryBrand } from "./data.ts";
+import { brandFolderFor, isInCollection } from "./membership.ts";
 import { renderShell } from "./shell.ts";
 
 export function strikethroughPrice(price: number): number {
@@ -188,12 +188,11 @@ export function renderCollectionPage(catalog: Catalog, slug: string): string {
   });
 }
 
-export function renderBrandPage(catalog: Catalog, folder: string): string {
+export function renderBrandPage(catalog: Catalog, folder: string, brandName: string = folder): string {
   const filtered = catalog.products
     .filter((p) => brandFolderFor(p) === folder)
     .sort((a, b) => a.position - b.position);
   const cards = filtered.map(renderProductCard).join("\n");
-  const brandName = BRAND_PREFIX_MAP[folder] ?? folder;
   const bodyContent = `
 <section class="section" id="all-products-grid">
   <h2 class="section-title">${esc(brandName.toUpperCase())}</h2>
@@ -204,6 +203,24 @@ export function renderBrandPage(catalog: Catalog, folder: string): string {
     bodyContent,
     perPageStyle: renderSliderCss(filtered),
   });
+}
+
+export function renderBrandsIndexPage(brands: PrimaryBrand[]): string {
+  const cards = brands
+    .map(
+      (b) =>
+        `<a href="/${esc(b.folderSlug)}/" class="cat-card" style="display:block;text-decoration:none;">
+      <img src="${esc(b.thumbnailUrl)}" alt="${esc(b.name)}" style="width:100%;height:100%;object-fit:cover;" />
+      <div class="cat-label">${esc(b.name)}</div>
+    </a>`
+    )
+    .join("\n");
+  const bodyContent = `
+<section class="section">
+  <h2 class="section-title">ALL<br><span>BRANDS</span></h2>
+  <div class="cat-grid">${cards}</div>
+</section>`;
+  return renderShell({ title: "Brands — BERSERKER", bodyContent });
 }
 
 // Real PDPs (e.g. gymshark/gymshark-onyx-5-half-sleeve/index.html:1280-1367,

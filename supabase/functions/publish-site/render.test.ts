@@ -1,6 +1,6 @@
 import { assertStringIncludes, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage } from "./render.ts";
-import type { CatalogProduct } from "./data.ts";
+import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderBrandsIndexPage, renderPdpPage } from "./render.ts";
+import type { CatalogProduct, PrimaryBrand } from "./data.ts";
 import type { Catalog } from "./data.ts";
 
 const sampleProduct: CatalogProduct = {
@@ -318,6 +318,15 @@ Deno.test("renderBrandPage: youngla includes the collab-brand product via its ow
   }
 });
 
+Deno.test("renderBrandPage: uses the passed brandName for its heading, falling back to the folder slug if omitted", () => {
+  const withName = renderBrandPage(sampleCatalog, "youngla", "YoungLA");
+  assertStringIncludes(withName, "YOUNGLA"); // heading is .toUpperCase()'d
+  assertStringIncludes(withName, "<title>YoungLA — BERSERKER</title>");
+
+  const withoutName = renderBrandPage(sampleCatalog, "youngla");
+  assertStringIncludes(withoutName, "YOUNGLA");
+});
+
 Deno.test("renderPdpPage: includes product info, all color swatches, and a description", () => {
   const withDescription: CatalogProduct = { ...twoColorProduct, description: "A great compression shirt." };
   const html = renderPdpPage(withDescription);
@@ -433,4 +442,15 @@ Deno.test("renderPdpPage: a color swatch's data-img-index points at that color's
   };
   const html = renderPdpPage(oneColorFourPhotos);
   assertStringIncludes(html, 'data-img-index="2"');
+});
+
+Deno.test("renderBrandsIndexPage: one .cat-card per brand, linking to its folder with its thumbnail and label", () => {
+  const html = renderBrandsIndexPage([
+    { name: "Gymshark", folderSlug: "gymshark", thumbnailUrl: "https://fake.test/_brands/gymshark-1.jpg" },
+    { name: "YoungLA", folderSlug: "youngla", thumbnailUrl: "https://fake.test/_brands/youngla-1.jpg" },
+  ]);
+  assertStringIncludes(html, '<a href="/gymshark/" class="cat-card"');
+  assertStringIncludes(html, 'src="https://fake.test/_brands/gymshark-1.jpg"');
+  assertStringIncludes(html, '<div class="cat-label">Gymshark</div>');
+  assertStringIncludes(html, '<a href="/youngla/" class="cat-card"');
 });
