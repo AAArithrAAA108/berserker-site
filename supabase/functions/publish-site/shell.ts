@@ -842,8 +842,13 @@ export function renderShell(opts: ShellOptions): string {
     cursor: pointer;
     transition: background .15s, border-color .15s, color .15s;
   }
-  .size-btn:hover { border-color: #888; }
+  .size-btn:hover:not(:disabled) { border-color: #888; }
   .size-btn.selected { background: #e8f000; color: #0a0a0a; border-color: #e8f000; }
+  .size-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+    color: #888;
+  }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1195,6 +1200,23 @@ ${opts.bodyContent}
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
+  // Stock is per color, not per product -- grey out (disable) whichever
+  // sizes are out of stock for the given color's variants, and drop the
+  // current size selection if it's no longer available after a color
+  // switch (rather than silently letting a shopper "confirm" a size that
+  // isn't actually in stock for the color they just picked).
+  function applySizeAvailability(variants) {
+    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
+      btn.disabled = !inStock;
+      if (!inStock && btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        selectedSize = null;
+      }
+    });
+  }
+
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
     pendingItem = { brand, name, price, codAdvance, imgSrc, allImgs };
     selectedSize = null;
@@ -1210,7 +1232,7 @@ ${opts.bodyContent}
     document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
@@ -1224,9 +1246,15 @@ ${opts.bodyContent}
         div.classList.add('selected');
         selectedColor = { label, imgIndex };
         document.getElementById('selected-color-label').textContent = label;
+        applySizeAvailability(variants);
+        checkConfirmReady();
       });
       swatchContainer.appendChild(div);
     });
+
+    // Default to the first color's stock before any swatch is clicked, same
+    // as the main image/label already default to the first color.
+    applySizeAvailability(colors[0]?.variants);
 
     document.getElementById('size-overlay').style.display = 'block';
     document.getElementById('size-modal').style.display = 'block';
@@ -1272,12 +1300,17 @@ ${opts.bodyContent}
 
     // Collect colors from swatches — with per-color image
     const allCardImgs = [...card.querySelectorAll('.product-img img')].map(i => i.src);
-    const colors = [...card.querySelectorAll('.swatch')].map(s => ({
-      bg: s.style.background,
-      label: s.title || s.style.background,
-      imgIndex: parseInt(s.dataset.imgIndex || '0'),
-      variant: s.dataset.variant || null
-    }));
+    const colors = [...card.querySelectorAll('.swatch')].map(s => {
+      let variants = [];
+      try { variants = JSON.parse(s.dataset.variants || '[]'); } catch (e) {}
+      return {
+        bg: s.style.background,
+        label: s.title || s.style.background,
+        imgIndex: parseInt(s.dataset.imgIndex || '0'),
+        variant: s.dataset.variant || null,
+        variants: variants
+      };
+    });
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();

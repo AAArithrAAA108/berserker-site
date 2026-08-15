@@ -49,7 +49,12 @@ export function renderProductCard(product: CatalogProduct): string {
   const swatches = product.colors
     .map((c) => {
       const idx = images.indexOf(c.coverImageUrl);
-      return `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}"></div>`;
+      // Stock is per color, not per product -- carried on the swatch itself
+      // so the Add to Cart size-picker modal (shell.ts) can grey out
+      // whichever sizes are actually out of stock for whichever color the
+      // shopper picks, instead of showing every size as available.
+      const variantsJson = esc(JSON.stringify(c.variants.map((v) => ({ size: v.size, inStock: v.inStock }))));
+      return `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}" data-variants="${variantsJson}"></div>`;
     })
     .join("");
   const brandFolder = brandFolderFor(product);

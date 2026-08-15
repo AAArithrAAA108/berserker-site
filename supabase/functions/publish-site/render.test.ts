@@ -108,6 +108,26 @@ Deno.test("renderProductCard: swatch data-img-index matches that color's slider 
   }
 });
 
+Deno.test("renderProductCard: swatch carries that color's real per-size stock as data-variants, for the Add to Cart size picker to grey out unavailable sizes", () => {
+  const mixedStockProduct: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      {
+        ...twoColorProduct.colors[0],
+        variants: [
+          { size: "S", inStock: true },
+          { size: "M", inStock: false },
+        ],
+      },
+    ],
+  };
+  const html = renderProductCard(mixedStockProduct);
+  assertStringIncludes(html, "data-variants=");
+  // HTML-escaped JSON -- quotes come through as &quot;.
+  assertStringIncludes(html, "&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true");
+  assertStringIncludes(html, "&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:false");
+});
+
 Deno.test("renderProductCard: slider shows every uploaded photo, and swatches point at each color's own start position, not its array index (regression: extra angle shots weren't mapped to their own color)", () => {
   const multiPhotoProduct: CatalogProduct = {
     ...twoColorProduct,
