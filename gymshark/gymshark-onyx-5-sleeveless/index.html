@@ -378,6 +378,7 @@
   }
   .product-card:hover { transform: translateY(-4px); border-color: #444; }
   .product-img {
+    display: block;
     aspect-ratio: 3/4;
     overflow: hidden;
     background: var(--mid);
@@ -932,7 +933,7 @@
         <img id="pdp-main-image" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0019.jpg" alt="Onyx 5.0 Seamless Compression Sleeveless — Black" />
       </div>
       <div class="pdp-image-label" id="pdp-image-label">Black</div>
-      <div class="pdp-thumbs" id="pdp-thumbs"><img class="pdp-thumb active" data-index="0" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0019.jpg" alt="View 1" /><img class="pdp-thumb" data-index="1" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0021.jpg" alt="View 2" /><img class="pdp-thumb" data-index="2" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0023.jpg" alt="View 3" /></div>
+      <div class="pdp-thumbs" id="pdp-thumbs"><img class="pdp-thumb active" data-index="0" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0019.jpg" alt="View 1" /><img class="pdp-thumb" data-index="1" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0020.jpg" alt="View 2" /><img class="pdp-thumb" data-index="2" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0021.jpg" alt="View 3" /><img class="pdp-thumb" data-index="3" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0022.jpg" alt="View 4" /><img class="pdp-thumb" data-index="4" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0023.jpg" alt="View 5" /><img class="pdp-thumb" data-index="5" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0024.jpg" alt="View 6" /></div>
       <p class="pdp-insta-note">Want to see real in-hand photos before you buy? DM us on Instagram <a href="https://instagram.com/berserker.in" target="_blank" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">@berserker.in</a> and we'll send them over.</p>
     </div>
     <div class="pdp-info">
@@ -942,7 +943,7 @@
       <div class="pdp-cod">COD Advance Amount: ₹3,000</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">Black</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#1a1a1a;" title="Black" data-img-index="0"></div><div class="modal-swatch" style="background:#3a1a5a;" title="Purple" data-img-index="1"></div><div class="modal-swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="2"></div></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#1a1a1a;" title="Black" data-img-index="0"></div><div class="modal-swatch" style="background:#3a1a5a;" title="Purple" data-img-index="2"></div><div class="modal-swatch" style="background:#5a1a1a;" title="Dark Red" data-img-index="4"></div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -964,8 +965,8 @@
 </section>
 <script>
   (function() {
-    var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0019.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0021.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0023.jpg"];
-    var swatchList = [{"label":"Black","imgIndex":0},{"label":"Purple","imgIndex":1},{"label":"Dark Red","imgIndex":2}];
+    var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0019.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0020.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0021.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0022.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0023.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-sleeveless/img-0024.jpg"];
+    var swatchList = [{"label":"Black","imgIndex":0},{"label":"Purple","imgIndex":2},{"label":"Dark Red","imgIndex":4}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -983,19 +984,33 @@
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
+    function selectSwatchForIndex(idx) {
+      colorSwatches.forEach(function(s) {
+        s.classList.toggle('selected', parseInt(s.dataset.imgIndex, 10) === idx);
+      });
+    }
+
     thumbs.forEach(function(t) {
       t.addEventListener('click', function() {
         var idx = parseInt(t.dataset.index, 10);
-        var sw = swatchList[idx];
-        setMainImage(idx, sw ? sw.label : '');
+        // A thumb isn't necessarily a color's cover shot (there can be more
+        // photos than colors) -- only relabel/reselect a swatch when this
+        // thumb IS one, otherwise keep showing the currently selected color.
+        var matches = swatchList.filter(function(s) { return s.imgIndex === idx; });
+        var match = matches.length ? matches[0] : null;
+        if (match) {
+          selectedColor = match;
+          colorLabel.textContent = match.label;
+          selectSwatchForIndex(idx);
+        }
+        setMainImage(idx, match ? match.label : (imageLabel ? imageLabel.textContent : ''));
       });
     });
 
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
-        colorSwatches.forEach(function(s) { s.classList.remove('selected'); });
-        sw.classList.add('selected');
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        selectSwatchForIndex(imgIndex);
         selectedColor = { label: sw.title, imgIndex: imgIndex };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
