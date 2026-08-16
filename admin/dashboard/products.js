@@ -310,7 +310,7 @@ async function renderImagesSection(product) {
   var container = document.getElementById('images-section-' + product.id);
   container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Images</p><div id="images-grid-' + product.id + '" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="file" id="image-upload-' + product.id + '" accept="image/jpeg,image/png,image/webp" multiple style="margin-top:8px;" /><p class="msg" id="image-upload-msg-' + product.id + '"></p>';
 
-  await refreshImagesGrid(product.id);
+  await refreshImagesGrid(product);
 
   document.getElementById('image-upload-' + product.id).addEventListener('change', async function(e) {
     var files = Array.from(e.target.files || []);
@@ -336,28 +336,58 @@ async function renderImagesSection(product) {
       msg.textContent = 'Uploaded ' + successCount + ' image(s).';
     }
     e.target.value = '';
-    await refreshImagesGrid(product.id);
+    await refreshImagesGrid(product);
   });
 }
 
-async function refreshImagesGrid(productId) {
-  var { data: images, error } = await sb.from('product_images').select('id, storage_path, sort_order').eq('product_id', productId).order('sort_order', { ascending: true });
+async function refreshImagesGrid(product) {
+  var productId = product.id;
+  var { data: images, error } = await sb.from('product_images').select('id, storage_path, sort_order, color_id').eq('product_id', productId).order('sort_order', { ascending: true });
   var grid = document.getElementById('images-grid-' + productId);
   if (error) { grid.innerHTML = 'Failed to load images: ' + esc(error.message); return; }
-  grid.innerHTML = images.map(function(img) {
+
+  var { data: colors } = await sb.from('product_colors').select('id, label').eq('product_id', productId).order('label', { ascending: true });
+  var colorLabelById = {};
+  (colors || []).forEach(function(c) { colorLabelById[c.id] = c.label; });
+
+  grid.innerHTML = images.map(function(img, i) {
     var url = sb.storage.from('product-images').getPublicUrl(img.storage_path).data.publicUrl;
-    return '<div style="position:relative;"><img src="' + esc(url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);" />' +
-      '<button class="btn danger delete-image-btn" data-image-id="' + img.id + '" data-storage-path="' + esc(img.storage_path) + '" style="position:absolute;top:2px;right:2px;padding:2px 6px;font-size:9px;">×</button></div>';
+    var serial = '[Image #' + (i + 1) + ']';
+    var assignedLabel = img.color_id ? (colorLabelById[img.color_id] || '(unknown color)') : '(unassigned)';
+    var colorOptions = '<option value=""' + (!img.color_id ? ' selected' : '') + '>(unassigned)</option>' +
+      (colors || []).map(function(c) {
+        return '<option value="' + c.id + '"' + (c.id === img.color_id ? ' selected' : '') + '>' + esc(c.label) + '</option>';
+      }).join('');
+    return '<div style="position:relative;width:80px;">' +
+      '<img src="' + esc(url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);" />' +
+      '<button class="btn danger delete-image-btn" data-image-id="' + img.id + '" data-storage-path="' + esc(img.storage_path) + '" style="position:absolute;top:2px;right:2px;padding:2px 6px;font-size:9px;">×</button>' +
+      '<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:2px;">' + serial + '</div>' +
+      '<select class="image-color-select" data-image-id="' + img.id + '" style="width:80px;font-size:10px;margin-top:2px;">' + colorOptions + '</select>' +
+      '<div class="image-color-caption" style="font-size:10px;color:var(--white);text-align:center;margin-top:2px;">' + esc(assignedLabel) + '</div>' +
+    '</div>';
   }).join('') || '<span style="color:var(--muted);font-size:12px;">No images yet.</span>';
 
-  var product = productsCache.find(function(p) { return p.id === productId; });
-  if (product && images.length) {
-    product.cover_thumb_url = sb.storage.from('product-images').getPublicUrl(images[0].storage_path).data.publicUrl;
+  var productInCache = productsCache.find(function(p) { return p.id === productId; });
+  if (productInCache && images.length) {
+    productInCache.cover_thumb_url = sb.storage.from('product-images').getPublicUrl(images[0].storage_path).data.publicUrl;
   }
+
+  grid.querySelectorAll('.image-color-select').forEach(function(select) {
+    select.addEventListener('change', async function() {
+      var imageId = select.dataset.imageId;
+      var newColorId = select.value || null;
+      select.disabled = true;
+      var { error: updateError } = await sb.from('product_images').update({ color_id: newColorId }).eq('id', imageId);
+      select.disabled = false;
+      if (updateError) { alert('Assignment failed: ' + updateError.message); return; }
+      await refreshImagesGrid(product);
+      renderColorsSection(product);
+    });
+  });
 
   grid.querySelectorAll('.delete-image-btn').forEach(function(btn) {
     btn.addEventListener('click', async function() {
-      if (!confirm('Delete this image? If any color uses it as a cover, that color will need a new cover assigned.')) return;
+      if (!confirm('Delete this image? If it was assigned to a color, that color loses this photo (and its thumbnail, if this was the one selected).')) return;
       var msg = document.getElementById('image-upload-msg-' + productId);
       var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath]);
       if (removeError) {
@@ -367,11 +397,12 @@ async function refreshImagesGrid(productId) {
       var { error: deleteError } = await sb.from('product_images').delete().eq('id', btn.dataset.imageId);
       if (deleteError) {
         if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: storage object removed but database row could not be deleted (' + deleteError.message + '). Please refresh and retry.'; }
-        await refreshImagesGrid(productId);
+        await refreshImagesGrid(product);
         return;
       }
       if (msg) { msg.style.color = '#8fd14f'; msg.textContent = 'Image deleted.'; }
-      await refreshImagesGrid(productId);
+      await refreshImagesGrid(product);
+      renderColorsSection(product);
     });
   });
 }
@@ -384,15 +415,18 @@ async function renderColorsSection(product) {
   var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
   if (error) { container.innerHTML = 'Failed to load colors: ' + esc(error.message); return; }
 
-  var { data: images } = await sb.from('product_images').select('id, storage_path').eq('product_id', product.id).order('sort_order', { ascending: true });
-  var coverOptions = (images || []).map(function(img) {
-    return { id: img.id, url: sb.storage.from('product-images').getPublicUrl(img.storage_path).data.publicUrl };
-  });
+  // Same global sort_order numbering as the Images grid above, so an admin
+  // can visually match a color's "Thumbnail: [Image #10]" against the photo
+  // actually captioned "[Image #10]" there.
+  var { data: allImages } = await sb.from('product_images').select('id, color_id').eq('product_id', product.id).order('sort_order', { ascending: true });
+  var serialById = {};
+  (allImages || []).forEach(function(img, i) { serialById[img.id] = i + 1; });
 
   container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Colors & Stock</p>' +
     colors.map(function(c) {
-      var coverSelectOptions = coverOptions.map(function(img) {
-        return '<option value="' + img.id + '"' + (img.id === c.cover_image_id ? ' selected' : '') + '>' + img.id.slice(0, 8) + '</option>';
+      var ownImages = (allImages || []).filter(function(img) { return img.color_id === c.id; });
+      var coverSelectOptions = ownImages.map(function(img) {
+        return '<option value="' + img.id + '"' + (img.id === c.cover_image_id ? ' selected' : '') + '>[Image #' + serialById[img.id] + ']</option>';
       }).join('');
       var groupSelectOptions = COLOR_GROUP_PALETTE.map(function(g) {
         return '<option value="' + g + '"' + (g === c.color_group ? ' selected' : '') + '>' + g + '</option>';
@@ -459,17 +493,14 @@ async function renderColorsSection(product) {
     var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex, label: label });
     if (suggested) colorGroup = suggested;
 
-    // Inherit the product's first uploaded image as this color's cover, if one
-    // exists, rather than leaving it null -- a color with no cover image and
-    // (until an admin visits the stock grid below) no variant rows would make
-    // Publish's storefront card show a broken image and zero size buttons for
-    // the WHOLE product if this color happens to sort first. If the product
-    // has no images uploaded yet, leave cover_image_id null -- that's a more
-    // visible gap an admin using this tab would notice immediately.
-    var coverImageId = coverOptions.length ? coverOptions[0].id : null;
-
+    // A brand-new color has no images assigned to it yet -- cover_image_id
+    // starts null (there is nothing yet that could correctly be its cover;
+    // seeding it from some other image, assigned or not, would misattribute
+    // a photo to a color it doesn't show). The admin assigns photos to this
+    // color from the Images grid above, then picks a Thumbnail here, same
+    // immediate next step as visiting the stock grid below already is.
     var { data: newColor, error } = await sb.from('product_colors')
-      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, cover_image_id: coverImageId })
+      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, cover_image_id: null })
       .select('id').single();
     if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; return; }
 
