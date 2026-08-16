@@ -452,6 +452,46 @@ Deno.test("renderPdpPage: a color swatch's data-img-index points at that color's
   assertStringIncludes(html, 'data-img-index="2"');
 });
 
+Deno.test("renderPdpPage: a color's swatch carries its own explicit, possibly non-contiguous image indices (regression: a start+count range couldn't express interleaved ownership)", () => {
+  const nonContiguous: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      {
+        ...twoColorProduct.colors[0],
+        coverImageUrl: "https://example.supabase.co/.../0.jpg",
+        images: [
+          { url: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
+          { url: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
+        ],
+      },
+      {
+        ...twoColorProduct.colors[1],
+        coverImageUrl: "https://example.supabase.co/.../1.jpg",
+        images: [{ url: "https://example.supabase.co/.../1.jpg", sortOrder: 1 }],
+      },
+    ],
+    images: [
+      { url: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../1.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
+    ],
+  };
+  const html = renderPdpPage(nonContiguous);
+  assertStringIncludes(html, 'data-img-indices="[0,2]"');
+  assertStringIncludes(html, 'data-img-indices="[1]"');
+});
+
+Deno.test("renderPdpPage: inline script's swatchList carries each color's indices array, not a count (regression: overlapping start+count ranges selected two swatches at once)", () => {
+  const html = renderPdpPage(twoColorProduct);
+  assertStringIncludes(html, '"indices"');
+  if (html.includes('"count"')) {
+    throw new Error("swatchList should no longer carry a count field -- indices replaces it entirely");
+  }
+  if (html.includes("data-img-count")) {
+    throw new Error("swatch markup should no longer emit data-img-count -- data-img-indices replaces it entirely");
+  }
+});
+
 Deno.test("renderBrandsIndexPage: one .cat-card per brand, linking to its folder with its thumbnail and label", () => {
   const html = renderBrandsIndexPage([
     { name: "Gymshark", folderSlug: "gymshark", thumbnailUrl: "https://fake.test/_brands/gymshark-1.jpg" },
