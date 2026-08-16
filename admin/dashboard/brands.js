@@ -3,6 +3,12 @@
 
 var brandsCache = [];
 
+// Mirrors the identical list enforced server-side in create_primary_brand/
+// rename_brand_folder (supabase/migrations/20260815120100_add_brand_rpcs.sql)
+// and in supabase/functions/publish-site/membership.ts (RESERVED_BRAND_SLUGS).
+// The server-side check is authoritative -- this is a UX pre-check only.
+var RESERVED_SLUGS = ['admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands'];
+
 async function loadBrandsList() {
   var { data, error } = await sb.from('brands').select('*').order('name', { ascending: true });
   document.getElementById('brands-loading').style.display = 'none';
@@ -77,6 +83,11 @@ function renderAddBrandForm() {
     var msg = document.getElementById('add-brand-msg');
     var file = form.thumbnail.files[0];
     var folderSlug = form.folder_slug.value.trim();
+    if (RESERVED_SLUGS.indexOf(folderSlug) !== -1) {
+      msg.style.color = '#ff3c1e';
+      msg.textContent = '"' + folderSlug + '" is a reserved slug and cannot be used.';
+      return;
+    }
     var storagePath = '_brands/' + folderSlug + '-' + Date.now() + '.' + file.name.split('.').pop();
 
     var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
@@ -138,32 +149,75 @@ function renderAddCollabForm() {
   });
 }
 
+// Mirrors products.js's publish-btn handler (session guard, ok/error check,
+// try/catch) so a failed publish after a successful rename is surfaced to the
+// admin instead of failing silently -- the DB is already correct at that
+// point, so the only risk of a swallowed failure is a stale live site.
+async function publishBrandChange(renameArgs) {
+  var status = document.getElementById('brands-status');
+  status.style.color = 'var(--muted)';
+  status.textContent = 'Publishing...';
+
+  var { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData || !sessionData.session) {
+    status.style.color = '#ff3c1e';
+    status.textContent = 'Saved, but not signed in -- the live site was not updated. Publish from the Products tab.';
+    return;
+  }
+
+  try {
+    var res = await fetch(SUPABASE_URL + '/functions/v1/publish-site', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionData.session.access_token },
+      body: JSON.stringify(renameArgs || {}),
+    });
+    var body = await res.json();
+    if (body.ok) {
+      status.style.color = '#8fd14f';
+      status.textContent = 'Published (commit ' + body.commitSha.slice(0, 7) + ').';
+    } else {
+      status.style.color = '#ff3c1e';
+      status.textContent = 'Saved, but publish failed: ' + (body.error || 'unknown error') + '. Publish again from the Products tab.';
+    }
+  } catch (err) {
+    status.style.color = '#ff3c1e';
+    status.textContent = 'Saved, but publish failed: ' + err.message + '. Publish again from the Products tab.';
+  }
+}
+
 function wireBrandRowButtons() {
   document.querySelectorAll('.rename-brand-btn').forEach(function(btn) {
     btn.addEventListener('click', async function() {
       var b = brandsCache.find(function(x) { return x.id === btn.dataset.id; });
       var newName = prompt('New name:', b.name);
       if (newName === null || newName.trim() === '') return;
+
+      var oldSlug = b.folder_slug;
+      var newSlug = oldSlug;
+      var slugChanged = false;
       if (b.is_primary) {
-        var newSlug = prompt('New folder slug:', b.folder_slug);
-        if (newSlug === null || newSlug.trim() === '') return;
-        if (newSlug.trim() !== b.folder_slug) {
-          var { error: renameError } = await sb.rpc('rename_brand_folder', { p_old_slug: b.folder_slug, p_new_slug: newSlug.trim() });
-          if (renameError) { alert('Rename failed: ' + renameError.message); return; }
-          // Trigger a scoped publish to move the folder's live pages -- same
-          // publish-site function, with renameFrom/renameTo so it deletes
-          // the old folder's files in the same commit it writes the new one.
-          var { data: sessionData } = await sb.auth.getSession();
-          await fetch(SUPABASE_URL + '/functions/v1/publish-site', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionData.session.access_token },
-            body: JSON.stringify({ renameFrom: b.folder_slug, renameTo: newSlug.trim() }),
-          });
-        }
+        var promptedSlug = prompt('New folder slug:', b.folder_slug);
+        if (promptedSlug === null || promptedSlug.trim() === '') return;
+        newSlug = promptedSlug.trim();
+        if (RESERVED_SLUGS.indexOf(newSlug) !== -1) { alert('"' + newSlug + '" is a reserved slug and cannot be used.'); return; }
+        slugChanged = newSlug !== oldSlug;
+      }
+
+      // Save the DB state (slug, then name) BEFORE publishing -- publish reads
+      // brand rows straight from the DB, so publishing first would generate
+      // pages carrying the old name/folder.
+      if (slugChanged) {
+        var { error: renameError } = await sb.rpc('rename_brand_folder', { p_old_slug: oldSlug, p_new_slug: newSlug });
+        if (renameError) { alert('Rename failed: ' + renameError.message); return; }
       }
       var { error } = await sb.from('brands').update({ name: newName.trim() }).eq('id', b.id);
       if (error) { alert('Rename failed: ' + error.message); return; }
       loadBrandsList();
+
+      // Publish so the live site picks up the change -- always, not just on a
+      // slug change, since a display-name-only rename still needs to reach the
+      // generated pages (brand headings, product-card brand labels, etc.).
+      await publishBrandChange(slugChanged ? { renameFrom: oldSlug, renameTo: newSlug } : null);
     });
   });
 
