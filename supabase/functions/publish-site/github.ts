@@ -51,7 +51,22 @@ export async function commitFiles(
     })
   );
 
-  const deleteEntries = deletePaths.map((path) => ({ path, mode: "100644", type: "blob" as const, sha: null }));
+  // A delete entry (sha: null) for a path absent from base_tree is not something
+  // to trust GitHub to no-op gracefully -- fetch the actual base tree and only
+  // emit delete entries for paths that really exist there. Skipped entirely when
+  // there's nothing to delete, which is the common case on every normal publish.
+  let deleteEntries: { path: string; mode: "100644"; type: "blob"; sha: null }[] = [];
+  if (deletePaths.length > 0) {
+    const baseTreeRes = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${baseTreeSha}?recursive=1`,
+      { headers: { Authorization: `Bearer ${githubToken}`, Accept: "application/vnd.github+json" } }
+    );
+    const baseTree = await parseGithubResponse(baseTreeRes, "get base tree");
+    const existingPaths = new Set<string>((baseTree.tree ?? []).map((entry: { path: string }) => entry.path));
+    deleteEntries = deletePaths
+      .filter((path) => existingPaths.has(path))
+      .map((path) => ({ path, mode: "100644" as const, type: "blob" as const, sha: null }));
+  }
 
   const treeRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees`, {
     method: "POST",

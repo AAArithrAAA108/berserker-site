@@ -46,7 +46,7 @@ for (const brand of primaryBrands) {
 await Deno.writeTextFile(`${outDir}/brands.html`, renderBrandsIndexPage(primaryBrands));
 
 for (const product of catalog.products) {
-  const folder = brandFolderFor(product) ?? "unknown";
+  const folder = brandFolderFor(product) || "unknown";
   await Deno.writeTextFile(`${outDir}/pdp-${folder}-${product.slug}.html`, renderPdpPage(product));
 }
 

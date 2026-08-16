@@ -16,10 +16,37 @@ create table if not exists admin_profiles (
   created_at timestamptz not null default now()
 );
 
+-- ── BRANDS ──
+-- A `is_primary` row owns a folder (e.g. YoungLA owns /youngla/). A collab row
+-- (is_primary = false) shares its parent's folder_slug instead of carrying its
+-- own -- e.g. "YoungLA x Batman" has folder_slug = 'youngla' too, and its
+-- products publish under /youngla/<product-slug>/ alongside YoungLA's own.
+create table if not exists brands (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  folder_slug text not null,
+  is_primary boolean not null default true,
+  thumbnail_storage_path text,
+  created_at timestamptz not null default now()
+);
+
+do $$ begin
+  if not exists (select 1 from pg_indexes where indexname = 'brands_one_primary_per_folder') then
+    create unique index brands_one_primary_per_folder on brands (folder_slug) where is_primary;
+  end if;
+end $$;
+
+-- Only a primary row's thumbnail is ever shown (one card per folder on
+-- /brands/) -- a collab row carrying its own thumbnail would be silently
+-- ignored by the renderer, so reject it at the data layer instead.
+alter table brands drop constraint if exists brands_collab_no_thumbnail;
+alter table brands add constraint brands_collab_no_thumbnail
+  check (is_primary or thumbnail_storage_path is null);
+
 -- ── PRODUCTS ──
 create table if not exists products (
   id uuid primary key default gen_random_uuid(),
-  brand text not null,
+  brand_id uuid not null references brands(id),
   name text not null,
   slug text unique not null,
   price numeric(10,2) not null,
@@ -129,6 +156,7 @@ create index if not exists orders_customer_phone_idx on orders (customer_phone);
 
 -- ── ROW LEVEL SECURITY ──
 alter table admin_profiles enable row level security;
+alter table brands enable row level security;
 alter table products enable row level security;
 alter table product_colors enable row level security;
 alter table product_images enable row level security;
@@ -156,6 +184,12 @@ $$ language sql security definer stable;
 create or replace function is_super_admin() returns boolean as $$
   select exists (select 1 from admin_profiles where id = auth.uid() and role = 'super_admin');
 $$ language sql security definer stable;
+
+-- Brands: public storefront can read; only admins can write.
+drop policy if exists "public read brands" on brands;
+create policy "public read brands" on brands for select using (true);
+drop policy if exists "admin write brands" on brands;
+create policy "admin write brands" on brands for all using (is_admin()) with check (is_admin());
 
 -- Products: public storefront can read; only admins can write.
 drop policy if exists "public read products" on products;
@@ -403,6 +437,97 @@ begin
   end if;
 
   update products set position = p_new_position where id = p_product_id;
+end;
+$$;
+
+-- ── BRAND MANAGEMENT ──
+-- Reserved folder slugs: never a valid brand folder_slug, since each one is a
+-- real site route. Kept in sync with the identical list in
+-- supabase/functions/publish-site/membership.ts (RESERVED_BRAND_SLUGS) and
+-- admin/dashboard/brands.js (client-side pre-check; this RPC is the
+-- authoritative server-side check).
+create or replace function create_primary_brand(p_name text, p_folder_slug text, p_thumbnail_storage_path text default null)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  if not is_admin() then
+    raise exception 'create_primary_brand: admin privileges required';
+  end if;
+
+  if p_folder_slug in ('admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands') then
+    raise exception 'create_primary_brand: % is a reserved folder name', p_folder_slug;
+  end if;
+
+  if exists (select 1 from brands where folder_slug = p_folder_slug and is_primary) then
+    raise exception 'create_primary_brand: folder % already exists', p_folder_slug;
+  end if;
+
+  insert into brands (name, folder_slug, is_primary, thumbnail_storage_path)
+  values (p_name, p_folder_slug, true, p_thumbnail_storage_path)
+  returning id into v_id;
+
+  return v_id;
+end;
+$$;
+
+create or replace function create_collab_brand(p_name text, p_parent_folder_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  if not is_admin() then
+    raise exception 'create_collab_brand: admin privileges required';
+  end if;
+
+  if not exists (select 1 from brands where folder_slug = p_parent_folder_slug and is_primary) then
+    raise exception 'create_collab_brand: no primary brand owns folder %', p_parent_folder_slug;
+  end if;
+
+  insert into brands (name, folder_slug, is_primary, thumbnail_storage_path)
+  values (p_name, p_parent_folder_slug, false, null)
+  returning id into v_id;
+
+  return v_id;
+end;
+$$;
+
+create or replace function rename_brand_folder(p_old_slug text, p_new_slug text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not is_admin() then
+    raise exception 'rename_brand_folder: admin privileges required';
+  end if;
+
+  if p_new_slug in ('admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands') then
+    raise exception 'rename_brand_folder: % is a reserved folder name', p_new_slug;
+  end if;
+
+  if p_old_slug = p_new_slug then
+    return;
+  end if;
+
+  if not exists (select 1 from brands where folder_slug = p_old_slug) then
+    raise exception 'rename_brand_folder: no brand owns folder %', p_old_slug;
+  end if;
+
+  if exists (select 1 from brands where folder_slug = p_new_slug) then
+    raise exception 'rename_brand_folder: folder % already exists', p_new_slug;
+  end if;
+
+  update brands set folder_slug = p_new_slug where folder_slug = p_old_slug;
 end;
 $$;
 

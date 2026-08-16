@@ -2,7 +2,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { fetchCatalog, fetchPrimaryBrands } from "./data.ts";
 import { renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage, renderBrandsIndexPage } from "./render.ts";
-import { COLLECTION_SLUGS, brandFolderFor } from "./membership.ts";
+import { COLLECTION_SLUGS, brandFolderFor, renameDeletePaths } from "./membership.ts";
 import { commitFiles } from "./github.ts";
 
 // The admin dashboard calls this function cross-origin with an Authorization
@@ -122,15 +122,13 @@ Deno.serve(async (req) => {
       return json({ ok: true, dryRun: true, fileCount: Object.keys(files).length, filePaths: Object.keys(files) });
     }
 
-    const deletePaths: string[] = [];
-    if (renameFrom && renameTo) {
-      deletePaths.push(`${renameFrom}/index.html`);
-      for (const product of catalog.products) {
-        if (product.brandFolder === renameTo) {
-          deletePaths.push(`${renameFrom}/${product.slug}/index.html`);
-        }
-      }
-    }
+    const deletePaths = renameDeletePaths(
+      catalog.products,
+      renameFrom,
+      renameTo,
+      primaryBrands.map((b) => b.folderSlug),
+      files
+    );
 
     const githubToken = Deno.env.get("GITHUB_TOKEN")!;
     const { commitSha } = await commitFiles(

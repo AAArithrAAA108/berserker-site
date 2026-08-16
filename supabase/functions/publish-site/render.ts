@@ -210,7 +210,7 @@ export function renderBrandsIndexPage(brands: PrimaryBrand[]): string {
     .map(
       (b) =>
         `<a href="/${esc(b.folderSlug)}/" class="cat-card" style="display:block;text-decoration:none;">
-      <img src="${esc(b.thumbnailUrl)}" alt="${esc(b.name)}" style="width:100%;height:100%;object-fit:cover;" />
+      ${b.thumbnailUrl ? `<img src="${esc(b.thumbnailUrl)}" alt="${esc(b.name)}" style="width:100%;height:100%;object-fit:cover;" />` : ""}
       <div class="cat-label">${esc(b.name)}</div>
     </a>`
     )
