@@ -81,10 +81,17 @@ create table if not exists product_colors (
   product_id uuid not null references products(id) on delete cascade,
   label text not null,
   hex text,
-  image_index int not null default 0,
   color_group text not null,
-  cover_image_id uuid references product_images(id) on delete set null
+  cover_image_id uuid references product_images(id) on delete set null,
+  created_at timestamptz not null default now()
 );
+
+-- Added via ALTER (not the product_images CREATE TABLE above) because
+-- product_images is deliberately created before product_colors (see the
+-- comment above that table) -- a color_id FK onto product_colors can only be
+-- added once product_colors exists.
+alter table product_images add column if not exists color_id uuid references product_colors(id) on delete set null;
+create index if not exists product_images_color_id_idx on product_images(color_id);
 
 create table if not exists product_variants (
   id uuid primary key default gen_random_uuid(),
