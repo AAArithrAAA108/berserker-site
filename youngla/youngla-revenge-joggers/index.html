@@ -955,7 +955,7 @@
       <div class="pdp-cod">COD Advance Amount: ₹3,000</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">Purple</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#413a52;" title="Purple" data-img-index="0" data-img-count="2"></div><div class="modal-swatch" style="background:#141414;" title="Black" data-img-index="2" data-img-count="2"></div><div class="modal-swatch" style="background:#0e5f5f;" title="Teal" data-img-index="4" data-img-count="3"></div><div class="modal-swatch" style="background:#c41e1e;" title="Red" data-img-index="7" data-img-count="1"></div></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#413a52;" title="Purple" data-img-index="0" data-img-indices="[0,1]"></div><div class="modal-swatch" style="background:#141414;" title="Black" data-img-index="2" data-img-indices="[2,3]"></div><div class="modal-swatch" style="background:#0e5f5f;" title="Teal" data-img-index="4" data-img-indices="[4,5,6]"></div><div class="modal-swatch" style="background:#c41e1e;" title="Red" data-img-index="7" data-img-indices="[7]"></div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -978,7 +978,7 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0068.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0069.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0070.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0071.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0072.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0073.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0074.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0075.jpg"];
-    var swatchList = [{"label":"Purple","imgIndex":0,"count":2},{"label":"Black","imgIndex":2,"count":2},{"label":"Teal","imgIndex":4,"count":3},{"label":"Red","imgIndex":7,"count":1}];
+    var swatchList = [{"label":"Purple","imgIndex":0,"indices":[0,1]},{"label":"Black","imgIndex":2,"indices":[2,3]},{"label":"Teal","imgIndex":4,"indices":[4,5,6]},{"label":"Red","imgIndex":7,"indices":[7]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -996,19 +996,15 @@
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
-    // A color can own more than one consecutive photo (e.g. front/back
-    // shots), so "does this thumb belong to this color" is a range check,
-    // not an exact index match against the color's own cover/start index.
     function colorForIndex(idx) {
-      var matches = swatchList.filter(function(s) { return idx >= s.imgIndex && idx < s.imgIndex + s.count; });
+      var matches = swatchList.filter(function(s) { return s.indices.indexOf(idx) !== -1; });
       return matches.length ? matches[0] : null;
     }
 
     function selectSwatchForIndex(idx) {
       colorSwatches.forEach(function(s) {
-        var start = parseInt(s.dataset.imgIndex, 10);
-        var count = parseInt(s.dataset.imgCount, 10) || 1;
-        s.classList.toggle('selected', idx >= start && idx < start + count);
+        var indices = JSON.parse(s.dataset.imgIndices || '[]');
+        s.classList.toggle('selected', indices.indexOf(idx) !== -1);
       });
     }
 
@@ -1028,9 +1024,9 @@
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
-        var count = parseInt(sw.dataset.imgCount, 10) || 1;
+        var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, count: count };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });

@@ -955,7 +955,7 @@
       <div class="pdp-cod">COD Advance Amount: ₹3,500</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">White</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#3a3a3a;" title="White" data-img-index="0" data-img-count="1"></div><div class="modal-swatch" style="background:#a01c5a;" title="PulseFire" data-img-index="1" data-img-count="1"></div><div class="modal-swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2" data-img-count="1"></div><div class="modal-swatch" style="background:#1c4aa0;" title="Blue" data-img-index="3" data-img-count="1"></div><div class="modal-swatch" style="background:#c46a1e;" title="Orange" data-img-index="4" data-img-count="1"></div></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#3a3a3a;" title="White" data-img-index="0" data-img-indices="[0]"></div><div class="modal-swatch" style="background:#a01c5a;" title="PulseFire" data-img-index="1" data-img-indices="[1]"></div><div class="modal-swatch" style="background:#5a1ca0;" title="Purple" data-img-index="2" data-img-indices="[2]"></div><div class="modal-swatch" style="background:#1c4aa0;" title="Blue" data-img-index="3" data-img-indices="[3]"></div><div class="modal-swatch" style="background:#c46a1e;" title="Orange" data-img-index="4" data-img-indices="[4]"></div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -978,7 +978,7 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0107.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0108.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0109.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0110.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0111.jpg"];
-    var swatchList = [{"label":"White","imgIndex":0,"count":1},{"label":"PulseFire","imgIndex":1,"count":1},{"label":"Purple","imgIndex":2,"count":1},{"label":"Blue","imgIndex":3,"count":1},{"label":"Orange","imgIndex":4,"count":1}];
+    var swatchList = [{"label":"White","imgIndex":0,"indices":[0]},{"label":"PulseFire","imgIndex":1,"indices":[1]},{"label":"Purple","imgIndex":2,"indices":[2]},{"label":"Blue","imgIndex":3,"indices":[3]},{"label":"Orange","imgIndex":4,"indices":[4]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -996,19 +996,15 @@
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
-    // A color can own more than one consecutive photo (e.g. front/back
-    // shots), so "does this thumb belong to this color" is a range check,
-    // not an exact index match against the color's own cover/start index.
     function colorForIndex(idx) {
-      var matches = swatchList.filter(function(s) { return idx >= s.imgIndex && idx < s.imgIndex + s.count; });
+      var matches = swatchList.filter(function(s) { return s.indices.indexOf(idx) !== -1; });
       return matches.length ? matches[0] : null;
     }
 
     function selectSwatchForIndex(idx) {
       colorSwatches.forEach(function(s) {
-        var start = parseInt(s.dataset.imgIndex, 10);
-        var count = parseInt(s.dataset.imgCount, 10) || 1;
-        s.classList.toggle('selected', idx >= start && idx < start + count);
+        var indices = JSON.parse(s.dataset.imgIndices || '[]');
+        s.classList.toggle('selected', indices.indexOf(idx) !== -1);
       });
     }
 
@@ -1028,9 +1024,9 @@
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
-        var count = parseInt(sw.dataset.imgCount, 10) || 1;
+        var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, count: count };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
