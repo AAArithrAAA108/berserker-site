@@ -13,11 +13,9 @@ export interface CatalogProduct {
   category: string; sleeveLength: string | null; description: string | null;
   colors: CatalogColor[];
   // Every image uploaded for this product (product_images), sorted by
-  // sort_order. Each color's own `images` (see CatalogColor) is a slice of
-  // this same list -- see fetchCatalog's color-range comment for how that
-  // slice is computed. Renderers use this full list (not just each color's
-  // slice) for the gallery/slider so every uploaded photo is reachable, even
-  // if a color's image_index range has a gap or anomaly.
+  // sort_order. Each color's own `images` (see CatalogColor) is the subset
+  // explicitly assigned to it (product_images.color_id) -- an image with no
+  // color_id still appears here but isn't owned by any color's swatch.
   images: CatalogImage[];
 }
 export interface Catalog { products: CatalogProduct[]; }
@@ -38,27 +36,17 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
 
   const brandById = new Map((brands ?? []).map((b) => [b.id, b]));
 
-  // product_colors.image_index is the real, admin-authored ordering for a
-  // product's colors/variants (0-based; migration 20260809050957 confirms it's
-  // what the live storefront's data-img-index has always keyed off). It must
-  // be selected and ordered on explicitly -- without it, Postgres has no
-  // defined row order, so colors (and therefore which swatch is "first"/
-  // pre-selected, and which image each swatch points at) come back in
-  // essentially random order. Order by product_id (grouping stability), then
-  // image_index (the real intended sequence), then id as a final tiebreaker
-  // for rows that share an image_index (e.g. newly admin-added colors, which
-  // default to 0) so repeated calls with identical data return identical order.
   const { data: colors, error: colorsError } = await supabase
     .from("product_colors")
-    .select("id, product_id, label, hex, image_index, color_group")
+    .select("id, product_id, label, hex, color_group, cover_image_id, created_at")
     .order("product_id", { ascending: true })
-    .order("image_index", { ascending: true })
+    .order("created_at", { ascending: true })
     .order("id", { ascending: true });
   if (colorsError) throw new Error(`fetchCatalog colors: ${colorsError.message}`);
 
   const { data: images, error: imagesError } = await supabase
     .from("product_images")
-    .select("id, product_id, storage_path, sort_order")
+    .select("id, product_id, storage_path, sort_order, color_id")
     .order("sort_order", { ascending: true });
   if (imagesError) throw new Error(`fetchCatalog images: ${imagesError.message}`);
 
@@ -71,10 +59,22 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
     supabase.storage.from(STORAGE_BASE).getPublicUrl(path).data.publicUrl;
 
   const imagesByProduct = new Map<string, CatalogImage[]>();
+  const imagesByColor = new Map<string, CatalogImage[]>();
+  const imageUrlById = new Map<string, string>();
   for (const img of images ?? []) {
-    const list = imagesByProduct.get(img.product_id) ?? [];
-    list.push({ url: publicUrl(img.storage_path), sortOrder: img.sort_order });
-    imagesByProduct.set(img.product_id, list);
+    const url = publicUrl(img.storage_path);
+    imageUrlById.set(img.id, url);
+    const catalogImg: CatalogImage = { url, sortOrder: img.sort_order };
+
+    const productList = imagesByProduct.get(img.product_id) ?? [];
+    productList.push(catalogImg);
+    imagesByProduct.set(img.product_id, productList);
+
+    if (img.color_id) {
+      const colorList = imagesByColor.get(img.color_id) ?? [];
+      colorList.push(catalogImg);
+      imagesByColor.set(img.color_id, colorList);
+    }
   }
 
   const variantsByColor = new Map<string, CatalogVariant[]>();
@@ -85,8 +85,7 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
   }
 
   // Group colors by product, preserving the query's already-correct
-  // (product_id, image_index, id) order -- the range computation below
-  // depends on each product's colors being in image_index order.
+  // (product_id, created_at, id) order.
   const colorsByProductRaw = new Map<string, NonNullable<typeof colors>>();
   for (const c of colors ?? []) {
     const list = colorsByProductRaw.get(c.product_id) ?? [];
@@ -96,39 +95,23 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
 
   const colorsByProduct = new Map<string, CatalogColor[]>();
   for (const [productId, productColors] of colorsByProductRaw) {
-    // image_index is a 0-based position into this product's own
-    // sort_order-sorted image list (migration 20260809050957 established
-    // sort_order = image_index + 1; directly confirmed against real data,
-    // e.g. a 21-color/42-image product where every color's image_index
-    // steps by exactly 2 -- one pair of photos per color). A color owns
-    // every image from its own image_index up to (but not including) the
-    // next color's image_index; the count varies per color (some products
-    // have 1 image per color, some 2, some more) and the last color owns
-    // everything through the end of the list. This recovers real,
-    // already-uploaded per-color photos (e.g. a second angle shot) that a
-    // single-cover-image view left permanently unreachable, without a
-    // schema change -- and doubles as the cover-image source, so a color
-    // never needs a separate nullable FK to know its own first photo.
-    const productImages = imagesByProduct.get(productId) ?? [];
-    const list: CatalogColor[] = productColors.map((c, i) => {
-      const start = Math.min(c.image_index, productImages.length);
-      const nextStart =
-        i + 1 < productColors.length
-          ? Math.min(productColors[i + 1].image_index, productImages.length)
-          : productImages.length;
-      let ownImages = productImages.slice(start, Math.max(start, nextStart));
-      // Defensive fallback for data anomalies (two colors sharing an
-      // image_index, or one past the end of the list) -- never leave a
-      // color with zero images if the product has any at all.
-      if (ownImages.length === 0 && productImages.length > 0) {
-        ownImages = [productImages[Math.min(start, productImages.length - 1)]];
-      }
+    // Each image now carries its own explicit color_id (set by the admin
+    // panel), so a color's photos are whatever product_images rows point
+    // at it -- no index math, no "does this range overlap that one".
+    const list: CatalogColor[] = productColors.map((c) => {
+      const ownImages = imagesByColor.get(c.id) ?? [];
+      const coverUrl = c.cover_image_id ? imageUrlById.get(c.cover_image_id) : undefined;
+      // cover_image_id can point at an image since reassigned to a different
+      // color (or deleted) -- only trust it if it's still actually one of
+      // this color's own images; otherwise fall back to the first owned one.
+      const coverImageUrl =
+        (coverUrl && ownImages.some((img) => img.url === coverUrl) ? coverUrl : ownImages[0]?.url) ?? "";
       return {
         id: c.id,
         label: c.label,
         hex: c.hex,
         colorGroup: c.color_group,
-        coverImageUrl: ownImages[0]?.url ?? "",
+        coverImageUrl,
         images: ownImages,
         variants: variantsByColor.get(c.id) ?? [],
       };

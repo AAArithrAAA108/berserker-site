@@ -237,14 +237,11 @@ export function renderBrandsIndexPage(brands: PrimaryBrand[]): string {
 // sections) and are reused here unmodified rather than redefined.
 //
 // One reconciliation versus the real markup: the real PDP carries 2 gallery
-// images per color (8 images / 4 colors, swatch data-img-index jumping in
-// steps of 2) because the source photoshoots had multiple angles per
-// colorway. The catalog data model this project standardizes on (Task 4)
-// only carries one image per color (`cover_image_id`), matching the card
-// template's slider. So here every color maps to exactly one gallery/thumb
-// image at its own index (colors[i] -> images[i]), same simplification
-// already applied to renderProductCard's swatches -- not a richer
-// multi-image-per-color gallery the data model doesn't support.
+// images per color for some products (e.g. front/back shots). This is fully
+// supported: each color's swatch carries the exact list of image indices it
+// owns (see colorImgIndices below), not a single index, so clicking any of a
+// color's thumbs correctly highlights that color's swatch and clicking the
+// swatch jumps to its cover photo.
 // JSON.stringify alone is safe to interpolate into HTML attribute/text
 // context (esc() handles that) but not into a raw `<script>` block: it does
 // not escape "<", so admin-editable text (product name, color label) that
@@ -270,13 +267,22 @@ export function renderPdpPage(product: CatalogProduct): string {
     const idx = images.indexOf(c.coverImageUrl);
     return idx === -1 ? 0 : idx;
   };
-  // A color can own more than one consecutive image (see fetchCatalog's
-  // range comment) -- e.g. a front and back shot of the same color. Thumb
-  // clicks need to know a color's full range, not just its starting index,
-  // so browsing any of its photos still shows and selects the right color.
-  const colorImgCount = (c: CatalogProduct["colors"][number]) => Math.max(1, c.images.length);
-  const firstColor =
-    product.colors.find((c) => colorImgIndex(c) === 0) ?? product.colors[0];
+  // A color's own photos are no longer guaranteed to be a contiguous block
+  // within the product's image list -- the admin panel lets a photo be
+  // (re)assigned to any color regardless of upload order, so a swatch must
+  // carry the exact list of indices it owns, not a start+count range.
+  const colorImgIndices = (c: CatalogProduct["colors"][number]) =>
+    c.images.map((img) => images.indexOf(img.url)).filter((i) => i !== -1);
+  // The color to show as "selected" on initial page load must be the color
+  // that actually owns image 0, not whichever color's (possibly empty)
+  // cover happens to resolve to index 0 via colorImgIndex's -1-to-0
+  // fallback -- a color with zero owned images has an empty coverImageUrl,
+  // which ALSO falls back to 0, so using colorImgIndex here would mark two
+  // swatches selected at once (this was the exact production bug the whole
+  // plan fixed for the interactive click path -- the initial server-rendered
+  // state was never converted off the same flawed check).
+  const selectedIdx = Math.max(0, product.colors.findIndex((c) => colorImgIndices(c).includes(0)));
+  const firstColor = product.colors[selectedIdx];
   const firstColorLabel = firstColor?.label ?? "";
 
   const thumbs = images
@@ -287,9 +293,10 @@ export function renderPdpPage(product: CatalogProduct): string {
     .join("");
 
   const swatches = product.colors
-    .map((c) => {
+    .map((c, i) => {
       const imgIndex = colorImgIndex(c);
-      return `<div class="modal-swatch${imgIndex === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-count="${colorImgCount(c)}"></div>`;
+      const indicesJson = esc(JSON.stringify(colorImgIndices(c)));
+      return `<div class="modal-swatch${i === selectedIdx ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}"></div>`;
     })
     .join("");
 
@@ -345,7 +352,7 @@ export function renderPdpPage(product: CatalogProduct): string {
 <script>
   (function() {
     var images = ${jsonForScript(images)};
-    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), count: colorImgCount(c) })))};
+    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), indices: colorImgIndices(c) })))};
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -354,7 +361,7 @@ export function renderPdpPage(product: CatalogProduct): string {
     var sizeBtns = document.querySelectorAll('#pdp-size-grid .size-btn');
     var addBtn = document.getElementById('pdp-add-btn');
 
-    var selectedColor = swatchList.length ? swatchList[0] : null;
+    var selectedColor = swatchList.length ? swatchList[${selectedIdx}] : null;
     var selectedSizeLocal = null;
 
     function setMainImage(index, label) {
@@ -363,19 +370,15 @@ export function renderPdpPage(product: CatalogProduct): string {
       if (imageLabel) imageLabel.textContent = label || '';
     }
 
-    // A color can own more than one consecutive photo (e.g. front/back
-    // shots), so "does this thumb belong to this color" is a range check,
-    // not an exact index match against the color's own cover/start index.
     function colorForIndex(idx) {
-      var matches = swatchList.filter(function(s) { return idx >= s.imgIndex && idx < s.imgIndex + s.count; });
+      var matches = swatchList.filter(function(s) { return s.indices.indexOf(idx) !== -1; });
       return matches.length ? matches[0] : null;
     }
 
     function selectSwatchForIndex(idx) {
       colorSwatches.forEach(function(s) {
-        var start = parseInt(s.dataset.imgIndex, 10);
-        var count = parseInt(s.dataset.imgCount, 10) || 1;
-        s.classList.toggle('selected', idx >= start && idx < start + count);
+        var indices = JSON.parse(s.dataset.imgIndices || '[]');
+        s.classList.toggle('selected', indices.indexOf(idx) !== -1);
       });
     }
 
@@ -395,9 +398,9 @@ export function renderPdpPage(product: CatalogProduct): string {
     colorSwatches.forEach(function(sw) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
-        var count = parseInt(sw.dataset.imgCount, 10) || 1;
+        var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, count: count };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
