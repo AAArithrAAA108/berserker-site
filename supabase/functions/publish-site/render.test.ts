@@ -302,6 +302,22 @@ Deno.test("renderListingPage: includes every product regardless of category/bran
   assertStringIncludes(html, "Joggers");
 });
 
+Deno.test("renderListingPage: includes the ?q= search-filter script (regression: dropped entirely during the live-storefront-generation rewrite, so search silently matched nothing)", () => {
+  const html = renderListingPage(sampleCatalog);
+  assertStringIncludes(html, "new URLSearchParams(window.location.search)");
+  assertStringIncludes(html, "params.get('q')");
+  assertStringIncludes(html, "querySelectorAll('.product-card')");
+  assertStringIncludes(html, "No products found for");
+});
+
+Deno.test("renderCollectionPage/renderBrandPage: do NOT include the search-filter script (listing-page-only, matching the feature's original scope)", () => {
+  const collectionHtml = renderCollectionPage(sampleCatalog, "jackets");
+  const brandHtml = renderBrandPage(sampleCatalog, "youngla");
+  if (collectionHtml.includes("new URLSearchParams") || brandHtml.includes("new URLSearchParams")) {
+    throw new Error("search-filter script should only render on the all-products listing page");
+  }
+});
+
 Deno.test("renderCollectionPage: jackets only includes the jacket-category product", () => {
   const html = renderCollectionPage(sampleCatalog, "jackets");
   assertStringIncludes(html, "Batman Jacket");

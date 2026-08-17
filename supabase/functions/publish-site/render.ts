@@ -155,6 +155,49 @@ export function renderSliderCss(products: CatalogProduct[]): string {
     .join("\n");
 }
 
+// The shared nav's search form (shell.ts) always submits to
+// /all-products/?q=<term> regardless of which page it's submitted from.
+// This filter script reads that query param client-side and hides any
+// `.product-card` whose brand+name text doesn't match -- it queries the
+// DOM directly against whatever cards renderProductCard actually emitted
+// above, so it covers every product in the current catalog (new or old)
+// with no separate index to keep in sync. Listing-page-only by design,
+// matching this feature's original scope (never applied to collection or
+// brand pages either).
+const SEARCH_FILTER_SCRIPT = `
+<script>
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var q = (params.get('q') || '').trim().toLowerCase();
+    if (!q) return;
+
+    var input = document.getElementById('nav-search-input');
+    if (input) input.value = params.get('q') || '';
+
+    var cards = document.querySelectorAll('.product-card');
+    var visibleCount = 0;
+    cards.forEach(function(card) {
+      var brandEl = card.querySelector('.product-brand');
+      var nameEl = card.querySelector('.product-name');
+      var brand = brandEl ? brandEl.textContent : '';
+      var name = nameEl ? nameEl.textContent : '';
+      var match = (brand + ' ' + name).toLowerCase().indexOf(q) !== -1;
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+
+    if (visibleCount === 0) {
+      var grid = document.querySelector('.product-grid');
+      if (grid) {
+        var msg = document.createElement('div');
+        msg.style.cssText = "grid-column:1/-1;text-align:center;padding:60px 20px;color:#888;font-family:'DM Sans',sans-serif;font-size:15px;";
+        msg.textContent = 'No products found for "' + params.get('q') + '".';
+        grid.appendChild(msg);
+      }
+    }
+  })();
+</script>`;
+
 export function renderListingPage(catalog: Catalog): string {
   const sorted = catalog.products.slice().sort((a, b) => a.position - b.position);
   const cards = sorted.map(renderProductCard).join("\n");
@@ -162,7 +205,8 @@ export function renderListingPage(catalog: Catalog): string {
 <section class="section" id="all-products-grid">
   <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
   <div class="product-grid">${cards}</div>
-</section>`;
+</section>
+${SEARCH_FILTER_SCRIPT}`;
   return renderShell({
     title: "All Products — BERSERKER",
     bodyContent,
