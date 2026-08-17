@@ -2,7 +2,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { fetchCatalog, fetchPrimaryBrands } from "./data.ts";
 import { renderListingPage, renderCollectionPage, renderBrandPage, renderPdpPage, renderBrandsIndexPage } from "./render.ts";
-import { COLLECTION_SLUGS, brandFolderFor, renameDeletePaths } from "./membership.ts";
+import { COLLECTION_SLUGS, brandFolderFor, renameDeletePaths, RESERVED_BRAND_SLUGS } from "./membership.ts";
 import { commitFiles } from "./github.ts";
 
 // The admin dashboard calls this function cross-origin with an Authorization
@@ -109,26 +109,39 @@ Deno.serve(async (req) => {
     let dryRun = false;
     let renameFrom: string | undefined;
     let renameTo: string | undefined;
+    let extraDeletePaths: string[] = [];
     try {
       const body = await req.json();
       dryRun = body?.dryRun === true;
       renameFrom = typeof body?.renameFrom === "string" ? body.renameFrom : undefined;
       renameTo = typeof body?.renameTo === "string" ? body.renameTo : undefined;
+      extraDeletePaths = Array.isArray(body?.extraDeletePaths)
+        ? body.extraDeletePaths.filter((p: unknown): p is string => typeof p === "string")
+        : [];
     } catch {
-      // no JSON body sent — dryRun stays false, renameFrom/renameTo stay undefined
+      // no JSON body sent — dryRun stays false, renameFrom/renameTo/extraDeletePaths stay unset
     }
 
     if (dryRun) {
       return json({ ok: true, dryRun: true, fileCount: Object.keys(files).length, filePaths: Object.keys(files) });
     }
 
-    const deletePaths = renameDeletePaths(
-      catalog.products,
-      renameFrom,
-      renameTo,
-      primaryBrands.map((b) => b.folderSlug),
-      files
+    // extraDeletePaths is how the admin panel tells Publish about pages that
+    // no longer have any backing data by the time this runs (a deleted
+    // product's PDP, a deleted brand's folder page) -- the DB rows are
+    // already gone, so nothing in `catalog` can tell us these paths on its
+    // own. Same safety filters as the rename path: never a reserved route,
+    // never a path this same publish is about to (re)write.
+    const safeExtraDeletePaths = extraDeletePaths.filter(
+      (p) => !(p in files) && !RESERVED_BRAND_SLUGS.some((slug) => p === `${slug}/index.html`)
     );
+
+    const deletePaths = [
+      ...new Set([
+        ...renameDeletePaths(catalog.products, renameFrom, renameTo, primaryBrands.map((b) => b.folderSlug), files),
+        ...safeExtraDeletePaths,
+      ]),
+    ];
 
     const githubToken = Deno.env.get("GITHUB_TOKEN")!;
     const { commitSha } = await commitFiles(

@@ -44,6 +44,7 @@ function brandRow(b, isCollab) {
     '<td class="btn-row">' +
       '<button class="btn secondary rename-brand-btn" data-id="' + b.id + '" data-primary="' + b.is_primary + '">Rename</button>' +
       (b.is_primary ? '<button class="btn secondary replace-thumb-btn" data-id="' + b.id + '" data-folder="' + esc(b.folder_slug) + '" data-path="' + esc(b.thumbnail_storage_path || '') + '">Replace Thumbnail</button>' : '') +
+      '<button class="btn danger delete-brand-btn" data-id="' + b.id + '" data-name="' + esc(b.name) + '" data-folder="' + esc(b.folder_slug) + '" data-primary="' + b.is_primary + '">Delete</button>' +
     '</td>';
   return tr;
 }
@@ -218,6 +219,45 @@ function wireBrandRowButtons() {
       // slug change, since a display-name-only rename still needs to reach the
       // generated pages (brand headings, product-card brand labels, etc.).
       await publishBrandChange(slugChanged ? { renameFrom: oldSlug, renameTo: newSlug } : null);
+    });
+  });
+
+  document.querySelectorAll('.delete-brand-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var brandId = btn.dataset.id;
+      var isPrimary = btn.dataset.primary === 'true';
+      var folderSlug = btn.dataset.folder;
+
+      // Every brand row sharing this folder (itself, plus every collab, if
+      // primary) owns the products whose live pages need to disappear too.
+      var brandIdsQuery = isPrimary
+        ? sb.from('brands').select('id').eq('folder_slug', folderSlug)
+        : Promise.resolve({ data: [{ id: brandId }], error: null });
+      var { data: relatedBrands, error: brandsLookupError } = await brandIdsQuery;
+      if (brandsLookupError) { alert('Delete failed: ' + brandsLookupError.message); return; }
+      var relatedBrandIds = relatedBrands.map(function(b) { return b.id; });
+
+      var { data: affectedProducts, error: productsLookupError } = await sb
+        .from('products').select('slug').in('brand_id', relatedBrandIds);
+      if (productsLookupError) { alert('Delete failed: ' + productsLookupError.message); return; }
+
+      var collabCount = isPrimary ? relatedBrandIds.length - 1 : 0;
+      var confirmMsg = 'Delete "' + btn.dataset.name + '" and its ' + affectedProducts.length + ' product(s)' +
+        (collabCount > 0 ? ' (including ' + collabCount + ' collab brand(s) sharing its folder)' : '') +
+        '? This cannot be undone.';
+      if (!confirm(confirmMsg)) return;
+
+      btn.disabled = true;
+      var { error: cascadeError } = await sb.rpc('delete_brand_cascade', { p_brand_id: brandId });
+      if (cascadeError) { alert('Delete failed: ' + cascadeError.message); btn.disabled = false; return; }
+      loadBrandsList();
+
+      // Remove the now-orphaned pages from the live site in the same commit:
+      // every affected product's PDP, plus the folder's own page if this was
+      // a primary brand (a collab never owned a folder page of its own).
+      var extraDeletePaths = affectedProducts.map(function(p) { return folderSlug + '/' + p.slug + '/index.html'; });
+      if (isPrimary) extraDeletePaths.push(folderSlug + '/index.html');
+      await publishBrandChange({ extraDeletePaths: extraDeletePaths });
     });
   });
 

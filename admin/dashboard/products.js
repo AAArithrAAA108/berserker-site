@@ -6,7 +6,7 @@ var productsCache = [];
 async function loadProductsList() {
   var { data, error } = await sb
     .from('products')
-    .select('*, brands(name), product_colors(id, label, hex, color_group, cover_image_id)')
+    .select('*, brands(name, folder_slug), product_colors(id, label, hex, color_group, cover_image_id)')
     .order('position', { ascending: true });
   document.getElementById('products-loading').style.display = 'none';
   if (error) {
@@ -80,10 +80,47 @@ function wireReorderInputs() {
   });
 }
 
+// Shared by the product-delete and brand-delete flows: publish with a set
+// of pages to delete (nothing else in the catalog can tell Publish about
+// them, since the backing DB rows are already gone by the time this runs).
+async function publishExtraDeletes(extraDeletePaths) {
+  var status = document.getElementById('publish-status');
+  if (!status) return;
+  status.style.color = 'var(--muted)';
+  status.textContent = 'Publishing...';
+
+  var { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData || !sessionData.session) {
+    status.style.color = '#ff3c1e';
+    status.textContent = 'Deleted, but not signed in -- the live page(s) were not removed. Publish again once signed in.';
+    return;
+  }
+
+  try {
+    var res = await fetch(SUPABASE_URL + '/functions/v1/publish-site', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionData.session.access_token },
+      body: JSON.stringify({ extraDeletePaths: extraDeletePaths }),
+    });
+    var body = await res.json();
+    if (body.ok) {
+      status.style.color = '#8fd14f';
+      status.textContent = 'Published ' + body.productCount + ' products (commit ' + body.commitSha.slice(0, 7) + ').';
+    } else {
+      status.style.color = '#ff3c1e';
+      status.textContent = 'Deleted, but publish failed: ' + (body.error || 'unknown error') + '. Publish again from the Products tab.';
+    }
+  } catch (err) {
+    status.style.color = '#ff3c1e';
+    status.textContent = 'Deleted, but publish failed: ' + err.message + '. Publish again from the Products tab.';
+  }
+}
+
 function wireDeleteButtons() {
   document.querySelectorAll('.delete-product-btn').forEach(function(btn) {
     btn.addEventListener('click', async function() {
-      if (!confirm('Delete this product and all its colors/images/variants from the database? (Does not remove the live storefront page until you Publish.)')) return;
+      var product = productsCache.find(function(p) { return p.id === btn.dataset.id; });
+      if (!confirm('Delete this product and all its colors/images/variants from the database, and remove its live storefront page?')) return;
       btn.disabled = true;
 
       // The product_images ROWS cascade-delete via the FK when the product row
@@ -117,6 +154,13 @@ function wireDeleteButtons() {
         return;
       }
       loadProductsList();
+
+      // Remove the now-orphaned PDP page from the live site in the same
+      // commit -- otherwise it stays published forever, reachable directly
+      // by URL even though nothing links to it anymore.
+      if (product && product.brands && product.brands.folder_slug) {
+        await publishExtraDeletes([product.brands.folder_slug + '/' + product.slug + '/index.html']);
+      }
     });
   });
 }
