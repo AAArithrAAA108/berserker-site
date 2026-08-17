@@ -377,6 +377,14 @@ async function refreshImagesGrid(product) {
       var imageId = select.dataset.imageId;
       var newColorId = select.value || null;
       select.disabled = true;
+      // If some color's cover currently points at this image, clear it --
+      // once this image is (re)assigned or unassigned, that color no longer
+      // owns it, so its cover pointer would otherwise go stale (data.ts's
+      // renderer fallback silently substitutes a different image on the
+      // live site, but this admin panel's own Thumbnail dropdown would show
+      // "(no cover)" -- a real admin/live-site mismatch, not just cosmetic).
+      var { error: clearError } = await sb.from('product_colors').update({ cover_image_id: null }).eq('cover_image_id', imageId);
+      if (clearError) { select.disabled = false; alert('Assignment failed: ' + clearError.message); return; }
       var { error: updateError } = await sb.from('product_images').update({ color_id: newColorId }).eq('id', imageId);
       select.disabled = false;
       if (updateError) { alert('Assignment failed: ' + updateError.message); return; }
