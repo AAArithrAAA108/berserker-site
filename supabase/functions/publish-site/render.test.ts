@@ -492,6 +492,21 @@ Deno.test("renderPdpPage: inline script's swatchList carries each color's indice
   }
 });
 
+Deno.test("renderPdpPage: a zero-image color never causes two swatches to render selected at once (regression: the initial-render path used the same -1-to-0 index fallback the interactive path was fixed to avoid)", () => {
+  const zeroImageColorFirst: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      { ...twoColorProduct.colors[0], label: "Denim Black", coverImageUrl: "", images: [] },
+      { ...twoColorProduct.colors[1], label: "Denim Blue", coverImageUrl: "https://example.supabase.co/.../black.jpg", images: [{ url: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }] },
+    ],
+    images: [{ url: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }],
+  };
+  const html = renderPdpPage(zeroImageColorFirst);
+  const selectedCount = (html.match(/class="modal-swatch selected"/g) || []).length;
+  assertEquals(selectedCount, 1);
+  assertStringIncludes(html, '<span id="pdp-color-label">Denim Blue</span>');
+});
+
 Deno.test("renderBrandsIndexPage: one .cat-card per brand, linking to its folder with its thumbnail and label", () => {
   const html = renderBrandsIndexPage([
     { name: "Gymshark", folderSlug: "gymshark", thumbnailUrl: "https://fake.test/_brands/gymshark-1.jpg" },

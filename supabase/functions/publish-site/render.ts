@@ -273,8 +273,16 @@ export function renderPdpPage(product: CatalogProduct): string {
   // carry the exact list of indices it owns, not a start+count range.
   const colorImgIndices = (c: CatalogProduct["colors"][number]) =>
     c.images.map((img) => images.indexOf(img.url)).filter((i) => i !== -1);
-  const firstColor =
-    product.colors.find((c) => colorImgIndex(c) === 0) ?? product.colors[0];
+  // The color to show as "selected" on initial page load must be the color
+  // that actually owns image 0, not whichever color's (possibly empty)
+  // cover happens to resolve to index 0 via colorImgIndex's -1-to-0
+  // fallback -- a color with zero owned images has an empty coverImageUrl,
+  // which ALSO falls back to 0, so using colorImgIndex here would mark two
+  // swatches selected at once (this was the exact production bug the whole
+  // plan fixed for the interactive click path -- the initial server-rendered
+  // state was never converted off the same flawed check).
+  const selectedIdx = Math.max(0, product.colors.findIndex((c) => colorImgIndices(c).includes(0)));
+  const firstColor = product.colors[selectedIdx];
   const firstColorLabel = firstColor?.label ?? "";
 
   const thumbs = images
@@ -285,10 +293,10 @@ export function renderPdpPage(product: CatalogProduct): string {
     .join("");
 
   const swatches = product.colors
-    .map((c) => {
+    .map((c, i) => {
       const imgIndex = colorImgIndex(c);
       const indicesJson = esc(JSON.stringify(colorImgIndices(c)));
-      return `<div class="modal-swatch${imgIndex === 0 ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}"></div>`;
+      return `<div class="modal-swatch${i === selectedIdx ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}"></div>`;
     })
     .join("");
 
@@ -353,7 +361,7 @@ export function renderPdpPage(product: CatalogProduct): string {
     var sizeBtns = document.querySelectorAll('#pdp-size-grid .size-btn');
     var addBtn = document.getElementById('pdp-add-btn');
 
-    var selectedColor = swatchList.length ? swatchList[0] : null;
+    var selectedColor = swatchList.length ? swatchList[${selectedIdx}] : null;
     var selectedSizeLocal = null;
 
     function setMainImage(index, label) {
