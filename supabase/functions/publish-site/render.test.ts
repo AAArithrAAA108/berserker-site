@@ -307,7 +307,7 @@ Deno.test("renderListingPage: includes the ?q= search-filter script (regression:
   assertStringIncludes(html, "new URLSearchParams(window.location.search)");
   assertStringIncludes(html, "params.get('q')");
   assertStringIncludes(html, "querySelectorAll('.product-card')");
-  assertStringIncludes(html, "No products found for");
+  assertStringIncludes(html, "No such product in stock :(");
 });
 
 Deno.test("renderCollectionPage/renderBrandPage: do NOT include the search-filter script (listing-page-only, matching the feature's original scope)", () => {
