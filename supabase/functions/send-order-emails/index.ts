@@ -16,7 +16,7 @@ import {
 } from "./email-templates.ts";
 
 const OWNER_EMAIL = "support@berserker.in";
-const FROM_ADDRESS = "BERSERKER <orders@berserker.in>";
+const FROM_ADDRESS = "BERSERKER <support@berserker.in>";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
