@@ -104,17 +104,19 @@ export function ownerEmailSubject(order: OrderRecord): string {
 export const ESTIMATED_SHIPPING_WINDOW = "35–45 days";
 
 export function renderCustomerEmailHtml(order: OrderRecord): string {
-  const balanceLine =
-    order.balance_due > 0 ? `<p><strong>Balance due on delivery:</strong> ${formatInr(order.balance_due)}</p>` : "";
   return `
 <h2>Thanks for your order, ${esc(order.customer_name)}!</h2>
-<p>Your BERSERKER order <strong>#${order.order_number}</strong> has been placed.</p>
+<p>Your BERSERKER order <strong>#${order.order_number}</strong> has been placed. Here's a full summary of what you gave us at checkout, for your records.</p>
+<p><strong>Contact:</strong> ${esc(order.customer_name)} — ${esc(order.customer_phone)}${order.customer_email ? " — " + esc(order.customer_email) : ""}</p>
+<p><strong>Delivery Address:</strong> ${renderAddress(order)}</p>
 <p><strong>Items:</strong></p>
 <ul>${renderItemsList(order.items)}</ul>
+<p><strong>Subtotal:</strong> ${formatInr(order.subtotal)}${renderDiscountLine(order)}</p>
 <p><strong>Order Total:</strong> ${formatInr(order.order_total)}</p>
-${balanceLine}
+<p><strong>Payment:</strong> ${renderPaymentSummary(order)}</p>
+${order.razorpay_payment_id ? `<p><strong>Payment Reference:</strong> ${esc(order.razorpay_payment_id)}</p>` : ""}
 <p>Estimated delivery: <strong>${ESTIMATED_SHIPPING_WINDOW}</strong> from today, unless a different timeline was shown on the product page.</p>
-<p>Questions? Reach us at <a href="mailto:support@berserker.in">support@berserker.in</a> or WhatsApp <a href="https://wa.me/918777841979">+91 87778 41979</a>.</p>
+<p>Spotted something wrong above (address, phone, etc.)? Reach us right away at <a href="mailto:support@berserker.in">support@berserker.in</a> or WhatsApp <a href="https://wa.me/918777841979">+91 87778 41979</a> so we can fix it before your order ships.</p>
 `.trim();
 }
 

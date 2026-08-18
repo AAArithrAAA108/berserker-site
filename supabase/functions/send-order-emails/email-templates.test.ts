@@ -106,14 +106,43 @@ Deno.test("renderCustomerEmailHtml: includes order number, items, total, and the
   assertStringIncludes(html, ESTIMATED_SHIPPING_WINDOW);
 });
 
-Deno.test("renderCustomerEmailHtml: omits the balance-due line for a fully-paid order, includes it for COD", () => {
+Deno.test("renderCustomerEmailHtml: includes everything the customer gave us at checkout -- contact info, delivery address, subtotal, and payment details (regression: an earlier version omitted all of this, showing only items and the grand total)", () => {
+  const html = renderCustomerEmailHtml(sampleOrder);
+  assertStringIncludes(html, "9876543210");
+  assertStringIncludes(html, "priya@example.com");
+  assertStringIncludes(html, "12 MG Road");
+  assertStringIncludes(html, "Flat 4B");
+  assertStringIncludes(html, "Bengaluru");
+  assertStringIncludes(html, "Karnataka");
+  assertStringIncludes(html, "560001");
+  assertStringIncludes(html, "Subtotal");
+  assertStringIncludes(html, "Payment Reference");
+  assertStringIncludes(html, "pay_test123");
+});
+
+Deno.test("renderCustomerEmailHtml: shows the discount/coupon code when applied, same as the owner email", () => {
+  const html = renderCustomerEmailHtml({ ...sampleOrder, subtotal: 16000, discount: 1003, coupon_code: "BRSKR25", order_total: 14997 });
+  assertStringIncludes(html, "-₹1,003");
+  assertStringIncludes(html, "BRSKR25");
+});
+
+Deno.test("renderCustomerEmailHtml: payment line shows full-payment vs. COD-with-balance correctly", () => {
   const fullyPaid = renderCustomerEmailHtml(sampleOrder);
-  if (fullyPaid.includes("Balance due on delivery")) {
-    throw new Error("should not show a balance-due line when balance_due is 0");
+  assertStringIncludes(fullyPaid, "Full payment online");
+  if (fullyPaid.includes("balance due on delivery")) {
+    throw new Error("should not mention a balance when balance_due is 0");
   }
-  const cod = renderCustomerEmailHtml({ ...sampleOrder, payment_method: "cod", balance_due: 10997 });
-  assertStringIncludes(cod, "Balance due on delivery");
-  assertStringIncludes(cod, "₹10,997");
+  const cod = renderCustomerEmailHtml({ ...sampleOrder, payment_method: "cod", amount_paid: 4000, balance_due: 10997 });
+  assertStringIncludes(cod, "Cash on Delivery");
+  assertStringIncludes(cod, "₹4,000");
+  assertStringIncludes(cod, "balance due on delivery: ₹10,997");
+});
+
+Deno.test("renderCustomerEmailHtml: omits the Payment Reference line when no payment id is present yet", () => {
+  const html = renderCustomerEmailHtml({ ...sampleOrder, razorpay_payment_id: null });
+  if (html.includes("Payment Reference")) {
+    throw new Error("should not render a Payment Reference line when razorpay_payment_id is null");
+  }
 });
 
 Deno.test("renderCustomerEmailHtml: escapes customer-editable text (regression: same threat model as the owner email)", () => {
