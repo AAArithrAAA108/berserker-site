@@ -37,6 +37,10 @@ export const RESERVED_BRAND_SLUGS = [
   "brands",
   "terms-of-service",
   "privacy-policy",
+  "docs",
+  "scripts",
+  "supabase",
+  "images",
 ];
 
 // Computes which published pages to delete when a brand folder is renamed
