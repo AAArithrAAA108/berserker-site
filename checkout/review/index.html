@@ -1169,7 +1169,12 @@
             </div>
           </div>
 
-          <button id="pay-btn" class="btn-primary" style="width:100%;text-align:center;margin-top:24px;">Pay ₹<span id="pay-amount">0</span> Securely via Razorpay</button>
+          <label style="display:flex;align-items:flex-start;gap:10px;margin-top:20px;cursor:pointer;">
+            <input type="checkbox" id="consent-checkbox" style="margin-top:3px;accent-color:#e8f000;flex-shrink:0;" />
+            <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:#aaa;line-height:1.6;">I have read and agree to the <a href="/shipping-info/" target="_blank" style="color:#f5f2ee;text-decoration:none;border-bottom:1px solid #333;">Shipping Policy</a>, <a href="/returns-and-refunds/" target="_blank" style="color:#f5f2ee;text-decoration:none;border-bottom:1px solid #333;">Returns &amp; Refund Policy</a>, <a href="/terms-of-service/" target="_blank" style="color:#f5f2ee;text-decoration:none;border-bottom:1px solid #333;">Terms of Service</a>, and <a href="/privacy-policy/" target="_blank" style="color:#f5f2ee;text-decoration:none;border-bottom:1px solid #333;">Privacy Policy</a>.</span>
+          </label>
+
+          <button id="pay-btn" class="btn-primary" disabled style="width:100%;text-align:center;margin-top:16px;opacity:.4;cursor:not-allowed;">Pay ₹<span id="pay-amount">0</span> Securely via Razorpay</button>
 
           <p class="checkout-disclaimer">Orders can be cancelled free of charge up to <strong>12 hours</strong> after payment. After 12 hours, the payment made is <strong>non-refundable</strong>. To cancel within that window, reach out to us via <a href="mailto:support@berserker.in">email</a> or <a href="https://instagram.com/berserker.in" target="_blank">Instagram DM</a>.</p>
         </div>
@@ -1755,6 +1760,18 @@
     document.querySelectorAll('input[name="payment-method"]').forEach(function(radio) {
       radio.addEventListener('change', updatePaymentUI);
     });
+
+    // Pay button stays disabled (both the UPI/Cards and COD flows share this
+    // one button -- updatePaymentUI() only swaps its label/amount) until the
+    // shopper explicitly agrees to the linked policies.
+    var consentCheckbox = document.getElementById('consent-checkbox');
+    function updateConsentGate() {
+      var payBtn = document.getElementById('pay-btn');
+      payBtn.disabled = !consentCheckbox.checked;
+      payBtn.style.opacity = consentCheckbox.checked ? '1' : '.4';
+      payBtn.style.cursor = consentCheckbox.checked ? 'pointer' : 'not-allowed';
+    }
+    consentCheckbox.addEventListener('change', updateConsentGate);
 
     document.getElementById('coupon-apply-btn').addEventListener('click', async function() {
       var codeInput = document.getElementById('coupon-input').value.trim().toUpperCase();

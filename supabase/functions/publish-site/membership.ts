@@ -35,6 +35,8 @@ export const RESERVED_BRAND_SLUGS = [
   "returns-and-refunds",
   "shipping-info",
   "brands",
+  "terms-of-service",
+  "privacy-policy",
 ];
 
 // Computes which published pages to delete when a brand folder is renamed

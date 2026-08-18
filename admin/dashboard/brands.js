@@ -7,7 +7,7 @@ var brandsCache = [];
 // rename_brand_folder (supabase/migrations/20260815120100_add_brand_rpcs.sql)
 // and in supabase/functions/publish-site/membership.ts (RESERVED_BRAND_SLUGS).
 // The server-side check is authoritative -- this is a UX pre-check only.
-var RESERVED_SLUGS = ['admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands'];
+var RESERVED_SLUGS = ['admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy'];
 
 async function loadBrandsList() {
   var { data, error } = await sb.from('brands').select('*').order('name', { ascending: true });
