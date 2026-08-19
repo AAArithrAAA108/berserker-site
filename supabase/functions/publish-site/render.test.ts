@@ -587,6 +587,19 @@ Deno.test("renderProductCard: color-only row (unchanged existing behavior) emits
   assertStringIncludes(html, 'data-variant=""');
 });
 
+Deno.test("renderPdpPage: variant-only product shows a \"Variant —\" section label, not \"Color —\"", () => {
+  const html = renderPdpPage(variantOnlyProduct);
+  assertStringIncludes(html, '<div class="pdp-section-label">Variant — <span id="pdp-color-label">V1</span></div>');
+  if (html.includes('<div class="pdp-section-label">Color —')) {
+    throw new Error("a pure-variant product should never show the \"Color —\" section label");
+  }
+});
+
+Deno.test("renderPdpPage: color-only and both-mode products keep the \"Color —\" section label (both still have a real, pickable color)", () => {
+  assertStringIncludes(renderPdpPage(twoColorProduct), '<div class="pdp-section-label">Color — <span id="pdp-color-label">Forest Green</span></div>');
+  assertStringIncludes(renderPdpPage(bothModeProduct), '<div class="pdp-section-label">Color — <span id="pdp-color-label">Forest Green</span></div>');
+});
+
 Deno.test("renderPdpPage: variant-only swatch renders its label as visible text on the swatch, with the modal-swatch-text class", () => {
   const html = renderPdpPage(variantOnlyProduct);
   assertStringIncludes(html, 'class="modal-swatch modal-swatch-text selected"');

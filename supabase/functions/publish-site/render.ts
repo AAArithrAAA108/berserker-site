@@ -339,6 +339,13 @@ export function renderPdpPage(product: CatalogProduct): string {
   const selectedIdx = Math.max(0, product.colors.findIndex((c) => colorImgIndices(c).includes(0)));
   const firstColor = product.colors[selectedIdx];
   const firstColorLabel = firstColor?.label ?? "";
+  // 'variant'-mode products have no real color at all (hex null -- label
+  // IS the variant text); 'color' and 'both' modes both have a real color,
+  // so "Color" still correctly describes the primary thing being picked
+  // even when 'both' also carries an extra variant tag. All colors on one
+  // product share the same mode, so the first color alone decides this for
+  // the whole page.
+  const colorSectionLabel = firstColor && firstColor.hex === null ? "Variant" : "Color";
 
   const thumbs = images
     .map(
@@ -385,7 +392,7 @@ export function renderPdpPage(product: CatalogProduct): string {
       <div class="pdp-price">${formatInr(product.price)}</div>
       <div class="pdp-cod">COD Advance Amount: ${formatInr(product.codAdvance)}</div>
 
-      <div class="pdp-section-label">Color — <span id="pdp-color-label">${esc(firstColorLabel)}</span></div>
+      <div class="pdp-section-label">${colorSectionLabel} — <span id="pdp-color-label">${esc(firstColorLabel)}</span></div>
       <div class="pdp-swatches" id="pdp-color-swatches">${swatches}</div>
 
       <div class="pdp-section-label">Size</div>
