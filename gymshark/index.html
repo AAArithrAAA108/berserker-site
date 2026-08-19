@@ -1149,6 +1149,24 @@
   </div>
 </div>
 <script>
+  // Escapes text that ultimately comes from an admin-editable database column
+  // (brand/product name, read back out of the DOM via .textContent when an
+  // item is added to the cart) before it's interpolated into innerHTML or an
+  // HTML attribute value here. render.ts's server-side esc() already escaped
+  // this same text once when the card/PDP first rendered it, but reading it
+  // back via .textContent decodes those entities again -- this client-side
+  // copy re-escapes it before the cart drawer re-interpolates it into new
+  // markup, the same threat model as render.ts's esc(), just running in the
+  // browser instead of at generation time.
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   // Cart state — persisted across pages via localStorage (shared key, same origin)
   const CART_STORAGE_KEY = 'berserkerCart';
   const cartItems = [];
@@ -1212,20 +1230,20 @@
       div.dataset.name = item.name;
       div.innerHTML = `
         <div style="width:72px;height:90px;flex-shrink:0;overflow:hidden;background:#1c1c1c;border:1px solid #2a2a2a;">
-          ${item.imgSrc ? `<img src="${item.imgSrc}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" />` : ''}
+          ${item.imgSrc ? `<img src="${escHtml(item.imgSrc)}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" />` : ''}
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-family:Space Mono,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#e8f000;margin-bottom:4px;">${item.brand}</div>
-          <div style="font-size:12px;color:#f5f2ee;line-height:1.4;margin-bottom:8px;">${item.name}</div>
+          <div style="font-family:Space Mono,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#e8f000;margin-bottom:4px;">${escHtml(item.brand)}</div>
+          <div style="font-size:12px;color:#f5f2ee;line-height:1.4;margin-bottom:8px;">${escHtml(item.name)}</div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <button data-action="dec" data-name="${item.name}" style="background:#2a2a2a;border:none;color:#f5f2ee;width:22px;height:22px;cursor:pointer;font-size:16px;line-height:1;">−</button>
+            <button data-action="dec" data-name="${escHtml(item.name)}" style="background:#2a2a2a;border:none;color:#f5f2ee;width:22px;height:22px;cursor:pointer;font-size:16px;line-height:1;">−</button>
             <span style="font-size:13px;color:#f5f2ee;">${item.qty}</span>
-            <button data-action="inc" data-name="${item.name}" style="background:#2a2a2a;border:none;color:${item.qty>=5?'#444':'#f5f2ee'};width:22px;height:22px;cursor:${item.qty>=5?'not-allowed':'pointer'};font-size:16px;line-height:1;">+</button>
+            <button data-action="inc" data-name="${escHtml(item.name)}" style="background:#2a2a2a;border:none;color:${item.qty>=5?'#444':'#f5f2ee'};width:22px;height:22px;cursor:${item.qty>=5?'not-allowed':'pointer'};font-size:16px;line-height:1;">+</button>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
           <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#f5f2ee;">₹${(item.price * item.qty).toLocaleString('en-IN')}</span>
-          <button data-action="remove" data-name="${item.name}" style="background:none;border:none;color:#555;font-size:11px;cursor:pointer;font-family:Space Mono,monospace;letter-spacing:.06em;">REMOVE</button>
+          <button data-action="remove" data-name="${escHtml(item.name)}" style="background:none;border:none;color:#555;font-size:11px;cursor:pointer;font-family:Space Mono,monospace;letter-spacing:.06em;">REMOVE</button>
         </div>
       `;
       itemsEl.appendChild(div);
@@ -1401,6 +1419,7 @@
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       selectedSize = btn.dataset.size;
+      checkConfirmReady();
     });
   });
 
