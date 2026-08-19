@@ -369,6 +369,31 @@
   }
   .section-link:hover { color: var(--white); border-color: var(--white); }
 
+  /* ── SORT BAR ── */
+  .sort-bar { display: flex; align-items: center; gap: 10px; }
+  .sort-bar label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sort-select {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .sort-select:focus { outline: none; border-color: var(--accent); }
+  @media(max-width: 640px) {
+    .sort-bar { width: 100%; justify-content: space-between; }
+  }
+
   /* ── PRODUCT GRID ── */
   .product-grid {
     display: grid;
@@ -946,7 +971,18 @@
 </div>
 
 <section class="section" id="all-products-grid">
-  <h2 class="section-title">VESCARTES</h2>
+  <div class="section-header">
+    <h2 class="section-title">VESCARTES</h2>
+    
+<div class="sort-bar">
+  <label for="sort-select">Sort by</label>
+  <select id="sort-select">
+    <option value="relevance">Relevance</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+  </select>
+</div>
+  </div>
   <div class="product-grid"><div class="product-card fade-in" id="product-42">
   <a href="/vescartes/vescartes-blossom-denim/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114307434-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114308830-Screenshot_2026-08-16_172126.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114309899-Screenshot_2026-08-16_172235.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114310886-Screenshot_2026-08-16_172236.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114312072-Screenshot_2026-08-16_172309.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114313429-Screenshot_2026-08-16_172336.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114314846-Screenshot_2026-08-16_172424.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114315776-Screenshot_2026-08-16_172444.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114316688-Screenshot_2026-08-16_172540.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114317481-Screenshot_2026-08-16_172541.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114318371-Screenshot_2026-08-16_172601.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787114319522-Screenshot_2026-08-16_172618.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /></div>
@@ -960,6 +996,34 @@
   <button class="product-add" data-cod-advance="4000">Add to Cart</button>
 </div></div>
 </section>
+
+<script>
+  (function() {
+    var select = document.getElementById('sort-select');
+    var grid = document.querySelector('.product-grid');
+    if (!select || !grid) return;
+
+    function priceOf(card) {
+      var priceEl = card.querySelector('.product-price');
+      var text = priceEl && priceEl.childNodes[0] ? priceEl.childNodes[0].textContent : '0';
+      return parseInt(text.replace(/[^0-9]/g, ''), 10) || 0;
+    }
+    function positionOf(card) {
+      return parseInt((card.id || '').replace('product-', ''), 10) || 0;
+    }
+
+    select.addEventListener('change', function() {
+      var mode = select.value;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.product-card'));
+      cards.sort(function(a, b) {
+        if (mode === 'price-asc') return priceOf(a) - priceOf(b);
+        if (mode === 'price-desc') return priceOf(b) - priceOf(a);
+        return positionOf(a) - positionOf(b);
+      });
+      cards.forEach(function(card) { grid.appendChild(card); });
+    });
+  })();
+</script>
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">

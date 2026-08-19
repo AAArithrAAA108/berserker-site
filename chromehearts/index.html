@@ -369,6 +369,31 @@
   }
   .section-link:hover { color: var(--white); border-color: var(--white); }
 
+  /* ── SORT BAR ── */
+  .sort-bar { display: flex; align-items: center; gap: 10px; }
+  .sort-bar label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sort-select {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .sort-select:focus { outline: none; border-color: var(--accent); }
+  @media(max-width: 640px) {
+    .sort-bar { width: 100%; justify-content: space-between; }
+  }
+
   /* ── PRODUCT GRID ── */
   .product-grid {
     display: grid;
@@ -1152,7 +1177,18 @@
 </div>
 
 <section class="section" id="all-products-grid">
-  <h2 class="section-title">CHROME HEARTS</h2>
+  <div class="section-header">
+    <h2 class="section-title">CHROME HEARTS</h2>
+    
+<div class="sort-bar">
+  <label for="sort-select">Sort by</label>
+  <select id="sort-select">
+    <option value="relevance">Relevance</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+  </select>
+</div>
+  </div>
   <div class="product-grid"><div class="product-card fade-in" id="product-28">
   <a href="/chromehearts/chromehearts-retro-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:4000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0211.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0212.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0213.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0214.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0215.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0216.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0217.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0218.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0219.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0220.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0221.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0222.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0223.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0224.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0225.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0226.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0227.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0228.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0229.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0230.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0231.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0232.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0233.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0234.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0235.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0236.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0237.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0238.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0239.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0240.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0241.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0242.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0243.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0244.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0245.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0246.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0247.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0248.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0249.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0250.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /></div>
@@ -1226,6 +1262,34 @@
   <button class="product-add" data-cod-advance="5600">Add to Cart</button>
 </div></div>
 </section>
+
+<script>
+  (function() {
+    var select = document.getElementById('sort-select');
+    var grid = document.querySelector('.product-grid');
+    if (!select || !grid) return;
+
+    function priceOf(card) {
+      var priceEl = card.querySelector('.product-price');
+      var text = priceEl && priceEl.childNodes[0] ? priceEl.childNodes[0].textContent : '0';
+      return parseInt(text.replace(/[^0-9]/g, ''), 10) || 0;
+    }
+    function positionOf(card) {
+      return parseInt((card.id || '').replace('product-', ''), 10) || 0;
+    }
+
+    select.addEventListener('change', function() {
+      var mode = select.value;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.product-card'));
+      cards.sort(function(a, b) {
+        if (mode === 'price-asc') return priceOf(a) - priceOf(b);
+        if (mode === 'price-desc') return priceOf(b) - priceOf(a);
+        return positionOf(a) - positionOf(b);
+      });
+      cards.forEach(function(card) { grid.appendChild(card); });
+    });
+  })();
+</script>
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">

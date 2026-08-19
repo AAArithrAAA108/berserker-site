@@ -369,6 +369,31 @@
   }
   .section-link:hover { color: var(--white); border-color: var(--white); }
 
+  /* ── SORT BAR ── */
+  .sort-bar { display: flex; align-items: center; gap: 10px; }
+  .sort-bar label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sort-select {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .sort-select:focus { outline: none; border-color: var(--accent); }
+  @media(max-width: 640px) {
+    .sort-bar { width: 100%; justify-content: space-between; }
+  }
+
   /* ── PRODUCT GRID ── */
   .product-grid {
     display: grid;
@@ -1860,7 +1885,18 @@
 </div>
 
 <section class="section" id="all-products-grid">
-  <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
+  <div class="section-header">
+    <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
+    
+<div class="sort-bar">
+  <label for="sort-select">Sort by</label>
+  <select id="sort-select">
+    <option value="relevance">Relevance</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+  </select>
+</div>
+  </div>
   <div class="product-grid"><div class="product-card fade-in" id="product-1">
   <a href="/gymshark/gymshark-onyx-5-half-sleeve/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0003.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0004.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0005.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0006.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0007.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0008.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0009.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0010.jpg" alt="Onyx 5.0 Seamless Compression Half Sleeve" style="width:12.5%;" /></div>
@@ -2397,6 +2433,34 @@
         grid.appendChild(msg);
       }
     }
+  })();
+</script>
+
+<script>
+  (function() {
+    var select = document.getElementById('sort-select');
+    var grid = document.querySelector('.product-grid');
+    if (!select || !grid) return;
+
+    function priceOf(card) {
+      var priceEl = card.querySelector('.product-price');
+      var text = priceEl && priceEl.childNodes[0] ? priceEl.childNodes[0].textContent : '0';
+      return parseInt(text.replace(/[^0-9]/g, ''), 10) || 0;
+    }
+    function positionOf(card) {
+      return parseInt((card.id || '').replace('product-', ''), 10) || 0;
+    }
+
+    select.addEventListener('change', function() {
+      var mode = select.value;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.product-card'));
+      cards.sort(function(a, b) {
+        if (mode === 'price-asc') return priceOf(a) - priceOf(b);
+        if (mode === 'price-desc') return priceOf(b) - priceOf(a);
+        return positionOf(a) - positionOf(b);
+      });
+      cards.forEach(function(card) { grid.appendChild(card); });
+    });
   })();
 </script>
 <footer>
