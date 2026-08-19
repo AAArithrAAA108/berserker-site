@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark" />
-<title>PANTS — BERSERKER</title>
+<title>Blossom Denim Jeans — BERSERKER</title>
 <link rel="icon" type="image/png" href="/all-products/images/img-0001.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -884,165 +884,35 @@
     display: block;
   }
 
-  #product-5:hover .slider-track { animation: slideProduct5 25.3000s linear infinite; }
-  @keyframes slideProduct5 {
-    0% { transform: translateX(0); }
-    1.1858% { transform: translateX(-8.3333%); }
-    9.0909% { transform: translateX(-8.3333%); }
-    10.2767% { transform: translateX(-16.6667%); }
-    18.1818% { transform: translateX(-16.6667%); }
-    19.3676% { transform: translateX(-25.0000%); }
-    27.2727% { transform: translateX(-25.0000%); }
-    28.4585% { transform: translateX(-33.3333%); }
-    36.3636% { transform: translateX(-33.3333%); }
-    37.5494% { transform: translateX(-41.6667%); }
-    45.4545% { transform: translateX(-41.6667%); }
-    46.6403% { transform: translateX(-50.0000%); }
-    54.5455% { transform: translateX(-50.0000%); }
-    55.7312% { transform: translateX(-58.3333%); }
-    63.6364% { transform: translateX(-58.3333%); }
-    64.8221% { transform: translateX(-66.6667%); }
-    72.7273% { transform: translateX(-66.6667%); }
-    73.9130% { transform: translateX(-75.0000%); }
-    81.8182% { transform: translateX(-75.0000%); }
-    83.0040% { transform: translateX(-83.3333%); }
-    90.9091% { transform: translateX(-83.3333%); }
-    92.0949% { transform: translateX(-91.6667%); }
-    100% { transform: translateX(-91.6667%); }
+  .pdp-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:start; }
+  .pdp-main-img { overflow:hidden; background:var(--mid); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; max-height:80vh; }
+  .pdp-main-img img { width:100%; height:auto; max-height:80vh; object-fit:contain; display:block; }
+  .pdp-thumbs { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .pdp-thumb { width:64px; height:80px; object-fit:contain; background:var(--mid); cursor:pointer; border:1px solid var(--border); opacity:.55; transition:opacity .2s, border-color .2s; }
+  .pdp-thumb:hover { opacity:.85; }
+  .pdp-thumb.active { opacity:1; border-color:var(--accent); }
+  .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:25px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--white); margin-top:14px; }
+  .pdp-insta-note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; max-width:420px; }
+  .pdp-title { font-family:var(--font-display); font-size:clamp(32px,3.5vw,48px); letter-spacing:.02em; line-height:1.05; color:var(--white); margin:10px 0 16px; }
+  .pdp-price { font-family:var(--font-display); font-size:36px; color:var(--white); letter-spacing:.03em; }
+  .pdp-cod { font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:6px; letter-spacing:.04em; }
+  .pdp-section-label { font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#888; margin:28px 0 12px; }
+  .pdp-swatches { display:flex; gap:10px; flex-wrap:wrap; }
+  .pdp-size-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; max-width:320px; }
+  .pdp-add-btn { width:100%; max-width:320px; margin-top:28px; opacity:.4; pointer-events:none; }
+  .pdp-add-btn.ready { opacity:1; pointer-events:auto; }
+  .pdp-trust { display:flex; flex-direction:column; gap:10px; margin-top:32px; padding-top:28px; border-top:1px solid var(--border); }
+  .pdp-description { margin-top:32px; padding-top:28px; border-top:1px solid var(--border); max-width:520px; }
+  .pdp-description h3 { font-family:var(--font-display); font-size:20px; letter-spacing:.04em; color:var(--white); margin-bottom:12px; }
+  .pdp-description p { color:#aaa; font-size:14px; line-height:1.8; }
+  @media(max-width:1100px) {
+    .pdp-grid { grid-template-columns:1fr; gap:32px; }
+    #product-detail { padding:60px 40px; }
   }
-  #product-5 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
-
-  #product-11:hover .slider-track { animation: slideProduct11 16.1000s linear infinite; }
-  @keyframes slideProduct11 {
-    0% { transform: translateX(0); }
-    1.8634% { transform: translateX(-12.5000%); }
-    14.2857% { transform: translateX(-12.5000%); }
-    16.1491% { transform: translateX(-25.0000%); }
-    28.5714% { transform: translateX(-25.0000%); }
-    30.4348% { transform: translateX(-37.5000%); }
-    42.8571% { transform: translateX(-37.5000%); }
-    44.7205% { transform: translateX(-50.0000%); }
-    57.1429% { transform: translateX(-50.0000%); }
-    59.0062% { transform: translateX(-62.5000%); }
-    71.4286% { transform: translateX(-62.5000%); }
-    73.2919% { transform: translateX(-75.0000%); }
-    85.7143% { transform: translateX(-75.0000%); }
-    87.5776% { transform: translateX(-87.5000%); }
-    100% { transform: translateX(-87.5000%); }
+  @media(max-width:640px) {
+    #product-detail { padding:48px 24px; }
+    .pdp-thumb { width:52px; height:66px; }
   }
-  #product-11 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
-
-  #product-12:hover .slider-track { animation: slideProduct12 11.5000s linear infinite; }
-  @keyframes slideProduct12 {
-    0% { transform: translateX(0); }
-    2.6087% { transform: translateX(-16.6667%); }
-    20.0000% { transform: translateX(-16.6667%); }
-    22.6087% { transform: translateX(-33.3333%); }
-    40.0000% { transform: translateX(-33.3333%); }
-    42.6087% { transform: translateX(-50.0000%); }
-    60.0000% { transform: translateX(-50.0000%); }
-    62.6087% { transform: translateX(-66.6667%); }
-    80.0000% { transform: translateX(-66.6667%); }
-    82.6087% { transform: translateX(-83.3333%); }
-    100% { transform: translateX(-83.3333%); }
-  }
-  #product-12 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
-
-  #product-26:hover .slider-track { animation: slideProduct26 25.3000s linear infinite; }
-  @keyframes slideProduct26 {
-    0% { transform: translateX(0); }
-    1.1858% { transform: translateX(-8.3333%); }
-    9.0909% { transform: translateX(-8.3333%); }
-    10.2767% { transform: translateX(-16.6667%); }
-    18.1818% { transform: translateX(-16.6667%); }
-    19.3676% { transform: translateX(-25.0000%); }
-    27.2727% { transform: translateX(-25.0000%); }
-    28.4585% { transform: translateX(-33.3333%); }
-    36.3636% { transform: translateX(-33.3333%); }
-    37.5494% { transform: translateX(-41.6667%); }
-    45.4545% { transform: translateX(-41.6667%); }
-    46.6403% { transform: translateX(-50.0000%); }
-    54.5455% { transform: translateX(-50.0000%); }
-    55.7312% { transform: translateX(-58.3333%); }
-    63.6364% { transform: translateX(-58.3333%); }
-    64.8221% { transform: translateX(-66.6667%); }
-    72.7273% { transform: translateX(-66.6667%); }
-    73.9130% { transform: translateX(-75.0000%); }
-    81.8182% { transform: translateX(-75.0000%); }
-    83.0040% { transform: translateX(-83.3333%); }
-    90.9091% { transform: translateX(-83.3333%); }
-    92.0949% { transform: translateX(-91.6667%); }
-    100% { transform: translateX(-91.6667%); }
-  }
-  #product-26 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
-
-  #product-27:hover .slider-track { animation: slideProduct27 20.7000s linear infinite; }
-  @keyframes slideProduct27 {
-    0% { transform: translateX(0); }
-    1.4493% { transform: translateX(-10.0000%); }
-    11.1111% { transform: translateX(-10.0000%); }
-    12.5604% { transform: translateX(-20.0000%); }
-    22.2222% { transform: translateX(-20.0000%); }
-    23.6715% { transform: translateX(-30.0000%); }
-    33.3333% { transform: translateX(-30.0000%); }
-    34.7826% { transform: translateX(-40.0000%); }
-    44.4444% { transform: translateX(-40.0000%); }
-    45.8937% { transform: translateX(-50.0000%); }
-    55.5556% { transform: translateX(-50.0000%); }
-    57.0048% { transform: translateX(-60.0000%); }
-    66.6667% { transform: translateX(-60.0000%); }
-    68.1159% { transform: translateX(-70.0000%); }
-    77.7778% { transform: translateX(-70.0000%); }
-    79.2271% { transform: translateX(-80.0000%); }
-    88.8889% { transform: translateX(-80.0000%); }
-    90.3382% { transform: translateX(-90.0000%); }
-    100% { transform: translateX(-90.0000%); }
-  }
-  #product-27 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
-
-  #product-33:hover .slider-track { animation: slideProduct33 11.5000s linear infinite; }
-  @keyframes slideProduct33 {
-    0% { transform: translateX(0); }
-    2.6087% { transform: translateX(-16.6667%); }
-    20.0000% { transform: translateX(-16.6667%); }
-    22.6087% { transform: translateX(-33.3333%); }
-    40.0000% { transform: translateX(-33.3333%); }
-    42.6087% { transform: translateX(-50.0000%); }
-    60.0000% { transform: translateX(-50.0000%); }
-    62.6087% { transform: translateX(-66.6667%); }
-    80.0000% { transform: translateX(-66.6667%); }
-    82.6087% { transform: translateX(-83.3333%); }
-    100% { transform: translateX(-83.3333%); }
-  }
-  #product-33 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
-
-  #product-42:hover .slider-track { animation: slideProduct42 25.3000s linear infinite; }
-  @keyframes slideProduct42 {
-    0% { transform: translateX(0); }
-    1.1858% { transform: translateX(-8.3333%); }
-    9.0909% { transform: translateX(-8.3333%); }
-    10.2767% { transform: translateX(-16.6667%); }
-    18.1818% { transform: translateX(-16.6667%); }
-    19.3676% { transform: translateX(-25.0000%); }
-    27.2727% { transform: translateX(-25.0000%); }
-    28.4585% { transform: translateX(-33.3333%); }
-    36.3636% { transform: translateX(-33.3333%); }
-    37.5494% { transform: translateX(-41.6667%); }
-    45.4545% { transform: translateX(-41.6667%); }
-    46.6403% { transform: translateX(-50.0000%); }
-    54.5455% { transform: translateX(-50.0000%); }
-    55.7312% { transform: translateX(-58.3333%); }
-    63.6364% { transform: translateX(-58.3333%); }
-    64.8221% { transform: translateX(-66.6667%); }
-    72.7273% { transform: translateX(-66.6667%); }
-    73.9130% { transform: translateX(-75.0000%); }
-    81.8182% { transform: translateX(-75.0000%); }
-    83.0040% { transform: translateX(-83.3333%); }
-    90.9091% { transform: translateX(-83.3333%); }
-    92.0949% { transform: translateX(-91.6667%); }
-    100% { transform: translateX(-91.6667%); }
-  }
-  #product-42 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
 </style>
 </head>
 <body>
@@ -1077,93 +947,136 @@
   </div>
 </div>
 
-<section class="section" id="all-products-grid">
-  <h2 class="section-title">PANTS</h2>
-  <div class="product-grid"><div class="product-card fade-in" id="product-5">
-  <a href="/gymshark/gymshark-lifting-essential-joggers/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0030.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0031.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0032.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0033.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0034.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0035.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0036.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0037.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0038.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0039.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0040.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-lifting-essential-joggers/img-0041.jpg" alt="Lifting Essential Joggers" style="width:8.333333333333334%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">Gymshark</div>
-    <a href="/gymshark/gymshark-lifting-essential-joggers/"><div class="product-name">Lifting Essential Joggers</div></a>
-    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#0d0d0d;" title="Stealth Black" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2c3244;" title="Navy" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#9a9a9a;" title="Grey" data-img-index="9" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
+<section class="section" id="product-detail" style="padding-top:48px;">
+  <div class="pdp-grid">
+    <div class="pdp-gallery">
+      <div class="pdp-main-img">
+        <img id="pdp-main-image" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans — 100" />
+      </div>
+      <div class="pdp-image-label" id="pdp-image-label">100</div>
+      <div class="pdp-thumbs" id="pdp-thumbs"><img class="pdp-thumb active" data-index="0" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png" alt="View 1" /><img class="pdp-thumb" data-index="1" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113831599-Screenshot_2026-08-16_172126.png" alt="View 2" /><img class="pdp-thumb" data-index="2" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113832363-Screenshot_2026-08-16_172235.png" alt="View 3" /><img class="pdp-thumb" data-index="3" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113833627-Screenshot_2026-08-16_172236.png" alt="View 4" /><img class="pdp-thumb" data-index="4" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113834368-Screenshot_2026-08-16_172309.png" alt="View 5" /><img class="pdp-thumb" data-index="5" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113835207-Screenshot_2026-08-16_172336.png" alt="View 6" /><img class="pdp-thumb" data-index="6" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113836196-Screenshot_2026-08-16_172424.png" alt="View 7" /><img class="pdp-thumb" data-index="7" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837005-Screenshot_2026-08-16_172444.png" alt="View 8" /><img class="pdp-thumb" data-index="8" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837723-Screenshot_2026-08-16_172540.png" alt="View 9" /><img class="pdp-thumb" data-index="9" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113839135-Screenshot_2026-08-16_172541.png" alt="View 10" /><img class="pdp-thumb" data-index="10" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113840122-Screenshot_2026-08-16_172601.png" alt="View 11" /><img class="pdp-thumb" data-index="11" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113841035-Screenshot_2026-08-16_172618.png" alt="View 12" /></div>
+      <p class="pdp-insta-note">Want to see real in-hand photos before you buy? DM us on Instagram <a href="https://instagram.com/berserker.in" target="_blank" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">@berserker.in</a> and we'll send them over.</p>
+    </div>
+    <div class="pdp-info">
+      <div class="product-brand">Vescartes</div>
+      <h1 class="pdp-title">Blossom Denim Jeans</h1>
+      <div class="pdp-price">₹4,000</div>
+      <div class="pdp-cod">COD Advance Amount: ₹5,599</div>
+
+      <div class="pdp-section-label">Color — <span id="pdp-color-label">100</span></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch modal-swatch-text selected" style="background:#333;" title="100" data-img-index="0" data-img-indices="[0,1,2,3,4,5]" data-variant="">100</div><div class="modal-swatch modal-swatch-text" style="background:#333;" title="102" data-img-index="6" data-img-indices="[6,7,8,9,10,11]" data-variant="">102</div></div>
+
+      <div class="pdp-section-label">Size</div>
+      <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
+
+      <button class="btn-primary pdp-add-btn" id="pdp-add-btn">Select Size &amp; Color</button>
+
+      <div class="pdp-trust">
+        <div class="trust-item"><span class="trust-icon">🔍</span> Quality Verified Before Dispatch</div>
+        <div class="trust-item"><span class="trust-icon">🚚</span> Free Shipping, All Over India</div>
+        <div class="trust-item"><span class="trust-icon">↩️</span> 24-Hour Unboxing Video Required for Claims</div>
+      </div>
+
+      <div class="pdp-description">
+        <h3>Product Details</h3>
+        <p> See <a href="/shipping-info/" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">Shipping Info</a> and <a href="/returns-and-refunds/" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">Returns &amp; Refunds</a> for full policy details.</p>
+      </div>
+    </div>
   </div>
-  <button class="product-add" data-cod-advance="3000">Add to Cart</button>
-</div>
-<div class="product-card fade-in" id="product-11">
-  <a href="/youngla/youngla-revenge-joggers/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0068.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0069.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0070.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0071.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0072.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0073.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0074.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0075.jpg" alt="Revenge Joggers" style="width:12.5%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">YoungLA</div>
-    <a href="/youngla/youngla-revenge-joggers/"><div class="product-name">Revenge Joggers</div></a>
-    <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#413a52;" title="Purple" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#0e5f5f;" title="Teal" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="3000">Add to Cart</button>
-</div>
-<div class="product-card fade-in" id="product-12">
-  <a href="/youngla/youngla-divine-sweats/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:600%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0076.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0077.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0078.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0079.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0080.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0081.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">YoungLA</div>
-    <a href="/youngla/youngla-divine-sweats/"><div class="product-name">Divine Sweats Sweatpants</div></a>
-    <div class="product-price">₹4,499<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a2a35;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2e3240;" title="Navy" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#3f2f4a;" title="Purple" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#3a3d3a;" title="Charcoal" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="2900">Add to Cart</button>
-</div>
-<div class="product-card fade-in" id="product-26">
-  <a href="/breathedivinity/breathedivinity-blood-oath-sweatpants/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0189.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0190.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0191.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0192.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0193.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0194.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0195.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0196.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0197.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0198.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0199.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0200.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">BreatheDivinity</div>
-    <a href="/breathedivinity/breathedivinity-blood-oath-sweatpants/"><div class="product-name">Blood Oath Sweatpants</div></a>
-    <div class="product-price">₹5,099<span class="original">₹13,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="3400">Add to Cart</button>
-</div>
-<div class="product-card fade-in" id="product-27">
-  <a href="/breathedivinity/breathedivinity-eternal-wyvern-oversized-sweatpants/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0201.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0202.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0203.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0204.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0205.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0206.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0207.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0208.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0209.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0210.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">BreatheDivinity</div>
-    <a href="/breathedivinity/breathedivinity-eternal-wyvern-oversized-sweatpants/"><div class="product-name">Eternal Wyvern Oversized Sweatpants</div></a>
-    <div class="product-price">₹5,099<span class="original">₹13,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#141414;" title="Black" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#3a3a3a;" title="White" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#a01c1c;" title="Red" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#5a1ca0;" title="Purple" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="3400">Add to Cart</button>
-</div>
-<div class="product-card fade-in" id="product-33">
-  <a href="/chromehearts/chromehearts-retro-jeans/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:600%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0310.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0311.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0312.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0313.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0314.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0315.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">Chrome Hearts</div>
-    <a href="/chromehearts/chromehearts-retro-jeans/"><div class="product-name">Retro Jeans</div></a>
-    <div class="product-price">₹7,499<span class="original">₹20,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="5600">Add to Cart</button>
-</div>
-<div class="product-card fade-in" id="product-42">
-  <a href="/vescartes/vescartes-blossom-denim/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113831599-Screenshot_2026-08-16_172126.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113832363-Screenshot_2026-08-16_172235.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113833627-Screenshot_2026-08-16_172236.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113834368-Screenshot_2026-08-16_172309.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113835207-Screenshot_2026-08-16_172336.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113836196-Screenshot_2026-08-16_172424.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837005-Screenshot_2026-08-16_172444.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837723-Screenshot_2026-08-16_172540.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113839135-Screenshot_2026-08-16_172541.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113840122-Screenshot_2026-08-16_172601.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113841035-Screenshot_2026-08-16_172618.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">Vescartes</div>
-    <a href="/vescartes/vescartes-blossom-denim/"><div class="product-name">Blossom Denim Jeans</div></a>
-    <div class="product-price">₹4,000<span class="original">₹10,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#333;" title="100" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="false"></div><div class="swatch" style="background:#333;" title="102" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="false"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="5599">Add to Cart</button>
-</div></div>
 </section>
+<script>
+  (function() {
+    var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113831599-Screenshot_2026-08-16_172126.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113832363-Screenshot_2026-08-16_172235.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113833627-Screenshot_2026-08-16_172236.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113834368-Screenshot_2026-08-16_172309.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113835207-Screenshot_2026-08-16_172336.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113836196-Screenshot_2026-08-16_172424.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837005-Screenshot_2026-08-16_172444.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837723-Screenshot_2026-08-16_172540.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113839135-Screenshot_2026-08-16_172541.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113840122-Screenshot_2026-08-16_172601.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113841035-Screenshot_2026-08-16_172618.png"];
+    var swatchList = [{"label":"100","imgIndex":0,"indices":[0,1,2,3,4,5],"variant":null},{"label":"102","imgIndex":6,"indices":[6,7,8,9,10,11],"variant":null}];
+    var mainImg = document.getElementById('pdp-main-image');
+    var imageLabel = document.getElementById('pdp-image-label');
+    var thumbs = document.querySelectorAll('.pdp-thumb');
+    var colorSwatches = document.querySelectorAll('#pdp-color-swatches .modal-swatch');
+    var colorLabel = document.getElementById('pdp-color-label');
+    var sizeBtns = document.querySelectorAll('#pdp-size-grid .size-btn');
+    var addBtn = document.getElementById('pdp-add-btn');
+
+    var selectedColor = swatchList.length ? swatchList[0] : null;
+    var selectedSizeLocal = null;
+
+    function setMainImage(index, label) {
+      mainImg.src = images[index];
+      thumbs.forEach(function(t) { t.classList.toggle('active', parseInt(t.dataset.index, 10) === index); });
+      if (imageLabel) imageLabel.textContent = label || '';
+    }
+
+    function colorForIndex(idx) {
+      var matches = swatchList.filter(function(s) { return s.indices.indexOf(idx) !== -1; });
+      return matches.length ? matches[0] : null;
+    }
+
+    function selectSwatchForIndex(idx) {
+      colorSwatches.forEach(function(s) {
+        var indices = JSON.parse(s.dataset.imgIndices || '[]');
+        s.classList.toggle('selected', indices.indexOf(idx) !== -1);
+      });
+    }
+
+    thumbs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var idx = parseInt(t.dataset.index, 10);
+        var owner = colorForIndex(idx);
+        if (owner) {
+          selectedColor = owner;
+          colorLabel.textContent = owner.label;
+          selectSwatchForIndex(idx);
+        }
+        setMainImage(idx, owner ? owner.label : (imageLabel ? imageLabel.textContent : ''));
+      });
+    });
+
+    colorSwatches.forEach(function(sw) {
+      sw.addEventListener('click', function() {
+        var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        var indices = JSON.parse(sw.dataset.imgIndices || '[]');
+        selectSwatchForIndex(imgIndex);
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
+        colorLabel.textContent = sw.title;
+        setMainImage(imgIndex, sw.title);
+      });
+    });
+
+    function updateAddBtn() {
+      var ready = selectedSizeLocal && selectedColor;
+      addBtn.classList.toggle('ready', !!ready);
+      addBtn.textContent = ready ? 'Add to Cart' : 'Select Size & Color';
+    }
+
+    sizeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        sizeBtns.forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        selectedSizeLocal = btn.dataset.size;
+        updateAddBtn();
+      });
+    });
+
+    addBtn.addEventListener('click', function() {
+      if (!selectedSizeLocal) {
+        if (typeof showToast === 'function') showToast('Please select a size');
+        return;
+      }
+      if (!selectedColor) {
+        if (typeof showToast === 'function') showToast('Please select a color');
+        return;
+      }
+      var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
+      var name = "Blossom Denim Jeans" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
+      var imgSrc = images[selectedColor.imgIndex];
+      if (typeof addToCart === 'function') {
+        addToCart("Vescartes", name, 4000, 5599, imgSrc);
+        if (typeof openCart === 'function') openCart();
+      }
+    });
+
+    updateAddBtn();
+  })();
+</script>
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
