@@ -1883,33 +1883,36 @@
           var orderNumber = null;
           if (sb) {
             try {
+              // create-verified-order recomputes real prices from the DB and
+              // verifies this payment against Razorpay's own API server-side
+              // -- it does not trust subtotal/discount/orderTotal/amountToCharge
+              // below, they're sent only so the order record can be created
+              // even if the server's own recomputation is what actually gets
+              // stored (kept here purely for display/debug parity, not trust).
               var orderItems = cart.map(function(item) {
-                return { brand: item.brand, name: item.name, qty: item.qty, price: item.price, imgSrc: item.imgSrc };
+                return { brand: item.brand, name: item.name, qty: item.qty, imgSrc: item.imgSrc };
               });
-              var insertRes = await sb.rpc('create_order', {
-                p_customer_name: address.name,
-                p_customer_phone: address.phone,
-                p_customer_email: address.email || null,
-                p_address_line1: address.address1,
-                p_address_line2: address.address2 || null,
-                p_city: address.city,
-                p_state: address.state,
-                p_pincode: address.pincode,
-                p_country: address.country,
-                p_items: orderItems,
-                p_subtotal: subtotal,
-                p_discount: appliedDiscount,
-                p_coupon_code: appliedCode,
-                p_order_total: orderTotal,
-                p_payment_method: method,
-                p_amount_paid: amountToCharge,
-                p_balance_due: balanceDue,
-                p_razorpay_payment_id: response.razorpay_payment_id
+              var insertRes = await sb.functions.invoke('create-verified-order', {
+                body: {
+                  customer: { name: address.name, phone: address.phone, email: address.email || null },
+                  address: {
+                    line1: address.address1,
+                    line2: address.address2 || null,
+                    city: address.city,
+                    state: address.state,
+                    pincode: address.pincode,
+                    country: address.country
+                  },
+                  items: orderItems,
+                  coupon_code: appliedCode,
+                  payment_method: method,
+                  razorpay_payment_id: response.razorpay_payment_id
+                }
               });
-              if (insertRes.error) {
-                console.error('Order save failed:', insertRes.error);
-              } else if (insertRes.data) {
-                orderNumber = insertRes.data;
+              if (insertRes.error || !insertRes.data || !insertRes.data.ok) {
+                console.error('Order save failed:', insertRes.error || insertRes.data);
+              } else {
+                orderNumber = insertRes.data.order_number;
               }
             } catch (e) {
               console.error('Order save failed:', e);

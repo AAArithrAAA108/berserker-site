@@ -161,6 +161,13 @@ create table if not exists orders (
 create index if not exists orders_created_at_idx on orders (created_at desc);
 create index if not exists orders_customer_phone_idx on orders (customer_phone);
 
+-- Prevents replaying the same captured Razorpay payment across two orders.
+-- Partial (WHERE razorpay_payment_id is not null) since COD orders with a
+-- zero advance never populate this column.
+create unique index if not exists orders_razorpay_payment_id_unique
+  on orders (razorpay_payment_id)
+  where razorpay_payment_id is not null;
+
 -- ── ROW LEVEL SECURITY ──
 alter table admin_profiles enable row level security;
 alter table brands enable row level security;
@@ -227,10 +234,12 @@ create policy "admin manage coupons" on coupons for all using (is_admin()) with 
 drop policy if exists "admin manage customers" on customers;
 create policy "admin manage customers" on customers for all using (is_admin()) with check (is_admin());
 
--- Orders: anyone (the storefront, unauthenticated) can INSERT a new order;
--- only admins can read, update, or delete existing orders.
+-- Orders: no client-facing INSERT policy -- create-verified-order (an Edge
+-- Function running as service role, which bypasses RLS) is the only way to
+-- create an order now. It recomputes real prices from the products table
+-- and verifies the Razorpay payment before inserting. Only admins can
+-- read, update, or delete existing orders.
 drop policy if exists "public can create orders" on orders;
-create policy "public can create orders" on orders for insert with check (true);
 drop policy if exists "admin read orders" on orders;
 create policy "admin read orders" on orders for select using (is_admin());
 drop policy if exists "admin update orders" on orders;
@@ -266,13 +275,21 @@ $$ language plpgsql security definer;
 
 grant execute on function validate_coupon(text, int) to anon;
 
--- ── SECURE ORDER CREATION (callable by the public storefront) ──
--- The storefront runs as the anon role, which can INSERT into orders but
--- cannot SELECT from it (admin-only). Postgres applies the SELECT policy to
--- the RETURNING clause of an INSERT too, so a plain `insert().select()` from
--- the client silently returns no row and the order number never comes back.
--- This function inserts as security definer and returns just the order
--- number, without exposing any other order's data to the caller.
+-- ── ORDER CREATION (no longer callable by the storefront -- see below) ──
+-- Originally: the storefront ran as the anon role, which could INSERT into
+-- orders but not SELECT from it (admin-only), and Postgres applies the
+-- SELECT policy to the RETURNING clause of an INSERT too -- so a plain
+-- `insert().select()` from the client silently returned no row. This
+-- function inserted as security definer to return just the order number
+-- without exposing any other order's data.
+--
+-- Superseded by supabase/functions/create-verified-order (an Edge Function
+-- running as service role): every price here came straight from the
+-- client, and razorpay_payment_id was never checked against Razorpay's own
+-- API, so anyone could mint an order at any price they liked. anon's
+-- execute grant on this function was revoked (see the
+-- 20260819000000_lock_down_order_creation migration); kept only for
+-- admin/internal use.
 create or replace function create_order(
   p_customer_name text,
   p_customer_phone text,
@@ -314,10 +331,8 @@ begin
 end;
 $$ language plpgsql security definer;
 
-grant execute on function create_order(
-  text, text, text, text, text, text, text, text, text,
-  jsonb, numeric, numeric, text, numeric, text, numeric, numeric, text
-) to anon;
+-- No grant to anon: create-verified-order (running as service role) is the
+-- only caller now. This function is kept for admin/internal use only.
 
 -- ── COLOR GROUP CLASSIFIER ──
 -- label-aware: an earlier Foundation fix (fix_color_group_prefer_label_over_hex_distance)
