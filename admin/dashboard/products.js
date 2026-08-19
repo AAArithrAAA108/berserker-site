@@ -33,7 +33,8 @@ function renderProductsTable() {
   productsCache.forEach(function(p) {
     var colorsHtml = (p.product_colors || []).map(function(c) {
       var title = c.variant_label ? (c.label + ' (' + c.variant_label + ')') : c.label;
-      return '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;margin-right:3px;" title="' + esc(title) + '"></span>';
+      var bg = c.hex || groupHex(c.color_group);
+      return '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + esc(bg) + ';border:1px solid #444;margin-right:3px;" title="' + esc(title) + '"></span>';
     }).join('');
     var tr = document.createElement('tr');
     tr.innerHTML =
@@ -491,6 +492,22 @@ async function refreshImagesGrid(product) {
 var COLOR_GROUP_PALETTE = ['Black','White','Grey','Red','Blue','Green','Purple','Pink','Orange','Navy','Maroon','Gold','Brown','Cream','Denim','Uncategorized'];
 var HEX_PATTERN = /^#[0-9a-f]{6}$/i;
 
+// Mirrors classify_color_group's own palette/palette_hex arrays (schema.sql)
+// and render.ts's GROUP_HEX -- a representative hex per named color group,
+// so a 'variant'-mode row (no real hex of its own) can still show a color
+// preview dot here driven by its Primary/Secondary Color selection.
+// "Uncategorized" has no representative color; groupHex falls back to the
+// same neutral "#333" the swatch already used before this feature.
+var GROUP_HEX = {
+  Black: '#141414', White: '#f0ede8', Grey: '#8a8a8a', Red: '#c41e1e',
+  Blue: '#1c4aa0', Green: '#1c8a3a', Purple: '#5a1ca0', Pink: '#c41e8a',
+  Orange: '#c46a1e', Navy: '#1c2c4a', Maroon: '#5a1a1a', Gold: '#c4a01c',
+  Brown: '#5a3f2a', Cream: '#ede9e3', Denim: '#6b9fd4',
+};
+function groupHex(group) {
+  return GROUP_HEX[group] || '#333';
+}
+
 async function renderColorsSection(product) {
   var container = document.getElementById('colors-section-' + product.id);
   var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, secondary_color_group, variant_label, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
@@ -533,7 +550,13 @@ async function renderColorsSection(product) {
       }).join('');
       return '<div class="color-row" data-color-id="' + c.id + '" style="border:1px solid var(--border);padding:10px;margin-bottom:8px;">' +
         '<div class="btn-row" style="align-items:center;">' +
-          (showColorFields ? '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;"></span>' : '') +
+          // Real hex for color/both mode (unchanged); a variant-mode row has
+          // no hex of its own, so derive a preview from its Primary color
+          // selection instead of a flat placeholder, plus a small corner
+          // dot for Secondary when set -- same treatment as the storefront.
+          '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(showColorFields ? (c.hex || '#333') : groupHex(c.color_group)) + ';border:1px solid #444;position:relative;">' +
+            (!showColorFields && c.secondary_color_group ? '<span style="position:absolute;bottom:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:' + esc(groupHex(c.secondary_color_group)) + ';border:1px solid #1c1c1c;"></span>' : '') +
+          '</span>' +
           '<input type="text" class="color-label" value="' + esc(c.label) + '" placeholder="' + esc(labelPlaceholder) + '" style="width:120px;" />' +
           (showColorFields ? '<input type="text" class="color-hex" value="' + esc(c.hex || '') + '" placeholder="#rrggbb" style="width:90px;" />' : '') +
           (showVariantField ? '<input type="text" class="variant-label-input" value="' + esc(c.variant_label || '') + '" placeholder="Variant (e.g. V1)" style="width:100px;" />' : '') +

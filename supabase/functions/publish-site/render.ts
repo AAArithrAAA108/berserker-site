@@ -23,6 +23,23 @@ export function esc(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
+// Mirrors classify_color_group's own palette/palette_hex arrays (schema.sql)
+// -- a representative hex per named color group, so a color with no real
+// hex of its own (a 'variant'-mode row -- see swatchDisplayText) can still
+// render an actual color instead of a flat placeholder tile. "Uncategorized"
+// (an admin-panel-only palette entry, not part of the DB classifier's own
+// list) has no representative color and falls through to the "#333"
+// fallback deliberately, same as an unset color_group always has.
+const GROUP_HEX: Record<string, string> = {
+  Black: "#141414", White: "#f0ede8", Grey: "#8a8a8a", Red: "#c41e1e",
+  Blue: "#1c4aa0", Green: "#1c8a3a", Purple: "#5a1ca0", Pink: "#c41e8a",
+  Orange: "#c46a1e", Navy: "#1c2c4a", Maroon: "#5a1a1a", Gold: "#c4a01c",
+  Brown: "#5a3f2a", Cream: "#ede9e3", Denim: "#6b9fd4",
+};
+function representativeHex(colorGroup: string): string {
+  return GROUP_HEX[colorGroup] ?? "#333";
+}
+
 // Visible text to overlay on a swatch: a 'both'-mode color's variant_label
 // (shown alongside its real color background), or -- when there's no real
 // color at all (hex null, i.e. a 'variant'-mode row where label itself IS
@@ -78,7 +95,12 @@ export function renderProductCard(product: CatalogProduct): string {
       // whichever sizes are actually out of stock for whichever color the
       // shopper picks, instead of showing every size as available.
       const variantsJson = esc(JSON.stringify(c.variants.map((v) => ({ size: v.size, inStock: v.inStock }))));
-      return `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}" data-variants="${variantsJson}" data-variant="${esc(c.variantLabel ?? "")}" data-has-color="${c.hex !== null}"></div>`;
+      const bg = c.hex ?? representativeHex(c.colorGroup);
+      // Secondary hex is resolved server-side (rather than passing the raw
+      // group name) so shell.ts's client-side JS doesn't need its own copy
+      // of the GROUP_HEX palette just to read this one attribute.
+      const secondaryHex = c.secondaryColorGroup ? representativeHex(c.secondaryColorGroup) : "";
+      return `<div class="swatch" style="background:${esc(bg)};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}" data-variants="${variantsJson}" data-variant="${esc(c.variantLabel ?? "")}" data-has-color="${c.hex !== null}" data-secondary-hex="${esc(secondaryHex)}"></div>`;
     })
     .join("");
   const brandFolder = brandFolderFor(product);
@@ -531,7 +553,17 @@ export function renderPdpPage(product: CatalogProduct): string {
       const indicesJson = esc(JSON.stringify(colorImgIndices(c)));
       const displayText = swatchDisplayText(c);
       const textClass = displayText ? " modal-swatch-text" : "";
-      return `<div class="modal-swatch${textClass}${i === selectedIdx ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}" data-variant="${esc(c.variantLabel ?? "")}">${esc(displayText)}</div>`;
+      const bg = c.hex ?? representativeHex(c.colorGroup);
+      // Secondary color gets a small corner accent dot -- only for a
+      // 'variant'-mode row (hex null), matching this feature's scope. A
+      // 'both'-mode swatch already carries a real background color plus
+      // the variant-text overlay; adding a third visual element there
+      // would overload a 28px circle.
+      const secondaryDot =
+        c.hex === null && c.secondaryColorGroup
+          ? `<span class="swatch-secondary-dot" style="background:${esc(representativeHex(c.secondaryColorGroup))};"></span>`
+          : "";
+      return `<div class="modal-swatch${textClass}${i === selectedIdx ? " selected" : ""}" style="background:${esc(bg)};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}" data-variant="${esc(c.variantLabel ?? "")}">${esc(displayText)}${secondaryDot}</div>`;
     })
     .join("");
 

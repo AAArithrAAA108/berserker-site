@@ -696,6 +696,78 @@ Deno.test("renderProductCard: variant-only row emits data-has-color=\"false\" an
   assertStringIncludes(html, 'data-variant=""');
 });
 
+// ── VARIANT-MODE SWATCHES SHOW A REAL PRIMARY/SECONDARY COLOR ──
+// A 'variant'-mode row (hex null) used to always render a flat "#333"
+// placeholder regardless of its Primary/Secondary Color selection --
+// these confirm it now derives an actual color from that data instead,
+// on both the card swatch and the PDP/size-picker modal swatch.
+
+const variantWithColorsProduct: CatalogProduct = {
+  ...twoColorProduct,
+  colors: [
+    { ...twoColorProduct.colors[0], label: "1", hex: null, colorGroup: "Black", secondaryColorGroup: "Green", variantLabel: null },
+    { ...twoColorProduct.colors[1], label: "2", hex: null, colorGroup: "Navy", secondaryColorGroup: null, variantLabel: null },
+  ],
+};
+
+Deno.test("renderProductCard: variant-only card swatch background is derived from its Primary Color, not a flat placeholder", () => {
+  const html = renderProductCard(variantWithColorsProduct);
+  assertStringIncludes(html, 'style="background:#141414;"'); // Black
+  assertStringIncludes(html, 'style="background:#1c2c4a;"'); // Navy
+  if (html.includes('style="background:#333;"')) {
+    throw new Error("a variant row with a real Primary Color set should never fall back to the flat placeholder");
+  }
+});
+
+Deno.test("renderProductCard: variant-only card swatch carries the Secondary Color's representative hex as data-secondary-hex, resolved server-side (not the raw group name)", () => {
+  const html = renderProductCard(variantWithColorsProduct);
+  assertStringIncludes(html, 'data-secondary-hex="#1c8a3a"'); // Green
+});
+
+Deno.test("renderProductCard: variant-only card swatch with no Secondary Color set emits an empty data-secondary-hex", () => {
+  const html = renderProductCard(variantWithColorsProduct);
+  var navyCardMatch = html.match(/background:#1c2c4a;"[^>]*data-secondary-hex="([^"]*)"/);
+  if (!navyCardMatch) throw new Error("could not locate the Navy swatch to check its data-secondary-hex");
+  assertEquals(navyCardMatch[1], "");
+});
+
+Deno.test("renderProductCard: a color/both-mode row (real hex) is unaffected -- still uses its own hex, not a Primary-Color-derived one", () => {
+  const html = renderProductCard(twoColorProduct);
+  assertStringIncludes(html, 'style="background:#1a4a1a;"'); // Forest Green's own hex, unchanged
+  assertStringIncludes(html, 'style="background:#1a1a1a;"'); // Stealth Black's own hex, unchanged
+});
+
+Deno.test("renderPdpPage: variant-only modal swatch background is Primary-Color-derived, and carries a swatch-secondary-dot for its Secondary Color", () => {
+  const html = renderPdpPage(variantWithColorsProduct);
+  assertStringIncludes(html, 'style="background:#141414;"'); // Black, selected swatch (index 0)
+  assertStringIncludes(html, '<span class="swatch-secondary-dot" style="background:#1c8a3a;"></span>'); // Green accent
+});
+
+Deno.test("renderPdpPage: variant-only modal swatch with no Secondary Color set omits the swatch-secondary-dot entirely", () => {
+  const singleColorNoSecondary: CatalogProduct = {
+    ...variantWithColorsProduct,
+    colors: [variantWithColorsProduct.colors[1]], // Navy, secondaryColorGroup: null
+  };
+  const html = renderPdpPage(singleColorNoSecondary);
+  // renderPdpPage returns the full shell-wrapped page, which always carries
+  // the shared .swatch-secondary-dot CSS rule regardless of use -- check
+  // for an actual element with that class, not just the string anywhere.
+  if (html.includes('class="swatch-secondary-dot"')) {
+    throw new Error("should not render a secondary-color dot when no secondary color is set");
+  }
+});
+
+Deno.test("renderPdpPage: both-mode swatch (real hex) never gets a swatch-secondary-dot, even if secondaryColorGroup happens to be set (would overload the swatch alongside the real color + variant-text overlay)", () => {
+  const bothModeWithSecondary: CatalogProduct = {
+    ...bothModeProduct,
+    colors: [{ ...bothModeProduct.colors[0], secondaryColorGroup: "Red" }],
+  };
+  const html = renderPdpPage(bothModeWithSecondary);
+  if (html.includes('class="swatch-secondary-dot"')) {
+    throw new Error("both-mode (real hex) swatches should not render the variant-only secondary-color accent dot");
+  }
+});
+
 Deno.test("renderProductCard: color-only row (unchanged existing behavior) emits data-has-color=\"true\" and an empty data-variant", () => {
   const html = renderProductCard(twoColorProduct);
   assertStringIncludes(html, 'data-has-color="true"');
