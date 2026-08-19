@@ -815,6 +815,15 @@
   }
   .modal-swatch:hover { transform: scale(1.2); }
   .modal-swatch.selected { border-color: #e8f000; transform: scale(1.2); }
+  .modal-swatch-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f5f2ee;
+  }
   .modal-swatch.selected::after {
     content: '✓';
     position: absolute;
@@ -942,20 +951,20 @@
   <div class="pdp-grid">
     <div class="pdp-gallery">
       <div class="pdp-main-img">
-        <img id="pdp-main-image" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059137784-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans — Denim Blue" />
+        <img id="pdp-main-image" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans — Variant 1" />
       </div>
-      <div class="pdp-image-label" id="pdp-image-label">Denim Blue</div>
-      <div class="pdp-thumbs" id="pdp-thumbs"><img class="pdp-thumb active" data-index="0" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059137784-Screenshot_2026-08-16_172050.png" alt="View 1" /><img class="pdp-thumb" data-index="1" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059139161-Screenshot_2026-08-16_172126.png" alt="View 2" /><img class="pdp-thumb" data-index="2" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059140248-Screenshot_2026-08-16_172235.png" alt="View 3" /><img class="pdp-thumb" data-index="3" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059144187-Screenshot_2026-08-16_172236.png" alt="View 4" /><img class="pdp-thumb" data-index="4" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059145630-Screenshot_2026-08-16_172309.png" alt="View 5" /><img class="pdp-thumb" data-index="5" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059150469-Screenshot_2026-08-16_172336.png" alt="View 6" /><img class="pdp-thumb" data-index="6" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059152122-Screenshot_2026-08-16_172424.png" alt="View 7" /><img class="pdp-thumb" data-index="7" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059176916-Screenshot_2026-08-16_172444.png" alt="View 8" /><img class="pdp-thumb" data-index="8" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059179890-Screenshot_2026-08-16_172540.png" alt="View 9" /><img class="pdp-thumb" data-index="9" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059180709-Screenshot_2026-08-16_172541.png" alt="View 10" /><img class="pdp-thumb" data-index="10" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059181757-Screenshot_2026-08-16_172601.png" alt="View 11" /><img class="pdp-thumb" data-index="11" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059184257-Screenshot_2026-08-16_172618.png" alt="View 12" /></div>
+      <div class="pdp-image-label" id="pdp-image-label">Variant 1</div>
+      <div class="pdp-thumbs" id="pdp-thumbs"><img class="pdp-thumb active" data-index="0" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png" alt="View 1" /><img class="pdp-thumb" data-index="1" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113831599-Screenshot_2026-08-16_172126.png" alt="View 2" /><img class="pdp-thumb" data-index="2" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113832363-Screenshot_2026-08-16_172235.png" alt="View 3" /><img class="pdp-thumb" data-index="3" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113833627-Screenshot_2026-08-16_172236.png" alt="View 4" /><img class="pdp-thumb" data-index="4" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113834368-Screenshot_2026-08-16_172309.png" alt="View 5" /><img class="pdp-thumb" data-index="5" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113835207-Screenshot_2026-08-16_172336.png" alt="View 6" /><img class="pdp-thumb" data-index="6" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113836196-Screenshot_2026-08-16_172424.png" alt="View 7" /><img class="pdp-thumb" data-index="7" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837005-Screenshot_2026-08-16_172444.png" alt="View 8" /><img class="pdp-thumb" data-index="8" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837723-Screenshot_2026-08-16_172540.png" alt="View 9" /><img class="pdp-thumb" data-index="9" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113839135-Screenshot_2026-08-16_172541.png" alt="View 10" /><img class="pdp-thumb" data-index="10" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113840122-Screenshot_2026-08-16_172601.png" alt="View 11" /><img class="pdp-thumb" data-index="11" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113841035-Screenshot_2026-08-16_172618.png" alt="View 12" /></div>
       <p class="pdp-insta-note">Want to see real in-hand photos before you buy? DM us on Instagram <a href="https://instagram.com/berserker.in" target="_blank" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">@berserker.in</a> and we'll send them over.</p>
     </div>
     <div class="pdp-info">
       <div class="product-brand">Vescartes</div>
       <h1 class="pdp-title">Blossom Denim Jeans</h1>
-      <div class="pdp-price">₹5,699</div>
-      <div class="pdp-cod">COD Advance Amount: ₹4,000</div>
+      <div class="pdp-price">₹4,000</div>
+      <div class="pdp-cod">COD Advance Amount: ₹5,599</div>
 
-      <div class="pdp-section-label">Color — <span id="pdp-color-label">Denim Blue</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#98b1c8;" title="Denim Blue" data-img-index="0" data-img-indices="[0,1,2,3,4,5]"></div><div class="modal-swatch" style="background:#000000;" title="Denim Black" data-img-index="6" data-img-indices="[6,7,8,9,10,11]"></div></div>
+      <div class="pdp-section-label">Color — <span id="pdp-color-label">Variant 1</span></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch modal-swatch-text selected" style="background:#333;" title="Variant 1" data-img-index="0" data-img-indices="[0,1,2,3,4,5]" data-variant="">Variant 1</div><div class="modal-swatch modal-swatch-text" style="background:#333;" title="Variant 2" data-img-index="6" data-img-indices="[6,7,8,9,10,11]" data-variant="">Variant 2</div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -977,8 +986,8 @@
 </section>
 <script>
   (function() {
-    var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059137784-Screenshot_2026-08-16_172050.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059139161-Screenshot_2026-08-16_172126.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059140248-Screenshot_2026-08-16_172235.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059144187-Screenshot_2026-08-16_172236.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059145630-Screenshot_2026-08-16_172309.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059150469-Screenshot_2026-08-16_172336.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059152122-Screenshot_2026-08-16_172424.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059176916-Screenshot_2026-08-16_172444.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059179890-Screenshot_2026-08-16_172540.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059180709-Screenshot_2026-08-16_172541.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059181757-Screenshot_2026-08-16_172601.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787059184257-Screenshot_2026-08-16_172618.png"];
-    var swatchList = [{"label":"Denim Blue","imgIndex":0,"indices":[0,1,2,3,4,5]},{"label":"Denim Black","imgIndex":6,"indices":[6,7,8,9,10,11]}];
+    var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113830251-Screenshot_2026-08-16_172050.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113831599-Screenshot_2026-08-16_172126.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113832363-Screenshot_2026-08-16_172235.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113833627-Screenshot_2026-08-16_172236.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113834368-Screenshot_2026-08-16_172309.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113835207-Screenshot_2026-08-16_172336.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113836196-Screenshot_2026-08-16_172424.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837005-Screenshot_2026-08-16_172444.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113837723-Screenshot_2026-08-16_172540.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113839135-Screenshot_2026-08-16_172541.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113840122-Screenshot_2026-08-16_172601.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1787113841035-Screenshot_2026-08-16_172618.png"];
+    var swatchList = [{"label":"Variant 1","imgIndex":0,"indices":[0,1,2,3,4,5],"variant":null},{"label":"Variant 2","imgIndex":6,"indices":[6,7,8,9,10,11],"variant":null}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -1026,7 +1035,7 @@
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
@@ -1056,10 +1065,11 @@
         if (typeof showToast === 'function') showToast('Please select a color');
         return;
       }
-      var name = "Blossom Denim Jeans" + ' — ' + selectedColor.label + ' / ' + selectedSizeLocal;
+      var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
+      var name = "Blossom Denim Jeans" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
-        addToCart("Vescartes", name, 5699, 4000, imgSrc);
+        addToCart("Vescartes", name, 4000, 5599, imgSrc);
         if (typeof openCart === 'function') openCart();
       }
     });
@@ -1360,23 +1370,30 @@
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 
-    // Build color/variant swatches
-    document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
+    // Build color/variant swatches. "Variant" as the section label covers
+    // both a pure-variant product (no real color at all -- hasColor false)
+    // and a color+variant product where the variant is the more specific
+    // thing being picked; plain color-only products keep "Color".
+    document.getElementById('variant-label-prefix').textContent = (colors[0]?.variant || colors[0]?.hasColor === false) ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, hasColor, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
       div.title = label;
-      if (variant) {
-        div.textContent = variant;
-        div.style.cssText += 'display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:#f5f2ee;';
+      // variant: overlay text on a real color (both mode). !hasColor: no
+      // real color at all (variant-only mode) -- label itself IS the
+      // variant text, shown directly on the neutral swatch.
+      const swatchText = variant || (!hasColor ? label : '');
+      if (swatchText) {
+        div.textContent = swatchText;
+        div.classList.add('modal-swatch-text');
       }
       div.addEventListener('click', () => {
         document.querySelectorAll('.modal-swatch').forEach(s => s.classList.remove('selected'));
         div.classList.add('selected');
-        selectedColor = { label, imgIndex };
+        selectedColor = { label, imgIndex, variant };
         document.getElementById('selected-color-label').textContent = label;
         applySizeAvailability(variants);
         checkConfirmReady();
@@ -1405,7 +1422,8 @@
     if (!selectedColor && !selectedSize) { showToast('Please select size and color'); return; }
     if (!selectedColor) { showToast('Please select color'); return; }
     if (!selectedSize) { showToast('Please select size'); return; }
-    const nameWithDetails = `${pendingItem.name} — ${selectedColor.label} / ${selectedSize}`;
+    const colorIdentity = selectedColor.variant ? `${selectedColor.label} (${selectedColor.variant})` : selectedColor.label;
+    const nameWithDetails = `${pendingItem.name} — ${colorIdentity} / ${selectedSize}`;
     const colorImg = pendingItem.allImgs[selectedColor.imgIndex] || pendingItem.imgSrc;
     addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, pendingItem.codAdvance, colorImg);
     closeSizePicker();
@@ -1441,6 +1459,7 @@
         label: s.title || s.style.background,
         imgIndex: parseInt(s.dataset.imgIndex || '0'),
         variant: s.dataset.variant || null,
+        hasColor: s.dataset.hasColor === 'true',
         variants: variants
       };
     });

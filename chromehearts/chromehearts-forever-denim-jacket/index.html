@@ -815,6 +815,15 @@
   }
   .modal-swatch:hover { transform: scale(1.2); }
   .modal-swatch.selected { border-color: #e8f000; transform: scale(1.2); }
+  .modal-swatch-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f5f2ee;
+  }
   .modal-swatch.selected::after {
     content: '✓';
     position: absolute;
@@ -955,7 +964,7 @@
       <div class="pdp-cod">COD Advance Amount: ₹7,300</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">Black</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#141414;" title="Black" data-img-index="0" data-img-indices="[0,1,2,3]"></div></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#141414;" title="Black" data-img-index="0" data-img-indices="[0,1,2,3]" data-variant=""></div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -978,7 +987,7 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0302.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0303.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0304.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0305.jpg"];
-    var swatchList = [{"label":"Black","imgIndex":0,"indices":[0,1,2,3]}];
+    var swatchList = [{"label":"Black","imgIndex":0,"indices":[0,1,2,3],"variant":null}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -1026,7 +1035,7 @@
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
@@ -1056,7 +1065,8 @@
         if (typeof showToast === 'function') showToast('Please select a color');
         return;
       }
-      var name = "Forever Black Denim Jacket" + ' — ' + selectedColor.label + ' / ' + selectedSizeLocal;
+      var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
+      var name = "Forever Black Denim Jacket" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart("Chrome Hearts", name, 8999, 7300, imgSrc);
@@ -1360,23 +1370,30 @@
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 
-    // Build color/variant swatches
-    document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
+    // Build color/variant swatches. "Variant" as the section label covers
+    // both a pure-variant product (no real color at all -- hasColor false)
+    // and a color+variant product where the variant is the more specific
+    // thing being picked; plain color-only products keep "Color".
+    document.getElementById('variant-label-prefix').textContent = (colors[0]?.variant || colors[0]?.hasColor === false) ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, hasColor, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
       div.title = label;
-      if (variant) {
-        div.textContent = variant;
-        div.style.cssText += 'display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:#f5f2ee;';
+      // variant: overlay text on a real color (both mode). !hasColor: no
+      // real color at all (variant-only mode) -- label itself IS the
+      // variant text, shown directly on the neutral swatch.
+      const swatchText = variant || (!hasColor ? label : '');
+      if (swatchText) {
+        div.textContent = swatchText;
+        div.classList.add('modal-swatch-text');
       }
       div.addEventListener('click', () => {
         document.querySelectorAll('.modal-swatch').forEach(s => s.classList.remove('selected'));
         div.classList.add('selected');
-        selectedColor = { label, imgIndex };
+        selectedColor = { label, imgIndex, variant };
         document.getElementById('selected-color-label').textContent = label;
         applySizeAvailability(variants);
         checkConfirmReady();
@@ -1405,7 +1422,8 @@
     if (!selectedColor && !selectedSize) { showToast('Please select size and color'); return; }
     if (!selectedColor) { showToast('Please select color'); return; }
     if (!selectedSize) { showToast('Please select size'); return; }
-    const nameWithDetails = `${pendingItem.name} — ${selectedColor.label} / ${selectedSize}`;
+    const colorIdentity = selectedColor.variant ? `${selectedColor.label} (${selectedColor.variant})` : selectedColor.label;
+    const nameWithDetails = `${pendingItem.name} — ${colorIdentity} / ${selectedSize}`;
     const colorImg = pendingItem.allImgs[selectedColor.imgIndex] || pendingItem.imgSrc;
     addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, pendingItem.codAdvance, colorImg);
     closeSizePicker();
@@ -1441,6 +1459,7 @@
         label: s.title || s.style.background,
         imgIndex: parseInt(s.dataset.imgIndex || '0'),
         variant: s.dataset.variant || null,
+        hasColor: s.dataset.hasColor === 'true',
         variants: variants
       };
     });

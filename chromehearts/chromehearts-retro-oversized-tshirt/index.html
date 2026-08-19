@@ -815,6 +815,15 @@
   }
   .modal-swatch:hover { transform: scale(1.2); }
   .modal-swatch.selected { border-color: #e8f000; transform: scale(1.2); }
+  .modal-swatch-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f5f2ee;
+  }
   .modal-swatch.selected::after {
     content: '✓';
     position: absolute;
@@ -955,7 +964,7 @@
       <div class="pdp-cod">COD Advance Amount: ₹3,100</div>
 
       <div class="pdp-section-label">Color — <span id="pdp-color-label">Variant 1</span></div>
-      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-img-indices="[0]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-img-indices="[1]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-img-indices="[2,3]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="4" data-img-indices="[4,5]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="6" data-img-indices="[6,7]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="8" data-img-indices="[8,9]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="10" data-img-indices="[10,11]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="12" data-img-indices="[12,13]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 9" data-img-index="14" data-img-indices="[14,15]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 10" data-img-index="16" data-img-indices="[16,17]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 11" data-img-index="18" data-img-indices="[18,19]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 12" data-img-index="20" data-img-indices="[20,21]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 13" data-img-index="22" data-img-indices="[22,23]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 14" data-img-index="24" data-img-indices="[24,25]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 15" data-img-index="26" data-img-indices="[26,27]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 16" data-img-index="28" data-img-indices="[28,29]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 17" data-img-index="30" data-img-indices="[30,31]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 18" data-img-index="32" data-img-indices="[32,33]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 19" data-img-index="34" data-img-indices="[34,35]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 20" data-img-index="36" data-img-indices="[36,37]"></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 21" data-img-index="38" data-img-indices="[38,39]"></div></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#2a2a2a;" title="Variant 1" data-img-index="0" data-img-indices="[0]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 2" data-img-index="1" data-img-indices="[1]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 3" data-img-index="2" data-img-indices="[2,3]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 4" data-img-index="4" data-img-indices="[4,5]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 5" data-img-index="6" data-img-indices="[6,7]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 6" data-img-index="8" data-img-indices="[8,9]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 7" data-img-index="10" data-img-indices="[10,11]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 8" data-img-index="12" data-img-indices="[12,13]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 9" data-img-index="14" data-img-indices="[14,15]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 10" data-img-index="16" data-img-indices="[16,17]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 11" data-img-index="18" data-img-indices="[18,19]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 12" data-img-index="20" data-img-indices="[20,21]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 13" data-img-index="22" data-img-indices="[22,23]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 14" data-img-index="24" data-img-indices="[24,25]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 15" data-img-index="26" data-img-indices="[26,27]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 16" data-img-index="28" data-img-indices="[28,29]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 17" data-img-index="30" data-img-indices="[30,31]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 18" data-img-index="32" data-img-indices="[32,33]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 19" data-img-index="34" data-img-indices="[34,35]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 20" data-img-index="36" data-img-indices="[36,37]" data-variant=""></div><div class="modal-swatch" style="background:#2a2a2a;" title="Variant 21" data-img-index="38" data-img-indices="[38,39]" data-variant=""></div></div>
 
       <div class="pdp-section-label">Size</div>
       <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
@@ -978,7 +987,7 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0211.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0212.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0213.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0214.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0215.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0216.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0217.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0218.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0219.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0220.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0221.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0222.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0223.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0224.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0225.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0226.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0227.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0228.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0229.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0230.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0231.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0232.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0233.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0234.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0235.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0236.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0237.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0238.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0239.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0240.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0241.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0242.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0243.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0244.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0245.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0246.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0247.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0248.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0249.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0250.jpg"];
-    var swatchList = [{"label":"Variant 1","imgIndex":0,"indices":[0]},{"label":"Variant 2","imgIndex":1,"indices":[1]},{"label":"Variant 3","imgIndex":2,"indices":[2,3]},{"label":"Variant 4","imgIndex":4,"indices":[4,5]},{"label":"Variant 5","imgIndex":6,"indices":[6,7]},{"label":"Variant 6","imgIndex":8,"indices":[8,9]},{"label":"Variant 7","imgIndex":10,"indices":[10,11]},{"label":"Variant 8","imgIndex":12,"indices":[12,13]},{"label":"Variant 9","imgIndex":14,"indices":[14,15]},{"label":"Variant 10","imgIndex":16,"indices":[16,17]},{"label":"Variant 11","imgIndex":18,"indices":[18,19]},{"label":"Variant 12","imgIndex":20,"indices":[20,21]},{"label":"Variant 13","imgIndex":22,"indices":[22,23]},{"label":"Variant 14","imgIndex":24,"indices":[24,25]},{"label":"Variant 15","imgIndex":26,"indices":[26,27]},{"label":"Variant 16","imgIndex":28,"indices":[28,29]},{"label":"Variant 17","imgIndex":30,"indices":[30,31]},{"label":"Variant 18","imgIndex":32,"indices":[32,33]},{"label":"Variant 19","imgIndex":34,"indices":[34,35]},{"label":"Variant 20","imgIndex":36,"indices":[36,37]},{"label":"Variant 21","imgIndex":38,"indices":[38,39]}];
+    var swatchList = [{"label":"Variant 1","imgIndex":0,"indices":[0],"variant":null},{"label":"Variant 2","imgIndex":1,"indices":[1],"variant":null},{"label":"Variant 3","imgIndex":2,"indices":[2,3],"variant":null},{"label":"Variant 4","imgIndex":4,"indices":[4,5],"variant":null},{"label":"Variant 5","imgIndex":6,"indices":[6,7],"variant":null},{"label":"Variant 6","imgIndex":8,"indices":[8,9],"variant":null},{"label":"Variant 7","imgIndex":10,"indices":[10,11],"variant":null},{"label":"Variant 8","imgIndex":12,"indices":[12,13],"variant":null},{"label":"Variant 9","imgIndex":14,"indices":[14,15],"variant":null},{"label":"Variant 10","imgIndex":16,"indices":[16,17],"variant":null},{"label":"Variant 11","imgIndex":18,"indices":[18,19],"variant":null},{"label":"Variant 12","imgIndex":20,"indices":[20,21],"variant":null},{"label":"Variant 13","imgIndex":22,"indices":[22,23],"variant":null},{"label":"Variant 14","imgIndex":24,"indices":[24,25],"variant":null},{"label":"Variant 15","imgIndex":26,"indices":[26,27],"variant":null},{"label":"Variant 16","imgIndex":28,"indices":[28,29],"variant":null},{"label":"Variant 17","imgIndex":30,"indices":[30,31],"variant":null},{"label":"Variant 18","imgIndex":32,"indices":[32,33],"variant":null},{"label":"Variant 19","imgIndex":34,"indices":[34,35],"variant":null},{"label":"Variant 20","imgIndex":36,"indices":[36,37],"variant":null},{"label":"Variant 21","imgIndex":38,"indices":[38,39],"variant":null}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -1026,7 +1035,7 @@
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
@@ -1056,7 +1065,8 @@
         if (typeof showToast === 'function') showToast('Please select a color');
         return;
       }
-      var name = "Retro Oversized T-Shirt" + ' — ' + selectedColor.label + ' / ' + selectedSizeLocal;
+      var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
+      var name = "Retro Oversized T-Shirt" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart("Chrome Hearts", name, 4799, 3100, imgSrc);
@@ -1360,23 +1370,30 @@
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 
-    // Build color/variant swatches
-    document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
+    // Build color/variant swatches. "Variant" as the section label covers
+    // both a pure-variant product (no real color at all -- hasColor false)
+    // and a color+variant product where the variant is the more specific
+    // thing being picked; plain color-only products keep "Color".
+    document.getElementById('variant-label-prefix').textContent = (colors[0]?.variant || colors[0]?.hasColor === false) ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, hasColor, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
       div.title = label;
-      if (variant) {
-        div.textContent = variant;
-        div.style.cssText += 'display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:#f5f2ee;';
+      // variant: overlay text on a real color (both mode). !hasColor: no
+      // real color at all (variant-only mode) -- label itself IS the
+      // variant text, shown directly on the neutral swatch.
+      const swatchText = variant || (!hasColor ? label : '');
+      if (swatchText) {
+        div.textContent = swatchText;
+        div.classList.add('modal-swatch-text');
       }
       div.addEventListener('click', () => {
         document.querySelectorAll('.modal-swatch').forEach(s => s.classList.remove('selected'));
         div.classList.add('selected');
-        selectedColor = { label, imgIndex };
+        selectedColor = { label, imgIndex, variant };
         document.getElementById('selected-color-label').textContent = label;
         applySizeAvailability(variants);
         checkConfirmReady();
@@ -1405,7 +1422,8 @@
     if (!selectedColor && !selectedSize) { showToast('Please select size and color'); return; }
     if (!selectedColor) { showToast('Please select color'); return; }
     if (!selectedSize) { showToast('Please select size'); return; }
-    const nameWithDetails = `${pendingItem.name} — ${selectedColor.label} / ${selectedSize}`;
+    const colorIdentity = selectedColor.variant ? `${selectedColor.label} (${selectedColor.variant})` : selectedColor.label;
+    const nameWithDetails = `${pendingItem.name} — ${colorIdentity} / ${selectedSize}`;
     const colorImg = pendingItem.allImgs[selectedColor.imgIndex] || pendingItem.imgSrc;
     addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, pendingItem.codAdvance, colorImg);
     closeSizePicker();
@@ -1441,6 +1459,7 @@
         label: s.title || s.style.background,
         imgIndex: parseInt(s.dataset.imgIndex || '0'),
         variant: s.dataset.variant || null,
+        hasColor: s.dataset.hasColor === 'true',
         variants: variants
       };
     });

@@ -815,6 +815,15 @@
   }
   .modal-swatch:hover { transform: scale(1.2); }
   .modal-swatch.selected { border-color: #e8f000; transform: scale(1.2); }
+  .modal-swatch-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f5f2ee;
+  }
   .modal-swatch.selected::after {
     content: '✓';
     position: absolute;
@@ -1026,7 +1035,7 @@
     <div class="product-brand">YoungLA × Batman</div>
     <a href="/youngla/youngla-batman-half-sleeve/"><div class="product-name">Compression Half Sleeve</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#1a1a2e;" title="Dark Knight" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2a2a2a;" title="Stealth" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#e8e8e8;" title="White" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#1a1a2e;" title="Dark Knight" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2a2a2a;" title="Stealth" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#e8e8e8;" title="White" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="4000">Add to Cart</button>
 </div>
@@ -1038,7 +1047,7 @@
     <div class="product-brand">YoungLA × Superman</div>
     <a href="/youngla/youngla-superman-half-sleeve/"><div class="product-name">Compression Half Sleeve</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#12141c;" title="Black" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#1e3fc4;" title="Blue" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#12141c;" title="Black" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#1e3fc4;" title="Blue" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1050,7 +1059,7 @@
     <div class="product-brand">YoungLA × Gold&#39;s Gym</div>
     <a href="/youngla/youngla-gold&#39;s-gym-tshirt/"><div class="product-name">Slim Fit T-Shirt</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#6e1f2a;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#f2c318;" title="Yellow" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#ece7db;" title="Cream" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#6e1f2a;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#f2c318;" title="Yellow" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#ece7db;" title="Cream" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1062,7 +1071,7 @@
     <div class="product-brand">YoungLA</div>
     <a href="/youngla/youngla-drip-oversized-tshirt/"><div class="product-name">Drip Oversized T-Shirt</div></a>
     <div class="product-price">₹4,399<span class="original">₹11,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a2a35;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#4a3f30;" title="Brown" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a2a35;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#4a3f30;" title="Brown" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="2800">Add to Cart</button>
 </div>
@@ -1074,7 +1083,7 @@
     <div class="product-brand">YoungLA</div>
     <a href="/youngla/youngla-revenge-hoodie/"><div class="product-name">Revenge Hoodie</div></a>
     <div class="product-price">₹5,099<span class="original">₹13,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#0d3b2e;" title="Green" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#8a8a8a;" title="Grey" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#0d3b2e;" title="Green" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#8a8a8a;" title="Grey" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
@@ -1086,7 +1095,7 @@
     <div class="product-brand">YoungLA</div>
     <a href="/youngla/youngla-revenge-joggers/"><div class="product-name">Revenge Joggers</div></a>
     <div class="product-price">₹4,799<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#413a52;" title="Purple" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#0e5f5f;" title="Teal" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#413a52;" title="Purple" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#0e5f5f;" title="Teal" data-img-index="4" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#c41e1e;" title="Red" data-img-index="7" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
@@ -1098,7 +1107,7 @@
     <div class="product-brand">YoungLA</div>
     <a href="/youngla/youngla-divine-sweats/"><div class="product-name">Divine Sweats Sweatpants</div></a>
     <div class="product-price">₹4,499<span class="original">₹12,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#5a2a35;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#2e3240;" title="Navy" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3f2f4a;" title="Purple" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div><div class="swatch" style="background:#3a3d3a;" title="Charcoal" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]"></div></div>
+    <div class="product-swatches"><div class="swatch" style="background:#5a2a35;" title="Maroon" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#141414;" title="Black" data-img-index="1" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#2e3240;" title="Navy" data-img-index="2" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#3f2f4a;" title="Purple" data-img-index="3" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div><div class="swatch" style="background:#3a3d3a;" title="Charcoal" data-img-index="5" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true"></div></div>
   </div>
   <button class="product-add" data-cod-advance="2900">Add to Cart</button>
 </div></div>
@@ -1396,23 +1405,30 @@
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 
-    // Build color/variant swatches
-    document.getElementById('variant-label-prefix').textContent = colors[0]?.variant ? 'Variant' : 'Color';
+    // Build color/variant swatches. "Variant" as the section label covers
+    // both a pure-variant product (no real color at all -- hasColor false)
+    // and a color+variant product where the variant is the more specific
+    // thing being picked; plain color-only products keep "Color".
+    document.getElementById('variant-label-prefix').textContent = (colors[0]?.variant || colors[0]?.hasColor === false) ? 'Variant' : 'Color';
     const swatchContainer = document.getElementById('modal-color-swatches');
     swatchContainer.innerHTML = '';
-    colors.forEach(({ bg, label, imgIndex, variant, variants }) => {
+    colors.forEach(({ bg, label, imgIndex, variant, hasColor, variants }) => {
       const div = document.createElement('div');
       div.className = 'modal-swatch';
       div.style.background = bg;
       div.title = label;
-      if (variant) {
-        div.textContent = variant;
-        div.style.cssText += 'display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:11px;font-weight:700;color:#f5f2ee;';
+      // variant: overlay text on a real color (both mode). !hasColor: no
+      // real color at all (variant-only mode) -- label itself IS the
+      // variant text, shown directly on the neutral swatch.
+      const swatchText = variant || (!hasColor ? label : '');
+      if (swatchText) {
+        div.textContent = swatchText;
+        div.classList.add('modal-swatch-text');
       }
       div.addEventListener('click', () => {
         document.querySelectorAll('.modal-swatch').forEach(s => s.classList.remove('selected'));
         div.classList.add('selected');
-        selectedColor = { label, imgIndex };
+        selectedColor = { label, imgIndex, variant };
         document.getElementById('selected-color-label').textContent = label;
         applySizeAvailability(variants);
         checkConfirmReady();
@@ -1441,7 +1457,8 @@
     if (!selectedColor && !selectedSize) { showToast('Please select size and color'); return; }
     if (!selectedColor) { showToast('Please select color'); return; }
     if (!selectedSize) { showToast('Please select size'); return; }
-    const nameWithDetails = `${pendingItem.name} — ${selectedColor.label} / ${selectedSize}`;
+    const colorIdentity = selectedColor.variant ? `${selectedColor.label} (${selectedColor.variant})` : selectedColor.label;
+    const nameWithDetails = `${pendingItem.name} — ${colorIdentity} / ${selectedSize}`;
     const colorImg = pendingItem.allImgs[selectedColor.imgIndex] || pendingItem.imgSrc;
     addToCart(pendingItem.brand, nameWithDetails, pendingItem.price, pendingItem.codAdvance, colorImg);
     closeSizePicker();
@@ -1477,6 +1494,7 @@
         label: s.title || s.style.background,
         imgIndex: parseInt(s.dataset.imgIndex || '0'),
         variant: s.dataset.variant || null,
+        hasColor: s.dataset.hasColor === 'true',
         variants: variants
       };
     });
