@@ -11,13 +11,22 @@
 // price/cod_advance are per-product (not per-color/size) -- this string is
 // enough to identify what was actually bought without needing stable
 // product/color IDs threaded through every page.
+//
+// A product with a variant label (option_mode 'both') extends the color
+// segment to "Black (V1)" -- colorLabel stays "Black", variantLabel becomes
+// "V1". A pure-variant product (option_mode 'variant') has no parens at
+// all: its product_colors.label IS the variant text directly (e.g. "V1"),
+// so it round-trips through the plain colorLabel path unchanged, same as
+// every existing color-only product's format.
 export interface ParsedCartItemName {
   productName: string;
   colorLabel: string;
+  variantLabel: string | null;
   size: string;
 }
 
 const VALID_SIZES = new Set(["S", "M", "L", "XL"]);
+const VARIANT_SUFFIX = / \(([^()]+)\)$/;
 
 export function parseCartItemName(name: string): ParsedCartItemName | null {
   const dashIdx = name.indexOf(" — ");
@@ -26,10 +35,19 @@ export function parseCartItemName(name: string): ParsedCartItemName | null {
   const rest = name.slice(dashIdx + 3);
   const slashIdx = rest.lastIndexOf(" / ");
   if (slashIdx === -1) return null;
-  const colorLabel = rest.slice(0, slashIdx).trim();
+  let colorLabel = rest.slice(0, slashIdx).trim();
   const size = rest.slice(slashIdx + 3).trim();
+
+  let variantLabel: string | null = null;
+  const variantMatch = colorLabel.match(VARIANT_SUFFIX);
+  if (variantMatch) {
+    variantLabel = variantMatch[1].trim();
+    colorLabel = colorLabel.slice(0, variantMatch.index).trim();
+    if (!variantLabel) return null;
+  }
+
   if (!productName || !colorLabel || !VALID_SIZES.has(size)) return null;
-  return { productName, colorLabel, size };
+  return { productName, colorLabel, variantLabel, size };
 }
 
 export interface ResolvedItem {

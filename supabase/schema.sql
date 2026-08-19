@@ -55,10 +55,15 @@ create table if not exists products (
   category text not null,
   sleeve_length text,
   description text,
+  -- Drives which fields the admin panel shows for this product's
+  -- color/option rows -- not consumed by the renderer, which infers swatch
+  -- display purely from each row's own data (see product_colors.variant_label).
+  option_mode text not null default 'color',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint products_category_check check (category in ('t-shirt','compression','pants','jacket','dress','set')),
   constraint products_sleeve_length_check check (sleeve_length is null or sleeve_length in ('half','full','sleeveless')),
+  constraint products_option_mode_check check (option_mode in ('color', 'variant', 'both')),
   -- DEFERRABLE so set_product_position() can shift a block of rows without the
   -- intermediate (momentarily colliding) state tripping the uniqueness check.
   constraint products_position_unique unique (position) deferrable initially immediate
@@ -83,6 +88,10 @@ create table if not exists product_colors (
   hex text,
   color_group text not null,
   cover_image_id uuid references product_images(id) on delete set null,
+  -- Only set in a 'both'-mode product: label stays the color name, this
+  -- carries the extra variant text shown alongside it. In 'variant' mode
+  -- label itself holds the variant text directly and this stays null.
+  variant_label text,
   created_at timestamptz not null default now()
 );
 

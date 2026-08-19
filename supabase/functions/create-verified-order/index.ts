@@ -118,14 +118,22 @@ Deno.serve(async (req) => {
       return json({ ok: false, error: `unknown product "${parsed.productName}" for brand "${item.brand}"` }, 400);
     }
 
-    const { data: color } = await supabase
+    // variant_label disambiguates a 'both'-mode product where the same
+    // color label can carry more than one variant (e.g. "Black" + "V1" vs
+    // "Black" + "V2" are two distinct purchasable rows) -- matching on
+    // label alone could return more than one row for those.
+    let colorQuery = supabase
       .from("product_colors")
       .select("id, label")
       .eq("product_id", product.id)
-      .eq("label", parsed.colorLabel)
-      .maybeSingle();
+      .eq("label", parsed.colorLabel);
+    colorQuery = parsed.variantLabel
+      ? colorQuery.eq("variant_label", parsed.variantLabel)
+      : colorQuery.is("variant_label", null);
+    const { data: color } = await colorQuery.maybeSingle();
     if (!color) {
-      return json({ ok: false, error: `unknown color "${parsed.colorLabel}" for "${parsed.productName}"` }, 400);
+      const colorDesc = parsed.variantLabel ? `${parsed.colorLabel} (${parsed.variantLabel})` : parsed.colorLabel;
+      return json({ ok: false, error: `unknown color "${colorDesc}" for "${parsed.productName}"` }, 400);
     }
 
     const { data: variant } = await supabase
@@ -136,7 +144,8 @@ Deno.serve(async (req) => {
       .eq("size", parsed.size)
       .maybeSingle();
     if (!variant || !variant.in_stock) {
-      return json({ ok: false, error: `"${parsed.productName} — ${parsed.colorLabel} / ${parsed.size}" is out of stock` }, 409);
+      const colorDesc = parsed.variantLabel ? `${parsed.colorLabel} (${parsed.variantLabel})` : parsed.colorLabel;
+      return json({ ok: false, error: `"${parsed.productName} — ${colorDesc} / ${parsed.size}" is out of stock` }, 409);
     }
 
     resolved.push({

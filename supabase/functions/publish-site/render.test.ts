@@ -1,5 +1,5 @@
 import { assertStringIncludes, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderBrandsIndexPage, renderPdpPage } from "./render.ts";
+import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderBrandsIndexPage, renderPdpPage, swatchDisplayText } from "./render.ts";
 import type { CatalogProduct, PrimaryBrand } from "./data.ts";
 import type { Catalog } from "./data.ts";
 
@@ -9,7 +9,7 @@ const sampleProduct: CatalogProduct = {
   category: "compression", sleeveLength: "half", description: null,
   colors: [
     {
-      id: "c1", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black",
+      id: "c1", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", variantLabel: null,
       coverImageUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg",
       images: [{ url: "https://example.supabase.co/.../img-0001.jpg", sortOrder: 0 }],
       variants: [
@@ -65,12 +65,12 @@ const twoColorProduct: CatalogProduct = {
   category: "compression", sleeveLength: "half", description: null,
   colors: [
     {
-      id: "c1", label: "Forest Green", hex: "#1a4a1a", colorGroup: "Green",
+      id: "c1", label: "Forest Green", hex: "#1a4a1a", colorGroup: "Green", variantLabel: null,
       coverImageUrl: "https://example.supabase.co/.../green.jpg",
       images: [], variants: [{ size: "S", inStock: true }],
     },
     {
-      id: "c2", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black",
+      id: "c2", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", variantLabel: null,
       coverImageUrl: "https://example.supabase.co/.../black.jpg",
       images: [], variants: [{ size: "S", inStock: true }],
     },
@@ -532,4 +532,100 @@ Deno.test("renderBrandsIndexPage: one .cat-card per brand, linking to its folder
   assertStringIncludes(html, 'src="https://fake.test/_brands/gymshark-1.jpg"');
   assertStringIncludes(html, '<div class="cat-label">Gymshark</div>');
   assertStringIncludes(html, '<a href="/youngla/" class="cat-card"');
+});
+
+// ── PRODUCT OPTIONS: color / variant / both ──
+// A color-mode row (real hex, no variant_label) shows no swatch text; a
+// variant-only row (hex null -- label itself IS the variant text) shows
+// its label; a both-mode row (real hex + variant_label) shows the variant
+// text overlaid on the real color. See swatchDisplayText's doc comment.
+
+Deno.test("swatchDisplayText: color-only row (real hex, no variant_label) shows no text", () => {
+  assertEquals(swatchDisplayText({ hex: "#1a1a1a", label: "Black", variantLabel: null }), "");
+});
+
+Deno.test("swatchDisplayText: variant-only row (hex null) shows its label as the text", () => {
+  assertEquals(swatchDisplayText({ hex: null, label: "V1", variantLabel: null }), "V1");
+});
+
+Deno.test("swatchDisplayText: both-mode row (real hex + variant_label) shows the variant text, not the color label", () => {
+  assertEquals(swatchDisplayText({ hex: "#1a1a1a", label: "Black", variantLabel: "V1" }), "V1");
+});
+
+const variantOnlyProduct: CatalogProduct = {
+  ...twoColorProduct,
+  colors: [
+    { ...twoColorProduct.colors[0], label: "V1", hex: null, variantLabel: null },
+    { ...twoColorProduct.colors[1], label: "V2", hex: null, variantLabel: null },
+  ],
+};
+
+const bothModeProduct: CatalogProduct = {
+  ...twoColorProduct,
+  colors: [
+    { ...twoColorProduct.colors[0], label: "Forest Green", hex: "#1a4a1a", variantLabel: "V1" },
+    { ...twoColorProduct.colors[1], label: "Stealth Black", hex: "#1a1a1a", variantLabel: "V2" },
+  ],
+};
+
+Deno.test("renderProductCard: card swatch carries data-variant and data-has-color so the Add to Cart popup (shell.ts) can read them", () => {
+  const html = renderProductCard(bothModeProduct);
+  assertStringIncludes(html, 'data-variant="V1"');
+  assertStringIncludes(html, 'data-variant="V2"');
+  assertStringIncludes(html, 'data-has-color="true"');
+});
+
+Deno.test("renderProductCard: variant-only row emits data-has-color=\"false\" and an empty data-variant (label itself is the variant text)", () => {
+  const html = renderProductCard(variantOnlyProduct);
+  assertStringIncludes(html, 'data-has-color="false"');
+  assertStringIncludes(html, 'data-variant=""');
+});
+
+Deno.test("renderProductCard: color-only row (unchanged existing behavior) emits data-has-color=\"true\" and an empty data-variant", () => {
+  const html = renderProductCard(twoColorProduct);
+  assertStringIncludes(html, 'data-has-color="true"');
+  assertStringIncludes(html, 'data-variant=""');
+});
+
+Deno.test("renderPdpPage: variant-only swatch renders its label as visible text on the swatch, with the modal-swatch-text class", () => {
+  const html = renderPdpPage(variantOnlyProduct);
+  assertStringIncludes(html, 'class="modal-swatch modal-swatch-text selected"');
+  assertStringIncludes(html, ">V1</div>");
+  assertStringIncludes(html, ">V2</div>");
+});
+
+Deno.test("renderPdpPage: both-mode swatch keeps its real color background AND overlays the variant text", () => {
+  const html = renderPdpPage(bothModeProduct);
+  assertStringIncludes(html, 'style="background:#1a4a1a;"');
+  assertStringIncludes(html, 'class="modal-swatch modal-swatch-text selected"');
+  assertStringIncludes(html, ">V1</div>");
+});
+
+Deno.test("renderPdpPage: color-only swatch (unchanged existing behavior) has no modal-swatch-text class on its swatch div and no visible text", () => {
+  const html = renderPdpPage(twoColorProduct);
+  // renderPdpPage returns the full shell-wrapped page, which always carries
+  // the shared .modal-swatch-text CSS rule regardless of use -- check the
+  // swatch element's own class list, not just "does this string appear
+  // anywhere on the page".
+  if (html.includes('class="modal-swatch modal-swatch-text')) {
+    throw new Error("a plain color-mode product's swatch divs should never carry the variant-text class");
+  }
+  assertStringIncludes(html, '<div class="modal-swatch selected" style="background:#1a4a1a;"');
+});
+
+Deno.test("renderPdpPage: swatchList JSON carries each color's variant field for the client-side script to build the composed cart-item name", () => {
+  const html = renderPdpPage(bothModeProduct);
+  assertStringIncludes(html, '"variant":"V1"');
+  assertStringIncludes(html, '"variant":"V2"');
+  // The color-only fixture's colors have no variant_label -- swatchList
+  // should still carry the field, just null, not omit it.
+  const plainHtml = renderPdpPage(twoColorProduct);
+  assertStringIncludes(plainHtml, '"variant":null');
+});
+
+Deno.test("renderPdpPage: composed cart-item name folds in the variant as \"Label (Variant)\" when present, and stays plain \"Label\" when not (regression: extending the format must not change the existing color-only product's cart-item name string, since checkout parsing depends on it)", () => {
+  const bothHtml = renderPdpPage(bothModeProduct);
+  assertStringIncludes(bothHtml, "selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label");
+  const plainHtml = renderPdpPage(twoColorProduct);
+  assertStringIncludes(plainHtml, "var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;");
 });

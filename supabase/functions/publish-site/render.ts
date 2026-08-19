@@ -23,6 +23,17 @@ export function esc(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
+// Visible text to overlay on a swatch: a 'both'-mode color's variant_label
+// (shown alongside its real color background), or -- when there's no real
+// color at all (hex null, i.e. a 'variant'-mode row where label itself IS
+// the variant text) -- the label itself. Plain color-mode rows (real hex,
+// no variant_label) show no text, matching the swatch's existing look.
+export function swatchDisplayText(c: { hex: string | null; label: string; variantLabel?: string | null }): string {
+  if (c.variantLabel) return c.variantLabel;
+  if (c.hex === null) return c.label;
+  return "";
+}
+
 export function renderProductCard(product: CatalogProduct): string {
   const wasPrice = strikethroughPrice(product.price);
   // The hover-slider cycles through every uploaded photo (not one per
@@ -54,7 +65,7 @@ export function renderProductCard(product: CatalogProduct): string {
       // whichever sizes are actually out of stock for whichever color the
       // shopper picks, instead of showing every size as available.
       const variantsJson = esc(JSON.stringify(c.variants.map((v) => ({ size: v.size, inStock: v.inStock }))));
-      return `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}" data-variants="${variantsJson}"></div>`;
+      return `<div class="swatch" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${idx === -1 ? 0 : idx}" data-variants="${variantsJson}" data-variant="${esc(c.variantLabel ?? "")}" data-has-color="${c.hex !== null}"></div>`;
     })
     .join("");
   const brandFolder = brandFolderFor(product);
@@ -340,7 +351,9 @@ export function renderPdpPage(product: CatalogProduct): string {
     .map((c, i) => {
       const imgIndex = colorImgIndex(c);
       const indicesJson = esc(JSON.stringify(colorImgIndices(c)));
-      return `<div class="modal-swatch${i === selectedIdx ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}"></div>`;
+      const displayText = swatchDisplayText(c);
+      const textClass = displayText ? " modal-swatch-text" : "";
+      return `<div class="modal-swatch${textClass}${i === selectedIdx ? " selected" : ""}" style="background:${esc(c.hex ?? "#333")};" title="${esc(c.label)}" data-img-index="${imgIndex}" data-img-indices="${indicesJson}" data-variant="${esc(c.variantLabel ?? "")}">${esc(displayText)}</div>`;
     })
     .join("");
 
@@ -396,7 +409,7 @@ export function renderPdpPage(product: CatalogProduct): string {
 <script>
   (function() {
     var images = ${jsonForScript(images)};
-    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), indices: colorImgIndices(c) })))};
+    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), indices: colorImgIndices(c), variant: c.variantLabel })))};
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -444,7 +457,7 @@ export function renderPdpPage(product: CatalogProduct): string {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices };
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
       });
@@ -474,7 +487,8 @@ export function renderPdpPage(product: CatalogProduct): string {
         if (typeof showToast === 'function') showToast('Please select a color');
         return;
       }
-      var name = ${jsonForScript(product.name)} + ' — ' + selectedColor.label + ' / ' + selectedSizeLocal;
+      var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
+      var name = ${jsonForScript(product.name)} + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart(${jsonForScript(product.brand)}, name, ${product.price}, ${product.codAdvance}, imgSrc);

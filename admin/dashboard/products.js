@@ -6,7 +6,7 @@ var productsCache = [];
 async function loadProductsList() {
   var { data, error } = await sb
     .from('products')
-    .select('*, brands(name, folder_slug), product_colors(id, label, hex, color_group, cover_image_id)')
+    .select('*, brands(name, folder_slug), product_colors(id, label, hex, color_group, variant_label, cover_image_id)')
     .order('position', { ascending: true });
   document.getElementById('products-loading').style.display = 'none';
   if (error) {
@@ -32,7 +32,8 @@ function renderProductsTable() {
   tbody.innerHTML = '';
   productsCache.forEach(function(p) {
     var colorsHtml = (p.product_colors || []).map(function(c) {
-      return '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;margin-right:3px;" title="' + esc(c.label) + '"></span>';
+      var title = c.variant_label ? (c.label + ' (' + c.variant_label + ')') : c.label;
+      return '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;margin-right:3px;" title="' + esc(title) + '"></span>';
     }).join('');
     var tr = document.createElement('tr');
     tr.innerHTML =
@@ -219,6 +220,7 @@ async function renderEditForm(product) {
           return '<option value="' + s + '"' + (s === (product.sleeve_length || '') ? ' selected' : '') + '>' + (s || '(none)') + '</option>';
         }).join('') +
       '</select></div>' +
+      '<div class="field"><label>Options</label>' + optionModeSelectHtml(product.option_mode || 'color') + '</div>' +
       '<div class="field" style="flex-basis:100%;"><label>Description</label><textarea name="description" style="width:100%;min-height:60px;background:var(--mid);border:1px solid var(--border);color:var(--white);font-family:\'DM Sans\',sans-serif;font-size:13px;padding:8px 10px;">' + esc(product.description || '') + '</textarea></div>' +
       '<button type="submit" class="btn">Save Changes</button>' +
       '<p class="msg" id="edit-msg-' + product.id + '"></p>' +
@@ -231,6 +233,7 @@ async function renderEditForm(product) {
     var form = e.target;
     var msg = document.getElementById('edit-msg-' + product.id);
     var sleeveVal = form.sleeve_length.value;
+    var newOptionMode = form.option_mode.value;
     var { error } = await sb.from('products').update({
       brand_id: form.brand_id.value,
       name: form.name.value.trim(),
@@ -238,6 +241,7 @@ async function renderEditForm(product) {
       cod_advance: parseFloat(form.cod_advance.value),
       category: form.category.value,
       sleeve_length: sleeveVal === '' ? null : sleeveVal,
+      option_mode: newOptionMode,
       description: form.description.value.trim() || null,
       updated_at: new Date().toISOString(),
     }).eq('id', product.id);
@@ -247,6 +251,11 @@ async function renderEditForm(product) {
     } else {
       msg.style.color = '#8fd14f';
       msg.textContent = 'Saved.';
+      // The Colors & Stock section's Add-Option fields depend on
+      // option_mode -- refresh it in place so switching modes doesn't
+      // require closing and reopening this product to see the new fields.
+      product.option_mode = newOptionMode;
+      renderColorsSection(product);
       loadProductsList();
     }
   });
@@ -265,6 +274,24 @@ document.getElementById('show-add-product-btn').addEventListener('click', functi
   }
 });
 
+// Shared by the add- and edit-product forms. option_mode governs which
+// fields the Colors & Stock section shows for this product's rows: 'color'
+// (a real color, unchanged default), 'variant' (a free-text label only, no
+// color picker -- e.g. "V1"), or 'both' (a real color plus an extra
+// variant-text field on each row).
+function optionModeSelectHtml(current) {
+  var modes = [
+    ['color', 'Color'],
+    ['variant', 'Variant number'],
+    ['both', 'Both (color + variant)'],
+  ];
+  return '<select name="option_mode" title="Whether this product\'s swatches show a color, a variant number, or both">' +
+    modes.map(function(m) {
+      return '<option value="' + m[0] + '"' + (m[0] === current ? ' selected' : '') + '>' + m[1] + '</option>';
+    }).join('') +
+  '</select>';
+}
+
 async function renderAddProductForm() {
   if (!brandsCache.length) { await loadBrandsList(); }
   var wrap = document.getElementById('add-product-form-wrap');
@@ -278,6 +305,7 @@ async function renderAddProductForm() {
       '<div class="field"><label>Category</label><select name="category" required>' +
         ['t-shirt','compression','pants','jacket','dress','set'].map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('') +
       '</select></div>' +
+      '<div class="field"><label>Options</label>' + optionModeSelectHtml('color') + '</div>' +
       '<button type="submit" class="btn">Create Product</button>' +
       '<p class="msg" id="add-product-msg"></p>' +
     '</form>';
@@ -297,6 +325,7 @@ async function renderAddProductForm() {
       price: parseFloat(form.price.value),
       cod_advance: parseFloat(form.cod_advance.value),
       category: form.category.value,
+      option_mode: form.option_mode.value,
       position: nextPosition,
     });
     if (error) {
@@ -464,8 +493,17 @@ var HEX_PATTERN = /^#[0-9a-f]{6}$/i;
 
 async function renderColorsSection(product) {
   var container = document.getElementById('colors-section-' + product.id);
-  var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
+  var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, variant_label, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
   if (error) { container.innerHTML = 'Failed to load colors: ' + esc(error.message); return; }
+
+  // Governs which fields this product's rows show -- see optionModeSelectHtml's
+  // doc comment for the three modes. 'variant' has no real color at all, so
+  // the "label" input doubles as the variant text directly; 'both' shows the
+  // color fields (unchanged) plus an extra variant-text input.
+  var mode = product.option_mode || 'color';
+  var showColorFields = mode === 'color' || mode === 'both';
+  var showVariantField = mode === 'both';
+  var labelPlaceholder = mode === 'variant' ? 'Variant label (e.g. V1)' : 'Color label';
 
   // Same global sort_order numbering as the Images grid above, so an admin
   // can visually match a color's "Thumbnail: [Image #10]" against the photo
@@ -485,10 +523,11 @@ async function renderColorsSection(product) {
       }).join('');
       return '<div class="color-row" data-color-id="' + c.id + '" style="border:1px solid var(--border);padding:10px;margin-bottom:8px;">' +
         '<div class="btn-row" style="align-items:center;">' +
-          '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;"></span>' +
-          '<input type="text" class="color-label" value="' + esc(c.label) + '" style="width:120px;" />' +
-          '<input type="text" class="color-hex" value="' + esc(c.hex || '') + '" placeholder="#rrggbb" style="width:90px;" />' +
-          '<select class="color-group-select" title="Color group (auto-suggested from label/hex on blur, editable)">' + groupSelectOptions + '</select>' +
+          (showColorFields ? '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;"></span>' : '') +
+          '<input type="text" class="color-label" value="' + esc(c.label) + '" placeholder="' + esc(labelPlaceholder) + '" style="width:120px;" />' +
+          (showColorFields ? '<input type="text" class="color-hex" value="' + esc(c.hex || '') + '" placeholder="#rrggbb" style="width:90px;" />' : '') +
+          (showColorFields ? '<select class="color-group-select" title="Color group (auto-suggested from label/hex on blur, editable)">' + groupSelectOptions + '</select>' : '') +
+          (showVariantField ? '<input type="text" class="variant-label-input" value="' + esc(c.variant_label || '') + '" placeholder="Variant (e.g. V1)" style="width:100px;" />' : '') +
           '<select class="color-cover-select">' + '<option value="">(no cover)</option>' + coverSelectOptions + '</select>' +
           '<button class="btn secondary save-color-btn">Save</button>' +
           '<button class="btn danger delete-color-btn">Delete</button>' +
@@ -497,9 +536,10 @@ async function renderColorsSection(product) {
       '</div>';
     }).join('') +
     '<div class="btn-row" style="margin-top:8px;">' +
-      '<input type="text" id="new-color-label-' + product.id + '" placeholder="Color label" style="width:140px;" />' +
-      '<input type="text" id="new-color-hex-' + product.id + '" placeholder="#rrggbb" style="width:100px;" />' +
-      '<button class="btn" id="add-color-btn-' + product.id + '">+ Add Color</button>' +
+      '<input type="text" id="new-color-label-' + product.id + '" placeholder="' + esc(labelPlaceholder) + '" style="width:140px;" />' +
+      (showColorFields ? '<input type="text" id="new-color-hex-' + product.id + '" placeholder="#rrggbb" style="width:100px;" />' : '') +
+      (showVariantField ? '<input type="text" id="new-variant-label-' + product.id + '" placeholder="Variant (e.g. V1)" style="width:100px;" />' : '') +
+      '<button class="btn" id="add-color-btn-' + product.id + '">+ Add ' + (mode === 'variant' ? 'Variant' : 'Color') + '</button>' +
     '</div>' +
     '<p class="msg" id="colors-msg-' + product.id + '"></p>';
 
@@ -510,12 +550,16 @@ async function renderColorsSection(product) {
       var row = btn.closest('.color-row');
       var colorId = row.dataset.colorId;
       var label = row.querySelector('.color-label').value.trim();
-      var hex = row.querySelector('.color-hex').value.trim() || null;
+      var hexInput = row.querySelector('.color-hex');
+      var hex = showColorFields && hexInput ? (hexInput.value.trim() || null) : null;
       var msg = document.getElementById('colors-msg-' + product.id);
       if (hex && !HEX_PATTERN.test(hex)) { msg.style.color = '#ff3c1e'; msg.textContent = 'Hex must look like #rrggbb.'; return; }
-      var colorGroup = row.querySelector('.color-group-select').value;
+      var groupSelect = row.querySelector('.color-group-select');
+      var colorGroup = showColorFields && groupSelect ? groupSelect.value : 'Variant';
+      var variantInput = row.querySelector('.variant-label-input');
+      var variantLabel = showVariantField && variantInput ? (variantInput.value.trim() || null) : null;
       var coverImageId = row.querySelector('.color-cover-select').value || null;
-      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, color_group: colorGroup, cover_image_id: coverImageId }).eq('id', colorId);
+      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, color_group: colorGroup, variant_label: variantLabel, cover_image_id: coverImageId }).eq('id', colorId);
       if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
       else { msg.style.color = '#8fd14f'; msg.textContent = 'Color saved.'; renderColorsSection(product); }
     });
@@ -536,14 +580,19 @@ async function renderColorsSection(product) {
   document.getElementById('add-color-btn-' + product.id).addEventListener('click', async function() {
     var labelInput = document.getElementById('new-color-label-' + product.id);
     var hexInput = document.getElementById('new-color-hex-' + product.id);
+    var variantInput = document.getElementById('new-variant-label-' + product.id);
     var label = labelInput.value.trim();
-    var hex = hexInput.value.trim() || null;
+    var hex = showColorFields && hexInput ? (hexInput.value.trim() || null) : null;
+    var variantLabel = showVariantField && variantInput ? (variantInput.value.trim() || null) : null;
     var msg = document.getElementById('colors-msg-' + product.id);
-    if (!label) { alert('Color label is required.'); return; }
+    if (!label) { alert((mode === 'variant' ? 'Variant' : 'Color') + ' label is required.'); return; }
     if (hex && !HEX_PATTERN.test(hex)) { msg.style.color = '#ff3c1e'; msg.textContent = 'Hex must look like #rrggbb.'; return; }
-    var colorGroup = 'Uncategorized';
-    var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex, label: label });
-    if (suggested) colorGroup = suggested;
+    var colorGroup = 'Variant';
+    if (showColorFields) {
+      colorGroup = 'Uncategorized';
+      var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex, label: label });
+      if (suggested) colorGroup = suggested;
+    }
 
     // A brand-new color has no images assigned to it yet -- cover_image_id
     // starts null (there is nothing yet that could correctly be its cover;
@@ -552,7 +601,7 @@ async function renderColorsSection(product) {
     // color from the Images grid above, then picks a Thumbnail here, same
     // immediate next step as visiting the stock grid below already is.
     var { data: newColor, error } = await sb.from('product_colors')
-      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, cover_image_id: null })
+      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, variant_label: variantLabel, cover_image_id: null })
       .select('id').single();
     if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; return; }
 
@@ -568,7 +617,8 @@ async function renderColorsSection(product) {
       msg.textContent = 'Color created, but stock rows failed to seed (' + variantsError.message + '). Check the stock grid below.';
     } else {
       labelInput.value = '';
-      hexInput.value = '';
+      if (hexInput) hexInput.value = '';
+      if (variantInput) variantInput.value = '';
     }
     renderColorsSection(product);
   });
