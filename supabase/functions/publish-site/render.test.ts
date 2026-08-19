@@ -1,5 +1,5 @@
 import { assertStringIncludes, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderBrandsIndexPage, renderPdpPage, swatchDisplayText } from "./render.ts";
+import { renderProductCard, esc, renderSliderCss, renderListingPage, renderCollectionPage, renderBrandPage, renderBrandsIndexPage, renderPdpPage, swatchDisplayText, productColorGroups } from "./render.ts";
 import type { CatalogProduct, PrimaryBrand } from "./data.ts";
 import type { Catalog } from "./data.ts";
 
@@ -9,7 +9,7 @@ const sampleProduct: CatalogProduct = {
   category: "compression", sleeveLength: "half", description: null,
   colors: [
     {
-      id: "c1", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", variantLabel: null,
+      id: "c1", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", secondaryColorGroup: null, variantLabel: null,
       coverImageUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg",
       images: [{ url: "https://example.supabase.co/.../img-0001.jpg", sortOrder: 0 }],
       variants: [
@@ -65,12 +65,12 @@ const twoColorProduct: CatalogProduct = {
   category: "compression", sleeveLength: "half", description: null,
   colors: [
     {
-      id: "c1", label: "Forest Green", hex: "#1a4a1a", colorGroup: "Green", variantLabel: null,
+      id: "c1", label: "Forest Green", hex: "#1a4a1a", colorGroup: "Green", secondaryColorGroup: null, variantLabel: null,
       coverImageUrl: "https://example.supabase.co/.../green.jpg",
       images: [], variants: [{ size: "S", inStock: true }],
     },
     {
-      id: "c2", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", variantLabel: null,
+      id: "c2", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", secondaryColorGroup: null, variantLabel: null,
       coverImageUrl: "https://example.supabase.co/.../black.jpg",
       images: [], variants: [{ size: "S", inStock: true }],
     },
@@ -311,10 +311,21 @@ Deno.test("renderListingPage: includes the ?q= search-filter script (regression:
 });
 
 Deno.test("renderCollectionPage/renderBrandPage: do NOT include the search-filter script (listing-page-only, matching the feature's original scope)", () => {
+  // "new URLSearchParams" alone no longer proves SEARCH_FILTER_SCRIPT is
+  // present -- COLOR_FILTER_SCRIPT (legitimately on brand pages) also
+  // reads it, to re-derive the ?q= match on every filter change, and
+  // "nav-search-input" is the shared nav search box present on every page
+  // regardless. "No such product in stock" is emitted only by
+  // SEARCH_FILTER_SCRIPT's zero-results message -- the one real marker.
   const collectionHtml = renderCollectionPage(sampleCatalog, "jackets");
   const brandHtml = renderBrandPage(sampleCatalog, "youngla");
-  if (collectionHtml.includes("new URLSearchParams") || brandHtml.includes("new URLSearchParams")) {
-    throw new Error("search-filter script should only render on the all-products listing page");
+  for (const html of [collectionHtml, brandHtml]) {
+    if (html.includes("No such product in stock")) {
+      throw new Error("search-filter script should only render on the all-products listing page");
+    }
+  }
+  if (collectionHtml.includes("new URLSearchParams")) {
+    throw new Error("collection pages should have neither the search filter nor the color filter script");
   }
 });
 
@@ -340,6 +351,86 @@ Deno.test("renderListingPage/renderBrandPage: sort script reads price from the s
   const html = renderBrandPage(sampleCatalog, "youngla");
   assertStringIncludes(html, "priceEl.childNodes[0]");
   assertStringIncludes(html, "(card.id || '').replace('product-', '')");
+});
+
+// ── COLOR FILTER ──
+
+Deno.test("productColorGroups: collects every distinct primary + secondary group across a product's colors", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      { ...twoColorProduct.colors[0], colorGroup: "Black", secondaryColorGroup: "Green" },
+      { ...twoColorProduct.colors[1], colorGroup: "Navy", secondaryColorGroup: null },
+    ],
+  };
+  const groups = productColorGroups(product);
+  assertEquals(groups.sort(), ["Black", "Green", "Navy"]);
+});
+
+Deno.test("productColorGroups: deduplicates when the same group appears as primary on one color and secondary on another", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      { ...twoColorProduct.colors[0], colorGroup: "Black", secondaryColorGroup: null },
+      { ...twoColorProduct.colors[1], colorGroup: "Navy", secondaryColorGroup: "Black" },
+    ],
+  };
+  assertEquals(productColorGroups(product).sort(), ["Black", "Navy"]);
+});
+
+Deno.test("renderProductCard: carries every distinct color group as a comma-joined data-color-groups attribute, for the filter script to read", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      { ...twoColorProduct.colors[0], colorGroup: "Black", secondaryColorGroup: "Green" },
+      { ...twoColorProduct.colors[1], colorGroup: "Navy", secondaryColorGroup: null },
+    ],
+  };
+  const html = renderProductCard(product);
+  assertStringIncludes(html, 'data-color-groups="Black,Green,Navy"');
+});
+
+Deno.test("renderListingPage/renderBrandPage: include a color-filter checkbox for every distinct group present in the given products, and the filter script", () => {
+  // sampleCatalog's products all reuse twoColorProduct's colors: Green + Black.
+  for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {
+    assertStringIncludes(html, '<button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>');
+    assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Black" /> Black');
+    assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Green" /> Green');
+    assertStringIncludes(html, "document.querySelectorAll('.color-filter-checkbox')");
+    assertStringIncludes(html, "card.dataset.colorGroups");
+  }
+});
+
+Deno.test("renderListingPage/renderBrandPage: filter panel starts closed via a real CSS class toggle, not the [hidden] attribute (regression: shell.ts's own .filter-panel rule set display:flex unconditionally, and since [hidden] and .filter-panel tie in CSS specificity, this stylesheet's later position in the cascade silently kept the panel visible on page load)", () => {
+  for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {
+    assertStringIncludes(html, '<div id="filter-panel" class="filter-panel">');
+    if (html.includes('id="filter-panel" class="filter-panel" hidden')) {
+      throw new Error("must not rely on the [hidden] attribute for the closed state");
+    }
+    assertStringIncludes(html, "panel.classList.toggle('open')");
+  }
+});
+
+Deno.test("renderColorFilterBar (via renderListingPage): omits a checkbox for a group with zero products on that page", () => {
+  const html = renderListingPage(sampleCatalog);
+  if (html.includes('value="Denim"')) {
+    throw new Error("should not offer a color filter option with no matching products");
+  }
+});
+
+Deno.test("renderBrandPage: emits no filter bar at all when the brand's products have no color groups set (regression: an empty checkbox panel is worse than no button)", () => {
+  const colorlessProduct: CatalogProduct = { ...twoColorProduct, colors: [] };
+  const html = renderBrandPage({ products: [colorlessProduct] }, "gymshark");
+  if (html.includes('id="filter-toggle-btn"')) {
+    throw new Error("should not render a Filter by Color button with nothing to filter by");
+  }
+});
+
+Deno.test("renderCollectionPage: does NOT include the color filter bar or script (outside this feature's requested scope)", () => {
+  const html = renderCollectionPage(sampleCatalog, "jackets");
+  if (html.includes('id="filter-toggle-btn"') || html.includes("color-filter-checkbox")) {
+    throw new Error("color filter should not render on collection pages");
+  }
 });
 
 Deno.test("renderCollectionPage: jackets only includes the jacket-category product", () => {

@@ -493,13 +493,18 @@ var HEX_PATTERN = /^#[0-9a-f]{6}$/i;
 
 async function renderColorsSection(product) {
   var container = document.getElementById('colors-section-' + product.id);
-  var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, variant_label, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
+  var { data: colors, error } = await sb.from('product_colors').select('id, label, hex, color_group, secondary_color_group, variant_label, cover_image_id').eq('product_id', product.id).order('label', { ascending: true });
   if (error) { container.innerHTML = 'Failed to load colors: ' + esc(error.message); return; }
 
   // Governs which fields this product's rows show -- see optionModeSelectHtml's
   // doc comment for the three modes. 'variant' has no real color at all, so
   // the "label" input doubles as the variant text directly; 'both' shows the
-  // color fields (unchanged) plus an extra variant-text input.
+  // color fields (unchanged) plus an extra variant-text input. Primary/
+  // secondary color group are shown in EVERY mode, independent of whether
+  // there's a real hex color -- they're a manual visual-categorization
+  // choice for the storefront's color filter (e.g. a "Variant 1" row with
+  // no hex at all can still be tagged Primary=Black so it shows up under
+  // the Black filter), not a description of the swatch's own rendering.
   var mode = product.option_mode || 'color';
   var showColorFields = mode === 'color' || mode === 'both';
   var showVariantField = mode === 'both';
@@ -512,22 +517,28 @@ async function renderColorsSection(product) {
   var serialById = {};
   (allImages || []).forEach(function(img, i) { serialById[img.id] = i + 1; });
 
+  function groupOptionsHtml(selected, includeNone) {
+    var opts = includeNone ? ['<option value="">(none)</option>'] : [];
+    COLOR_GROUP_PALETTE.forEach(function(g) {
+      opts.push('<option value="' + g + '"' + (g === selected ? ' selected' : '') + '>' + g + '</option>');
+    });
+    return opts.join('');
+  }
+
   container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Colors & Stock</p>' +
     colors.map(function(c) {
       var ownImages = (allImages || []).filter(function(img) { return img.color_id === c.id; });
       var coverSelectOptions = ownImages.map(function(img) {
         return '<option value="' + img.id + '"' + (img.id === c.cover_image_id ? ' selected' : '') + '>[Image #' + serialById[img.id] + ']</option>';
       }).join('');
-      var groupSelectOptions = COLOR_GROUP_PALETTE.map(function(g) {
-        return '<option value="' + g + '"' + (g === c.color_group ? ' selected' : '') + '>' + g + '</option>';
-      }).join('');
       return '<div class="color-row" data-color-id="' + c.id + '" style="border:1px solid var(--border);padding:10px;margin-bottom:8px;">' +
         '<div class="btn-row" style="align-items:center;">' +
           (showColorFields ? '<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:' + esc(c.hex || '#333') + ';border:1px solid #444;"></span>' : '') +
           '<input type="text" class="color-label" value="' + esc(c.label) + '" placeholder="' + esc(labelPlaceholder) + '" style="width:120px;" />' +
           (showColorFields ? '<input type="text" class="color-hex" value="' + esc(c.hex || '') + '" placeholder="#rrggbb" style="width:90px;" />' : '') +
-          (showColorFields ? '<select class="color-group-select" title="Color group (auto-suggested from label/hex on blur, editable)">' + groupSelectOptions + '</select>' : '') +
           (showVariantField ? '<input type="text" class="variant-label-input" value="' + esc(c.variant_label || '') + '" placeholder="Variant (e.g. V1)" style="width:100px;" />' : '') +
+          '<select class="color-group-select" title="Primary color (auto-suggested from label/hex on blur, editable) -- used by the storefront\'s color filter">' + groupOptionsHtml(c.color_group, false) + '</select>' +
+          '<select class="secondary-group-select" title="Secondary color, optional -- the storefront\'s color filter also matches on this">' + groupOptionsHtml(c.secondary_color_group || '', true) + '</select>' +
           '<select class="color-cover-select">' + '<option value="">(no cover)</option>' + coverSelectOptions + '</select>' +
           '<button class="btn secondary save-color-btn">Save</button>' +
           '<button class="btn danger delete-color-btn">Delete</button>' +
@@ -539,6 +550,8 @@ async function renderColorsSection(product) {
       '<input type="text" id="new-color-label-' + product.id + '" placeholder="' + esc(labelPlaceholder) + '" style="width:140px;" />' +
       (showColorFields ? '<input type="text" id="new-color-hex-' + product.id + '" placeholder="#rrggbb" style="width:100px;" />' : '') +
       (showVariantField ? '<input type="text" id="new-variant-label-' + product.id + '" placeholder="Variant (e.g. V1)" style="width:100px;" />' : '') +
+      '<select id="new-color-group-' + product.id + '" title="Primary color">' + groupOptionsHtml('Uncategorized', false) + '</select>' +
+      '<select id="new-secondary-group-' + product.id + '" title="Secondary color, optional">' + groupOptionsHtml('', true) + '</select>' +
       '<button class="btn" id="add-color-btn-' + product.id + '">+ Add ' + (mode === 'variant' ? 'Variant' : 'Color') + '</button>' +
     '</div>' +
     '<p class="msg" id="colors-msg-' + product.id + '"></p>';
@@ -554,12 +567,12 @@ async function renderColorsSection(product) {
       var hex = showColorFields && hexInput ? (hexInput.value.trim() || null) : null;
       var msg = document.getElementById('colors-msg-' + product.id);
       if (hex && !HEX_PATTERN.test(hex)) { msg.style.color = '#ff3c1e'; msg.textContent = 'Hex must look like #rrggbb.'; return; }
-      var groupSelect = row.querySelector('.color-group-select');
-      var colorGroup = showColorFields && groupSelect ? groupSelect.value : 'Variant';
+      var colorGroup = row.querySelector('.color-group-select').value;
+      var secondaryColorGroup = row.querySelector('.secondary-group-select').value || null;
       var variantInput = row.querySelector('.variant-label-input');
       var variantLabel = showVariantField && variantInput ? (variantInput.value.trim() || null) : null;
       var coverImageId = row.querySelector('.color-cover-select').value || null;
-      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, color_group: colorGroup, variant_label: variantLabel, cover_image_id: coverImageId }).eq('id', colorId);
+      var { error } = await sb.from('product_colors').update({ label: label, hex: hex, color_group: colorGroup, secondary_color_group: secondaryColorGroup, variant_label: variantLabel, cover_image_id: coverImageId }).eq('id', colorId);
       if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; }
       else { msg.style.color = '#8fd14f'; msg.textContent = 'Color saved.'; renderColorsSection(product); }
     });
@@ -577,6 +590,18 @@ async function renderColorsSection(product) {
     });
   });
 
+  var newColorGroupSelect = document.getElementById('new-color-group-' + product.id);
+  var newColorHexInput = document.getElementById('new-color-hex-' + product.id);
+  if (newColorHexInput) {
+    newColorHexInput.addEventListener('blur', async function() {
+      var hex = newColorHexInput.value.trim();
+      var label = document.getElementById('new-color-label-' + product.id).value.trim();
+      if (!hex && !label) return;
+      var { data: suggested, error } = await sb.rpc('classify_color_group', { hex: hex || null, label: label || null });
+      if (!error && suggested && COLOR_GROUP_PALETTE.indexOf(suggested) !== -1) { newColorGroupSelect.value = suggested; }
+    });
+  }
+
   document.getElementById('add-color-btn-' + product.id).addEventListener('click', async function() {
     var labelInput = document.getElementById('new-color-label-' + product.id);
     var hexInput = document.getElementById('new-color-hex-' + product.id);
@@ -587,12 +612,8 @@ async function renderColorsSection(product) {
     var msg = document.getElementById('colors-msg-' + product.id);
     if (!label) { alert((mode === 'variant' ? 'Variant' : 'Color') + ' label is required.'); return; }
     if (hex && !HEX_PATTERN.test(hex)) { msg.style.color = '#ff3c1e'; msg.textContent = 'Hex must look like #rrggbb.'; return; }
-    var colorGroup = 'Variant';
-    if (showColorFields) {
-      colorGroup = 'Uncategorized';
-      var { data: suggested } = await sb.rpc('classify_color_group', { hex: hex, label: label });
-      if (suggested) colorGroup = suggested;
-    }
+    var colorGroup = newColorGroupSelect.value;
+    var secondaryColorGroup = document.getElementById('new-secondary-group-' + product.id).value || null;
 
     // A brand-new color has no images assigned to it yet -- cover_image_id
     // starts null (there is nothing yet that could correctly be its cover;
@@ -601,7 +622,7 @@ async function renderColorsSection(product) {
     // color from the Images grid above, then picks a Thumbnail here, same
     // immediate next step as visiting the stock grid below already is.
     var { data: newColor, error } = await sb.from('product_colors')
-      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, variant_label: variantLabel, cover_image_id: null })
+      .insert({ product_id: product.id, label: label, hex: hex, color_group: colorGroup, secondary_color_group: secondaryColorGroup, variant_label: variantLabel, cover_image_id: null })
       .select('id').single();
     if (error) { msg.style.color = '#ff3c1e'; msg.textContent = error.message; return; }
 

@@ -87,6 +87,11 @@ create table if not exists product_colors (
   label text not null,
   hex text,
   color_group text not null,
+  -- Optional second color group for the storefront's color filter -- a
+  -- product shows under either its primary (color_group) or secondary
+  -- group. Manual only (no auto-suggestion): classify_color_group infers
+  -- a single dominant color from hex/label, nothing more.
+  secondary_color_group text,
   cover_image_id uuid references product_images(id) on delete set null,
   -- Only set in a 'both'-mode product: label stays the color name, this
   -- carries the extra variant text shown alongside it. In 'variant' mode

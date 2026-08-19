@@ -5,6 +5,7 @@ export interface CatalogVariant { size: string; inStock: boolean; }
 export interface CatalogImage { url: string; sortOrder: number; }
 export interface CatalogColor {
   id: string; label: string; hex: string | null; colorGroup: string;
+  secondaryColorGroup: string | null;
   variantLabel: string | null;
   coverImageUrl: string; images: CatalogImage[]; variants: CatalogVariant[];
 }
@@ -39,7 +40,7 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
 
   const { data: colors, error: colorsError } = await supabase
     .from("product_colors")
-    .select("id, product_id, label, hex, color_group, variant_label, cover_image_id, created_at")
+    .select("id, product_id, label, hex, color_group, secondary_color_group, variant_label, cover_image_id, created_at")
     .order("product_id", { ascending: true })
     .order("created_at", { ascending: true })
     .order("id", { ascending: true });
@@ -112,6 +113,7 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
         label: c.label,
         hex: c.hex,
         colorGroup: c.color_group,
+        secondaryColorGroup: c.secondary_color_group,
         variantLabel: c.variant_label,
         coverImageUrl,
         images: ownImages,

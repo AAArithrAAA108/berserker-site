@@ -66,3 +66,11 @@ Deno.test("renderShell: .product-img has display:block (regression: card templat
   if (!rule) throw new Error(".product-img rule not found");
   assertStringIncludes(rule[0], "display: block");
 });
+
+Deno.test("renderShell: .filter-panel defaults to display:none, with .filter-panel.open the only rule that shows it (regression: an unconditional display:flex here ties in CSS specificity with the [hidden] attribute render.ts's filter panel markup used to rely on, and this stylesheet loading after the UA sheet meant display:flex silently won, keeping the panel visible on every page load)", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  const baseRule = html.match(/\.filter-panel\s*\{[^}]*\}/);
+  if (!baseRule) throw new Error(".filter-panel rule not found");
+  assertStringIncludes(baseRule[0], "display: none");
+  assertStringIncludes(html, ".filter-panel.open { display: flex; }");
+});

@@ -34,6 +34,19 @@ export function swatchDisplayText(c: { hex: string | null; label: string; varian
   return "";
 }
 
+// Every distinct color group (primary or secondary) across a product's
+// colors, e.g. a color with primary "Black" + secondary "Green" and a
+// second color with primary "Navy" yields ["Black", "Green", "Navy"] --
+// the color filter matches a product if ANY selected group appears here.
+export function productColorGroups(product: CatalogProduct): string[] {
+  const groups = new Set<string>();
+  for (const c of product.colors) {
+    if (c.colorGroup) groups.add(c.colorGroup);
+    if (c.secondaryColorGroup) groups.add(c.secondaryColorGroup);
+  }
+  return Array.from(groups);
+}
+
 export function renderProductCard(product: CatalogProduct): string {
   const wasPrice = strikethroughPrice(product.price);
   // The hover-slider cycles through every uploaded photo (not one per
@@ -70,9 +83,10 @@ export function renderProductCard(product: CatalogProduct): string {
     .join("");
   const brandFolder = brandFolderFor(product);
   const pdpPath = brandFolder ? `/${brandFolder}/${product.slug}/` : "/all-products/";
+  const colorGroupsAttr = esc(productColorGroups(product).join(","));
 
   return `
-<div class="product-card fade-in" id="product-${product.position}">
+<div class="product-card fade-in" id="product-${product.position}" data-color-groups="${colorGroupsAttr}">
   <a href="${esc(pdpPath)}" class="product-img product-img-slider">
     <div class="slider-track"${trackStyle}>${sliderImgs}</div>
   </a>
@@ -262,6 +276,94 @@ const SORT_SCRIPT = `
   })();
 </script>`;
 
+// Checkbox list built from whichever color groups actually appear among
+// the products passed in (a brand page only lists that brand's colors;
+// the all-products page lists every color site-wide) -- keeps the filter
+// from showing a "Denim" option on a brand with zero denim products.
+// Sorted alphabetically since there's no shared canonical palette order
+// between this Deno module and the admin panel's own JS-side constant.
+function renderColorFilterBar(products: CatalogProduct[]): string {
+  const groups = new Set<string>();
+  for (const p of products) {
+    for (const g of productColorGroups(p)) groups.add(g);
+  }
+  const sortedGroups = Array.from(groups).sort();
+  if (sortedGroups.length === 0) return "";
+  const checkboxes = sortedGroups
+    .map(
+      (g) =>
+        `<label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="${esc(g)}" /> ${esc(g)}</label>`
+    )
+    .join("");
+  return `
+<div class="filter-bar">
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <div id="filter-panel" class="filter-panel">
+    ${checkboxes}
+    <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
+  </div>
+</div>`;
+}
+
+// A card matches the color filter if ANY selected group is in its own
+// data-color-groups (set by productColorGroups at render time) -- OR
+// semantics, matching the "Black or Green" example in the feature
+// request, not "must have every selected color". No filters selected
+// shows everything, same as the search box being empty.
+//
+// Re-derives the ?q= search match from scratch on every filter change
+// (same logic as SEARCH_FILTER_SCRIPT) instead of relying on the DOM
+// state SEARCH_FILTER_SCRIPT already applied, so combined visibility is
+// correct regardless of whether the shopper touches search or the color
+// filter first -- neither script needs to know the other ran.
+const COLOR_FILTER_SCRIPT = `
+<script>
+  (function() {
+    var toggleBtn = document.getElementById('filter-toggle-btn');
+    var panel = document.getElementById('filter-panel');
+    var clearBtn = document.getElementById('filter-clear-btn');
+    var grid = document.querySelector('.product-grid');
+    if (!toggleBtn || !panel || !grid) return;
+
+    function searchMatches(card) {
+      var params = new URLSearchParams(window.location.search);
+      var q = (params.get('q') || '').trim().toLowerCase();
+      if (!q) return true;
+      var brandEl = card.querySelector('.product-brand');
+      var nameEl = card.querySelector('.product-name');
+      var brand = brandEl ? brandEl.textContent : '';
+      var name = nameEl ? nameEl.textContent : '';
+      return (brand + ' ' + name).toLowerCase().indexOf(q) !== -1;
+    }
+
+    function applyFilter() {
+      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var cards = grid.querySelectorAll('.product-card');
+      cards.forEach(function(card) {
+        var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
+        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
+        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+      });
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      panel.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
+    });
+    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+      cb.addEventListener('change', applyFilter);
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        applyFilter();
+      });
+    }
+  })();
+</script>`;
+
 export function renderListingPage(catalog: Catalog): string {
   const sorted = catalog.products.slice().sort((a, b) => a.position - b.position);
   const cards = sorted.map(renderProductCard).join("\n");
@@ -269,12 +371,16 @@ export function renderListingPage(catalog: Catalog): string {
 <section class="section" id="all-products-grid">
   <div class="section-header">
     <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
-    ${SORT_BAR_HTML}
+    <div class="list-controls">
+      ${renderColorFilterBar(sorted)}
+      ${SORT_BAR_HTML}
+    </div>
   </div>
   <div class="product-grid">${cards}</div>
 </section>
 ${SEARCH_FILTER_SCRIPT}
-${SORT_SCRIPT}`;
+${SORT_SCRIPT}
+${COLOR_FILTER_SCRIPT}`;
   return renderShell({
     title: "All Products — BERSERKER",
     bodyContent,
@@ -309,11 +415,15 @@ export function renderBrandPage(catalog: Catalog, folder: string, brandName: str
 <section class="section" id="all-products-grid">
   <div class="section-header">
     <h2 class="section-title">${esc(brandName.toUpperCase())}</h2>
-    ${SORT_BAR_HTML}
+    <div class="list-controls">
+      ${renderColorFilterBar(filtered)}
+      ${SORT_BAR_HTML}
+    </div>
   </div>
   <div class="product-grid">${cards}</div>
 </section>
-${SORT_SCRIPT}`;
+${SORT_SCRIPT}
+${COLOR_FILTER_SCRIPT}`;
   return renderShell({
     title: `${esc(brandName)} — BERSERKER`,
     bodyContent,
