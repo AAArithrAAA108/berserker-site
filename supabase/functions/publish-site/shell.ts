@@ -1310,6 +1310,7 @@ ${opts.bodyContent}
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       selectedSize = btn.dataset.size;
+      checkConfirmReady();
     });
   });
 
