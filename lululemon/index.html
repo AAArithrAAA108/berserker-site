@@ -390,8 +390,68 @@
     cursor: pointer;
   }
   .sort-select:focus { outline: none; border-color: var(--accent); }
+  .list-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  /* ── COLOR FILTER ── */
+  .filter-bar { position: relative; }
+  .filter-toggle {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .filter-toggle:hover { border-color: var(--accent); }
+  .filter-panel {
+    /* display:none by default rather than relying on the [hidden]
+       attribute -- a [hidden] and .filter-panel selector tie in
+       specificity, and this stylesheet loads after the UA sheet, so a
+       display value set here would silently win over [hidden] and keep
+       the panel visible. .filter-panel.open is the only thing that shows it. */
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 20;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+  }
+  .filter-panel.open { display: flex; }
+  .color-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--white);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-clear {
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding-top: 10px;
+    margin-top: 4px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .filter-clear:hover { color: var(--white); }
   @media(max-width: 640px) {
-    .sort-bar { width: 100%; justify-content: space-between; }
+    .list-controls { width: 100%; justify-content: space-between; }
   }
 
   /* ── PRODUCT GRID ── */
@@ -965,7 +1025,16 @@
 <section class="section" id="all-products-grid">
   <div class="section-header">
     <h2 class="section-title">LULULEMON</h2>
-    
+    <div class="list-controls">
+      
+<div class="filter-bar">
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <div id="filter-panel" class="filter-panel">
+    <label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /> Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /> Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /> Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /> White</label>
+    <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
+  </div>
+</div>
+      
 <div class="sort-bar">
   <label for="sort-select">Sort by</label>
   <select id="sort-select">
@@ -974,8 +1043,9 @@
     <option value="price-desc">Price: High to Low</option>
   </select>
 </div>
+    </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-41">
+  <div class="product-grid"><div class="product-card fade-in" id="product-41" data-color-groups="Blue,Grey,Black,White">
   <a href="/lululemon/lululemon-define-nulu-align-yoga-set/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0370.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0371.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0372.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0373.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0374.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0375.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0376.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0377.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /></div>
   </a>
@@ -1014,6 +1084,53 @@
       });
       cards.forEach(function(card) { grid.appendChild(card); });
     });
+  })();
+</script>
+
+<script>
+  (function() {
+    var toggleBtn = document.getElementById('filter-toggle-btn');
+    var panel = document.getElementById('filter-panel');
+    var clearBtn = document.getElementById('filter-clear-btn');
+    var grid = document.querySelector('.product-grid');
+    if (!toggleBtn || !panel || !grid) return;
+
+    function searchMatches(card) {
+      var params = new URLSearchParams(window.location.search);
+      var q = (params.get('q') || '').trim().toLowerCase();
+      if (!q) return true;
+      var brandEl = card.querySelector('.product-brand');
+      var nameEl = card.querySelector('.product-name');
+      var brand = brandEl ? brandEl.textContent : '';
+      var name = nameEl ? nameEl.textContent : '';
+      return (brand + ' ' + name).toLowerCase().indexOf(q) !== -1;
+    }
+
+    function applyFilter() {
+      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var cards = grid.querySelectorAll('.product-card');
+      cards.forEach(function(card) {
+        var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
+        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
+        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+      });
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      panel.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
+    });
+    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+      cb.addEventListener('change', applyFilter);
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        applyFilter();
+      });
+    }
   })();
 </script>
 <footer>

@@ -390,8 +390,68 @@
     cursor: pointer;
   }
   .sort-select:focus { outline: none; border-color: var(--accent); }
+  .list-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  /* ── COLOR FILTER ── */
+  .filter-bar { position: relative; }
+  .filter-toggle {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .filter-toggle:hover { border-color: var(--accent); }
+  .filter-panel {
+    /* display:none by default rather than relying on the [hidden]
+       attribute -- a [hidden] and .filter-panel selector tie in
+       specificity, and this stylesheet loads after the UA sheet, so a
+       display value set here would silently win over [hidden] and keep
+       the panel visible. .filter-panel.open is the only thing that shows it. */
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 20;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+  }
+  .filter-panel.open { display: flex; }
+  .color-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--white);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-clear {
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding-top: 10px;
+    margin-top: 4px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .filter-clear:hover { color: var(--white); }
   @media(max-width: 640px) {
-    .sort-bar { width: 100%; justify-content: space-between; }
+    .list-controls { width: 100%; justify-content: space-between; }
   }
 
   /* ── PRODUCT GRID ── */
@@ -964,7 +1024,7 @@
 
 <section class="section" id="all-products-grid">
   <h2 class="section-title">SETS</h2>
-  <div class="product-grid"><div class="product-card fade-in" id="product-41">
+  <div class="product-grid"><div class="product-card fade-in" id="product-41" data-color-groups="Blue,Grey,Black,White">
   <a href="/lululemon/lululemon-define-nulu-align-yoga-set/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0370.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0371.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0372.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0373.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0374.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0375.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0376.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/lululemon-define-nulu-align-yoga-set/img-0377.jpg" alt="Define Nulu Jacket + Align Yoga Pants Set" style="width:12.5%;" /></div>
   </a>

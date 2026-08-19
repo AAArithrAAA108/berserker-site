@@ -390,8 +390,68 @@
     cursor: pointer;
   }
   .sort-select:focus { outline: none; border-color: var(--accent); }
+  .list-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  /* ── COLOR FILTER ── */
+  .filter-bar { position: relative; }
+  .filter-toggle {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .filter-toggle:hover { border-color: var(--accent); }
+  .filter-panel {
+    /* display:none by default rather than relying on the [hidden]
+       attribute -- a [hidden] and .filter-panel selector tie in
+       specificity, and this stylesheet loads after the UA sheet, so a
+       display value set here would silently win over [hidden] and keep
+       the panel visible. .filter-panel.open is the only thing that shows it. */
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 20;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+  }
+  .filter-panel.open { display: flex; }
+  .color-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--white);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-clear {
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding-top: 10px;
+    margin-top: 4px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .filter-clear:hover { color: var(--white); }
   @media(max-width: 640px) {
-    .sort-bar { width: 100%; justify-content: space-between; }
+    .list-controls { width: 100%; justify-content: space-between; }
   }
 
   /* ── PRODUCT GRID ── */
@@ -1047,7 +1107,16 @@
 <section class="section" id="all-products-grid">
   <div class="section-header">
     <h2 class="section-title">CACTUS JACK</h2>
-    
+    <div class="list-controls">
+      
+<div class="filter-bar">
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <div id="filter-panel" class="filter-panel">
+    <label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /> Black</label>
+    <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
+  </div>
+</div>
+      
 <div class="sort-bar">
   <label for="sort-select">Sort by</label>
   <select id="sort-select">
@@ -1056,8 +1125,9 @@
     <option value="price-desc">Price: High to Low</option>
   </select>
 </div>
+    </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-34">
+  <div class="product-grid"><div class="product-card fade-in" id="product-34" data-color-groups="Black">
   <a href="/cactusjack/cactusjack-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0316.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0317.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0318.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0319.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0320.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0321.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0322.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0323.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /></div>
   </a>
@@ -1069,7 +1139,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-35">
+<div class="product-card fade-in" id="product-35" data-color-groups="Black">
   <a href="/cactusjack/cactusjack-astroworld-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0324.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0325.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0326.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0327.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0328.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0329.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0330.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0331.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0332.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0333.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /></div>
   </a>
@@ -1081,7 +1151,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-36">
+<div class="product-card fade-in" id="product-36" data-color-groups="Black">
   <a href="/cactusjack/cactusjack-fragment-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:600%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0334.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0335.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0336.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0337.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0338.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0339.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /></div>
   </a>
@@ -1093,7 +1163,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-37">
+<div class="product-card fade-in" id="product-37" data-color-groups="Black">
   <a href="/cactusjack/cactusjack-mcdonalds-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0340.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0341.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0342.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0343.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0344.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0345.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0346.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0347.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0348.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0349.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0350.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0351.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0352.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0353.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /></div>
   </a>
@@ -1105,7 +1175,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-38">
+<div class="product-card fade-in" id="product-38" data-color-groups="Black">
   <a href="/cactusjack/cactusjack-playstation-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-playstation-oversized-tshirt/img-0354.jpg" alt="Oversized T-Shirt" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-playstation-oversized-tshirt/img-0355.jpg" alt="Oversized T-Shirt" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-playstation-oversized-tshirt/img-0356.jpg" alt="Oversized T-Shirt" style="width:33.333333333333336%;" /></div>
   </a>
@@ -1144,6 +1214,53 @@
       });
       cards.forEach(function(card) { grid.appendChild(card); });
     });
+  })();
+</script>
+
+<script>
+  (function() {
+    var toggleBtn = document.getElementById('filter-toggle-btn');
+    var panel = document.getElementById('filter-panel');
+    var clearBtn = document.getElementById('filter-clear-btn');
+    var grid = document.querySelector('.product-grid');
+    if (!toggleBtn || !panel || !grid) return;
+
+    function searchMatches(card) {
+      var params = new URLSearchParams(window.location.search);
+      var q = (params.get('q') || '').trim().toLowerCase();
+      if (!q) return true;
+      var brandEl = card.querySelector('.product-brand');
+      var nameEl = card.querySelector('.product-name');
+      var brand = brandEl ? brandEl.textContent : '';
+      var name = nameEl ? nameEl.textContent : '';
+      return (brand + ' ' + name).toLowerCase().indexOf(q) !== -1;
+    }
+
+    function applyFilter() {
+      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var cards = grid.querySelectorAll('.product-card');
+      cards.forEach(function(card) {
+        var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
+        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
+        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+      });
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      panel.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
+    });
+    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+      cb.addEventListener('change', applyFilter);
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        applyFilter();
+      });
+    }
   })();
 </script>
 <footer>

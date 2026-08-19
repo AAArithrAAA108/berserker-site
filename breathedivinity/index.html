@@ -390,8 +390,68 @@
     cursor: pointer;
   }
   .sort-select:focus { outline: none; border-color: var(--accent); }
+  .list-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  /* ── COLOR FILTER ── */
+  .filter-bar { position: relative; }
+  .filter-toggle {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .filter-toggle:hover { border-color: var(--accent); }
+  .filter-panel {
+    /* display:none by default rather than relying on the [hidden]
+       attribute -- a [hidden] and .filter-panel selector tie in
+       specificity, and this stylesheet loads after the UA sheet, so a
+       display value set here would silently win over [hidden] and keep
+       the panel visible. .filter-panel.open is the only thing that shows it. */
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 20;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+  }
+  .filter-panel.open { display: flex; }
+  .color-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--white);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-clear {
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding-top: 10px;
+    margin-top: 4px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .filter-clear:hover { color: var(--white); }
   @media(max-width: 640px) {
-    .sort-bar { width: 100%; justify-content: space-between; }
+    .list-controls { width: 100%; justify-content: space-between; }
   }
 
   /* ── PRODUCT GRID ── */
@@ -1263,7 +1323,16 @@
 <section class="section" id="all-products-grid">
   <div class="section-header">
     <h2 class="section-title">BREATHEDIVINITY</h2>
-    
+    <div class="list-controls">
+      
+<div class="filter-bar">
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <div id="filter-panel" class="filter-panel">
+    <label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /> Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /> Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Gold" /> Gold</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /> Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /> Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Orange" /> Orange</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /> Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Purple" /> Purple</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /> Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /> White</label>
+    <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
+  </div>
+</div>
+      
 <div class="sort-bar">
   <label for="sort-select">Sort by</label>
   <select id="sort-select">
@@ -1272,8 +1341,9 @@
     <option value="price-desc">Price: High to Low</option>
   </select>
 </div>
+    </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-13">
+  <div class="product-grid"><div class="product-card fade-in" id="product-13" data-color-groups="White,Red,Gold">
   <a href="/breathedivinity/breathedivinity-voidtech-nightfall-half-sleeve/" class="product-img product-img-slider">
     <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-nightfall-half-sleeve/img-0082.jpg" alt="VoidTech Nightfall Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-nightfall-half-sleeve/img-0083.jpg" alt="VoidTech Nightfall Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-nightfall-half-sleeve/img-0084.jpg" alt="VoidTech Nightfall Compression Half Sleeve" style="width:33.333333333333336%;" /></div>
   </a>
@@ -1285,7 +1355,7 @@
   </div>
   <button class="product-add" data-cod-advance="2500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-14">
+<div class="product-card fade-in" id="product-14" data-color-groups="White,Red,Purple,Blue">
   <a href="/breathedivinity/breathedivinity-voidtech-berserker/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0085.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0086.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0087.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0088.png" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0089.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0090.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0091.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-berserker/img-0092.jpg" alt="VoidTech Berserker Compression" style="width:12.5%;" /></div>
   </a>
@@ -1297,7 +1367,7 @@
   </div>
   <button class="product-add" data-cod-advance="2500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-15">
+<div class="product-card fade-in" id="product-15" data-color-groups="Black,Purple">
   <a href="/breathedivinity/breathedivinity-voidtech-cyber-skeleton/" class="product-img product-img-slider">
     <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0093.jpg" alt="VoidTech Cyber Skeleton Compression" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0094.jpg" alt="VoidTech Cyber Skeleton Compression" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0095.jpg" alt="VoidTech Cyber Skeleton Compression" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0096.jpg" alt="VoidTech Cyber Skeleton Compression" style="width:25%;" /></div>
   </a>
@@ -1309,7 +1379,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-16">
+<div class="product-card fade-in" id="product-16" data-color-groups="Red,White,Purple,Green">
   <a href="/breathedivinity/breathedivinity-voidtech-immortal/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0097.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0098.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0099.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0100.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0101.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0102.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0103.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0104.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0105.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-immortal/img-0106.jpg" alt="VoidTech Immortal Compression" style="width:10%;" /></div>
   </a>
@@ -1321,7 +1391,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-17">
+<div class="product-card fade-in" id="product-17" data-color-groups="White,Pink,Purple,Blue,Orange">
   <a href="/breathedivinity/breathedivinity-voidtech-pulsefire/" class="product-img product-img-slider">
     <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0107.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0108.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0109.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0110.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-pulsefire/img-0111.jpg" alt="VoidTech PulseFire Compression" style="width:20%;" /></div>
   </a>
@@ -1333,7 +1403,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-18">
+<div class="product-card fade-in" id="product-18" data-color-groups="Purple,White,Red,Blue,Pink">
   <a href="/breathedivinity/breathedivinity-voidtech-infernal/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0112.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0113.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0114.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0115.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0116.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0117.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0118.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0119.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0120.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-infernal/img-0121.jpg" alt="VoidTech Infernal Compression" style="width:10%;" /></div>
   </a>
@@ -1345,7 +1415,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-19">
+<div class="product-card fade-in" id="product-19" data-color-groups="Red,Grey,Blue,Green,Black,Purple,Orange,Pink">
   <a href="/breathedivinity/breathedivinity-hollow-souls/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0122.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0123.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0124.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0125.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0126.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0127.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0128.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0129.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0130.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0131.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0132.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0133.jpg" alt="Hollow Souls Oversized T-Shirt" style="width:8.333333333333334%;" /></div>
   </a>
@@ -1357,7 +1427,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-20">
+<div class="product-card fade-in" id="product-20" data-color-groups="White,Red,Purple,Blue,Black,Pink">
   <a href="/breathedivinity/breathedivinity-bloodraven/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0134.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0135.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0136.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0137.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0138.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0139.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0140.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0141.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0142.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0143.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0144.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0145.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0146.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-bloodraven/img-0147.jpg" alt="Bloodraven Oversized T-Shirt" style="width:7.142857142857143%;" /></div>
   </a>
@@ -1369,7 +1439,7 @@
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-21">
+<div class="product-card fade-in" id="product-21" data-color-groups="Red,White">
   <a href="/breathedivinity/breathedivinity-deathclaw/" class="product-img product-img-slider">
     <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathclaw/img-0148.jpg" alt="Deathclaw Oversized T-Shirt" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathclaw/img-0149.jpg" alt="Deathclaw Oversized T-Shirt" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathclaw/img-0150.jpg" alt="Deathclaw Oversized T-Shirt" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathclaw/img-0151.jpg" alt="Deathclaw Oversized T-Shirt" style="width:25%;" /></div>
   </a>
@@ -1381,7 +1451,7 @@
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-22">
+<div class="product-card fade-in" id="product-22" data-color-groups="Blue,White,Red,Orange,Purple,Pink">
   <a href="/breathedivinity/breathedivinity-dragon-blade/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0152.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0153.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0154.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0155.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0156.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0157.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0158.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0159.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0160.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0161.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0162.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0163.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0164.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-dragon-blade/img-0165.jpg" alt="Dragon Blade Oversized T-Shirt" style="width:7.142857142857143%;" /></div>
   </a>
@@ -1393,7 +1463,7 @@
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-23">
+<div class="product-card fade-in" id="product-23" data-color-groups="White,Red,Purple">
   <a href="/breathedivinity/breathedivinity-gargoyle/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0166.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0167.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0168.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0169.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0170.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0171.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0172.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-gargoyle/img-0173.jpg" alt="Gargoyle Oversized T-Shirt" style="width:12.5%;" /></div>
   </a>
@@ -1405,7 +1475,7 @@
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-24">
+<div class="product-card fade-in" id="product-24" data-color-groups="Orange,Pink,Blue,Purple,Red">
   <a href="/breathedivinity/breathedivinity-fallen-knight-long-sleeve/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0174.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0175.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0176.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0177.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0178.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0179.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0180.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0181.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0182.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-fallen-knight-long-sleeve/img-0183.jpg" alt="Fallen Knight Long Sleeve Compression" style="width:10%;" /></div>
   </a>
@@ -1417,7 +1487,7 @@
   </div>
   <button class="product-add" data-cod-advance="3700">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-25">
+<div class="product-card fade-in" id="product-25" data-color-groups="Purple,White,Red">
   <a href="/breathedivinity/breathedivinity-deathwing-oversized-hoodie/" class="product-img product-img-slider">
     <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathwing-oversized-hoodie/img-0184.jpg" alt="Deathwing Oversized Hoodie" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathwing-oversized-hoodie/img-0185.jpg" alt="Deathwing Oversized Hoodie" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathwing-oversized-hoodie/img-0186.jpg" alt="Deathwing Oversized Hoodie" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathwing-oversized-hoodie/img-0187.png" alt="Deathwing Oversized Hoodie" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-deathwing-oversized-hoodie/img-0188.jpg" alt="Deathwing Oversized Hoodie" style="width:20%;" /></div>
   </a>
@@ -1429,7 +1499,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-26">
+<div class="product-card fade-in" id="product-26" data-color-groups="Purple,White,Red">
   <a href="/breathedivinity/breathedivinity-blood-oath-sweatpants/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0189.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0190.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0191.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0192.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0193.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0194.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0195.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0196.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0197.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0198.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0199.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-blood-oath-sweatpants/img-0200.jpg" alt="Blood Oath Sweatpants" style="width:8.333333333333334%;" /></div>
   </a>
@@ -1441,7 +1511,7 @@
   </div>
   <button class="product-add" data-cod-advance="3400">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-27">
+<div class="product-card fade-in" id="product-27" data-color-groups="Black,White,Red,Purple">
   <a href="/breathedivinity/breathedivinity-eternal-wyvern-oversized-sweatpants/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0201.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0202.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0203.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0204.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0205.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0206.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0207.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0208.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0209.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-eternal-wyvern-oversized-sweatpants/img-0210.jpg" alt="Eternal Wyvern Oversized Sweatpants" style="width:10%;" /></div>
   </a>
@@ -1480,6 +1550,53 @@
       });
       cards.forEach(function(card) { grid.appendChild(card); });
     });
+  })();
+</script>
+
+<script>
+  (function() {
+    var toggleBtn = document.getElementById('filter-toggle-btn');
+    var panel = document.getElementById('filter-panel');
+    var clearBtn = document.getElementById('filter-clear-btn');
+    var grid = document.querySelector('.product-grid');
+    if (!toggleBtn || !panel || !grid) return;
+
+    function searchMatches(card) {
+      var params = new URLSearchParams(window.location.search);
+      var q = (params.get('q') || '').trim().toLowerCase();
+      if (!q) return true;
+      var brandEl = card.querySelector('.product-brand');
+      var nameEl = card.querySelector('.product-name');
+      var brand = brandEl ? brandEl.textContent : '';
+      var name = nameEl ? nameEl.textContent : '';
+      return (brand + ' ' + name).toLowerCase().indexOf(q) !== -1;
+    }
+
+    function applyFilter() {
+      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var cards = grid.querySelectorAll('.product-card');
+      cards.forEach(function(card) {
+        var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
+        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
+        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+      });
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      panel.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
+    });
+    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+      cb.addEventListener('change', applyFilter);
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        applyFilter();
+      });
+    }
   })();
 </script>
 <footer>
