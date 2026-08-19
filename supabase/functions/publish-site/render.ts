@@ -209,15 +209,72 @@ const SEARCH_FILTER_SCRIPT = `
   })();
 </script>`;
 
+// Dropdown reused on the all-products page (which also serves search
+// results -- SEARCH_FILTER_SCRIPT filters the same cards this sorts) and
+// every brand page. Not on collection pages -- outside this feature's
+// requested scope.
+const SORT_BAR_HTML = `
+<div class="sort-bar">
+  <label for="sort-select">Sort by</label>
+  <select id="sort-select">
+    <option value="relevance">Relevance</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+  </select>
+</div>`;
+
+// "Relevance" restores each card's admin-defined catalog order -- read
+// from the id="product-${position}" renderProductCard already emits,
+// rather than snapshotting the initial DOM order, so it stays correct
+// even after multiple sort changes. Price is read the same way the cart's
+// Add-to-Cart handler already does (shell.ts): the bare text node before
+// the .original strikethrough span. Re-appending each card in sorted order
+// moves it within .product-grid without detaching/recreating any card,
+// so hover-slider state and event listeners on the cards are unaffected;
+// it composes with SEARCH_FILTER_SCRIPT's display:none filtering since
+// that never reorders the DOM, only hides non-matching cards.
+const SORT_SCRIPT = `
+<script>
+  (function() {
+    var select = document.getElementById('sort-select');
+    var grid = document.querySelector('.product-grid');
+    if (!select || !grid) return;
+
+    function priceOf(card) {
+      var priceEl = card.querySelector('.product-price');
+      var text = priceEl && priceEl.childNodes[0] ? priceEl.childNodes[0].textContent : '0';
+      return parseInt(text.replace(/[^0-9]/g, ''), 10) || 0;
+    }
+    function positionOf(card) {
+      return parseInt((card.id || '').replace('product-', ''), 10) || 0;
+    }
+
+    select.addEventListener('change', function() {
+      var mode = select.value;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.product-card'));
+      cards.sort(function(a, b) {
+        if (mode === 'price-asc') return priceOf(a) - priceOf(b);
+        if (mode === 'price-desc') return priceOf(b) - priceOf(a);
+        return positionOf(a) - positionOf(b);
+      });
+      cards.forEach(function(card) { grid.appendChild(card); });
+    });
+  })();
+</script>`;
+
 export function renderListingPage(catalog: Catalog): string {
   const sorted = catalog.products.slice().sort((a, b) => a.position - b.position);
   const cards = sorted.map(renderProductCard).join("\n");
   const bodyContent = `
 <section class="section" id="all-products-grid">
-  <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
+  <div class="section-header">
+    <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
+    ${SORT_BAR_HTML}
+  </div>
   <div class="product-grid">${cards}</div>
 </section>
-${SEARCH_FILTER_SCRIPT}`;
+${SEARCH_FILTER_SCRIPT}
+${SORT_SCRIPT}`;
   return renderShell({
     title: "All Products — BERSERKER",
     bodyContent,
@@ -250,9 +307,13 @@ export function renderBrandPage(catalog: Catalog, folder: string, brandName: str
   const cards = filtered.map(renderProductCard).join("\n");
   const bodyContent = `
 <section class="section" id="all-products-grid">
-  <h2 class="section-title">${esc(brandName.toUpperCase())}</h2>
+  <div class="section-header">
+    <h2 class="section-title">${esc(brandName.toUpperCase())}</h2>
+    ${SORT_BAR_HTML}
+  </div>
   <div class="product-grid">${cards}</div>
-</section>`;
+</section>
+${SORT_SCRIPT}`;
   return renderShell({
     title: `${esc(brandName)} — BERSERKER`,
     bodyContent,

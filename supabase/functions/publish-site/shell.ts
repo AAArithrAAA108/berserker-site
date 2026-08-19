@@ -420,6 +420,31 @@ export function renderShell(opts: ShellOptions): string {
   }
   .section-link:hover { color: var(--white); border-color: var(--white); }
 
+  /* ── SORT BAR ── */
+  .sort-bar { display: flex; align-items: center; gap: 10px; }
+  .sort-bar label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sort-select {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .sort-select:focus { outline: none; border-color: var(--accent); }
+  @media(max-width: 640px) {
+    .sort-bar { width: 100%; justify-content: space-between; }
+  }
+
   /* ── PRODUCT GRID ── */
   .product-grid {
     display: grid;

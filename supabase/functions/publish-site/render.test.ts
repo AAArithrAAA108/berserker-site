@@ -318,6 +318,30 @@ Deno.test("renderCollectionPage/renderBrandPage: do NOT include the search-filte
   }
 });
 
+Deno.test("renderListingPage/renderBrandPage: include the sort-by dropdown (Relevance/Price asc/Price desc) and its sort script", () => {
+  for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {
+    assertStringIncludes(html, '<select id="sort-select">');
+    assertStringIncludes(html, '<option value="relevance">Relevance</option>');
+    assertStringIncludes(html, '<option value="price-asc">Price: Low to High</option>');
+    assertStringIncludes(html, '<option value="price-desc">Price: High to Low</option>');
+    assertStringIncludes(html, "document.getElementById('sort-select')");
+    assertStringIncludes(html, "querySelector('.product-grid')");
+  }
+});
+
+Deno.test("renderCollectionPage: does NOT include the sort-by dropdown (outside this feature's requested scope: brand pages, all-products, and search only)", () => {
+  const html = renderCollectionPage(sampleCatalog, "jackets");
+  if (html.includes('id="sort-select"')) {
+    throw new Error("sort dropdown should not render on collection pages");
+  }
+});
+
+Deno.test("renderListingPage/renderBrandPage: sort script reads price from the same bare-text-node position the cart's Add-to-Cart handler already reads (shell.ts), and relevance from the card's id=\"product-${position}\"", () => {
+  const html = renderBrandPage(sampleCatalog, "youngla");
+  assertStringIncludes(html, "priceEl.childNodes[0]");
+  assertStringIncludes(html, "(card.id || '').replace('product-', '')");
+});
+
 Deno.test("renderCollectionPage: jackets only includes the jacket-category product", () => {
   const html = renderCollectionPage(sampleCatalog, "jackets");
   assertStringIncludes(html, "Batman Jacket");
