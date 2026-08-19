@@ -19,8 +19,23 @@ const RATE_LIMIT_MAX_ATTEMPTS = 8;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const RATE_LIMIT_CLEANUP_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 1 day
 
+// checkout/review/index.html calls this function cross-origin with an
+// Authorization header, which is not a CORS-safelisted header -- every
+// browser sends a preflight OPTIONS request first, and without these
+// headers on both the preflight response and the real response, the
+// browser blocks the request entirely before it ever reaches this
+// handler's own logic (matches publish-site/index.ts's identical need).
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS },
+  });
 }
 
 interface RequestItem {
@@ -31,8 +46,11 @@ interface RequestItem {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    return new Response("Method not allowed", { status: 405, headers: CORS_HEADERS });
   }
 
   let body: any;
