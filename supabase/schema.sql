@@ -168,6 +168,19 @@ create unique index if not exists orders_razorpay_payment_id_unique
   on orders (razorpay_payment_id)
   where razorpay_payment_id is not null;
 
+-- Tracks order-creation attempts (successful or not) by IP so
+-- create-verified-order can reject a burst of requests from the same
+-- source. No RLS policies: only ever touched by the Edge Function's
+-- service-role client.
+create table if not exists order_creation_attempts (
+  id bigint generated always as identity primary key,
+  ip_address text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists order_creation_attempts_ip_time_idx
+  on order_creation_attempts (ip_address, created_at desc);
+
 -- ── ROW LEVEL SECURITY ──
 alter table admin_profiles enable row level security;
 alter table brands enable row level security;

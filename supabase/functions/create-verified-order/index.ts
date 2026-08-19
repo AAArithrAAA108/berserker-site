@@ -15,6 +15,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { parseCartItemName, computeOrderTotals, computePaymentSplit } from "./order-logic.ts";
 
 const MAX_QTY_PER_ITEM = 5; // matches the UI's own per-item cap (shell.ts: existing.qty >= 5)
+const RATE_LIMIT_MAX_ATTEMPTS = 8;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const RATE_LIMIT_CLEANUP_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 1 day
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -69,6 +72,26 @@ Deno.serve(async (req) => {
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+
+  // Rate limit by IP: rejects a burst of order-creation attempts (e.g. a
+  // script probing for valid product/color/size combinations) before doing
+  // any of the more expensive DB lookups or a Razorpay API call below.
+  // Real shoppers retrying a failed payment a couple of times never come
+  // close to this threshold.
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
+  const { count: recentAttempts } = await supabase
+    .from("order_creation_attempts")
+    .select("*", { count: "exact", head: true })
+    .eq("ip_address", clientIp)
+    .gte("created_at", windowStart);
+  if ((recentAttempts ?? 0) >= RATE_LIMIT_MAX_ATTEMPTS) {
+    return json({ ok: false, error: "Too many order attempts. Please wait a few minutes and try again." }, 429);
+  }
+  await supabase.from("order_creation_attempts").insert({ ip_address: clientIp });
+  // Opportunistic cleanup so this table doesn't grow unbounded -- cheap at
+  // this traffic volume, no cron needed.
+  await supabase.from("order_creation_attempts").delete().lt("created_at", new Date(Date.now() - RATE_LIMIT_CLEANUP_MAX_AGE_MS).toISOString());
 
   // Resolve every cart item against the real catalog -- this is what makes
   // price/stock trustworthy. Any failure here rejects the whole order
