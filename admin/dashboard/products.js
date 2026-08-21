@@ -252,11 +252,17 @@ async function renderEditForm(product) {
     } else {
       msg.style.color = '#8fd14f';
       msg.textContent = 'Saved.';
-      // The Colors & Stock section's Add-Option fields depend on
-      // option_mode -- refresh it in place so switching modes doesn't
-      // require closing and reopening this product to see the new fields.
+      // Only rebuild Colors & Stock when option_mode actually changed (its
+      // Add-Option fields depend on it) -- rebuilding on every unrelated
+      // product-field save (name/price/category/etc) tore down and
+      // re-fetched every stock checkbox for no reason, and could show a
+      // just-toggled checkbox as reverted if this fresh fetch raced ahead
+      // of that toggle's own still-in-flight save (regression: this is
+      // what "toggle stock, hit Save, see it revert" was -- the checkbox's
+      // own write always persisted correctly, only the *display* was stale).
+      var optionModeChanged = product.option_mode !== newOptionMode;
       product.option_mode = newOptionMode;
-      renderColorsSection(product);
+      if (optionModeChanged) renderColorsSection(product);
       loadProductsList();
     }
   });
