@@ -482,6 +482,7 @@ export function renderShell(opts: ShellOptions): string {
   .filter-facets {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 24px;
   }
@@ -534,6 +535,15 @@ export function renderShell(opts: ShellOptions): string {
   .filter-clear:hover { color: var(--white); }
   @media(max-width: 640px) {
     .list-controls { width: 100%; justify-content: space-between; }
+    /* .filter-panel's right:0 anchors it to the toggle button's right edge.
+       On desktop that button sits far enough from the viewport edge for the
+       panel to open safely; on mobile the button is only ~24px from the
+       left edge, so the panel (now two columns wide) extended off the left
+       side of the screen entirely -- cut off with no way to reach it.
+       Anchoring left:0 instead grows the panel rightward into free screen
+       space, and the max-width/overflow-x guard against it still spilling
+       past the right edge on the narrowest phones. */
+    .filter-panel { left: 0; right: auto; max-width: calc(100vw - 48px); overflow-x: auto; }
   }
 
   /* ── PRODUCT GRID ── */
