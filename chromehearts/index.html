@@ -425,6 +425,20 @@
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  /* Color and Sleeve Length are two side-by-side columns rather than
+     stacked sections -- .filter-facets is the row, .filter-facet is each
+     column (its own label + checkboxes stacked). */
+  .filter-facets {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .filter-facet {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
   .filter-section-label {
     font-family: var(--font-mono);
     font-size: 10px;
@@ -1275,8 +1289,10 @@
 <div class="filter-bar">
   <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
   <div id="filter-panel" class="filter-panel">
-    <div class="filter-section-label">Color</div><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /><span class="color-filter-swatch" style="background:#1c4aa0;"></span>Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /><span class="color-filter-swatch" style="background:#5a3f2a;"></span>Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Denim" /><span class="color-filter-swatch" style="background:#6b9fd4;"></span>Denim</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /><span class="color-filter-swatch" style="background:#8a8a8a;"></span>Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /><span class="color-filter-swatch" style="background:#c41e8a;"></span>Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /><span class="color-filter-swatch" style="background:#c41e1e;"></span>Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /><span class="color-filter-swatch" style="background:#f0ede8;"></span>White</label>
-    <div class="filter-section-label">Sleeve Length</div><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="full" />Full Sleeve</label><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="half" />Half Sleeve</label>
+    <div class="filter-facets">
+      <div class="filter-facet"><div class="filter-section-label">Color</div><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /><span class="color-filter-swatch" style="background:#1c4aa0;"></span>Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /><span class="color-filter-swatch" style="background:#5a3f2a;"></span>Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Denim" /><span class="color-filter-swatch" style="background:#6b9fd4;"></span>Denim</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /><span class="color-filter-swatch" style="background:#8a8a8a;"></span>Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /><span class="color-filter-swatch" style="background:#c41e8a;"></span>Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /><span class="color-filter-swatch" style="background:#c41e1e;"></span>Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /><span class="color-filter-swatch" style="background:#f0ede8;"></span>White</label></div>
+      <div class="filter-facet"><div class="filter-section-label">Sleeve Length</div><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="full" />Full Sleeve</label><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="half" />Half Sleeve</label></div>
+    </div>
     <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
   </div>
 </div>
