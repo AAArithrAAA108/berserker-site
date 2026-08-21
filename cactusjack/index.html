@@ -425,6 +425,15 @@
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  .filter-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .filter-section-label:first-child { margin-top: 0; }
   .color-filter-option {
     display: flex;
     align-items: center;
@@ -434,6 +443,14 @@
     color: var(--white);
     cursor: pointer;
     white-space: nowrap;
+  }
+  .color-filter-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    flex-shrink: 0;
   }
   .filter-clear {
     background: none;
@@ -890,6 +907,11 @@
     cursor: not-allowed;
     color: #888;
   }
+  /* Out-of-stock sizes stay clickable (see applySizeAvailability) -- a
+     shopper can still select one, at which point the confirm button shows
+     "Out of Stock" instead of silently clearing the selection. */
+  .size-btn.out-of-stock { opacity: .35; color: #888; }
+  .size-btn.selected.out-of-stock { background: #2a2a2a; color: #ff3c1e; border-color: #ff3c1e; opacity: 1; }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1119,9 +1141,10 @@
     <div class="list-controls">
       
 <div class="filter-bar">
-  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
   <div id="filter-panel" class="filter-panel">
-    <label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /> Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /> Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /> Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Cream" /> Cream</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Gold" /> Gold</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /> Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Orange" /> Orange</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /> Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /> Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /> White</label>
+    <div class="filter-section-label">Color</div><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /><span class="color-filter-swatch" style="background:#1c4aa0;"></span>Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /><span class="color-filter-swatch" style="background:#5a3f2a;"></span>Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Cream" /><span class="color-filter-swatch" style="background:#ede9e3;"></span>Cream</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Gold" /><span class="color-filter-swatch" style="background:#c4a01c;"></span>Gold</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Orange" /><span class="color-filter-swatch" style="background:#c46a1e;"></span>Orange</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /><span class="color-filter-swatch" style="background:#c41e8a;"></span>Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /><span class="color-filter-swatch" style="background:#c41e1e;"></span>Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /><span class="color-filter-swatch" style="background:#f0ede8;"></span>White</label>
+    <div class="filter-section-label">Sleeve Length</div><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="half" />Half Sleeve</label>
     <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
   </div>
 </div>
@@ -1136,7 +1159,7 @@
 </div>
     </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-34" data-color-groups="Black,Orange,Brown,White,Pink">
+  <div class="product-grid"><div class="product-card fade-in" id="product-34" data-color-groups="Black,Orange,Brown,White,Pink" data-sleeve-length="half">
   <a href="/cactusjack/cactusjack-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0316.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0317.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0318.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0319.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0320.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0321.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0322.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-oversized-tshirt/img-0323.jpg" alt="Oversized T-Shirt" style="width:12.5%;" /></div>
   </a>
@@ -1148,7 +1171,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-35" data-color-groups="Black,Cream,Blue,Brown,White,Red">
+<div class="product-card fade-in" id="product-35" data-color-groups="Black,Cream,Blue,Brown,White,Red" data-sleeve-length="half">
   <a href="/cactusjack/cactusjack-astroworld-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0324.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0325.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0326.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0327.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0328.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0329.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0330.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0331.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0332.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-astroworld-oversized-tshirt/img-0333.jpg" alt="Astroworld Oversized T-Shirt" style="width:10%;" /></div>
   </a>
@@ -1160,7 +1183,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-36" data-color-groups="Black,Blue,White,Brown,Cream,Pink">
+<div class="product-card fade-in" id="product-36" data-color-groups="Black,Blue,White,Brown,Cream,Pink" data-sleeve-length="half">
   <a href="/cactusjack/cactusjack-fragment-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:600%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0334.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0335.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0336.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0337.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0338.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-fragment-oversized-tshirt/img-0339.jpg" alt="Oversized T-Shirt" style="width:16.666666666666668%;" /></div>
   </a>
@@ -1172,7 +1195,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-37" data-color-groups="White,Red,Brown,Black,Gold,Orange,Blue">
+<div class="product-card fade-in" id="product-37" data-color-groups="White,Red,Brown,Black,Gold,Orange,Blue" data-sleeve-length="half">
   <a href="/cactusjack/cactusjack-mcdonalds-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:1400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0340.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0341.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0342.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0343.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0344.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0345.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0346.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0347.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0348.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0349.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0350.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0351.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0352.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-mcdonalds-oversized-tshirt/img-0353.jpg" alt="Oversized T-Shirt" style="width:7.142857142857143%;" /></div>
   </a>
@@ -1184,7 +1207,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-38" data-color-groups="Brown,Green,Black,Blue">
+<div class="product-card fade-in" id="product-38" data-color-groups="Brown,Green,Black,Blue" data-sleeve-length="half">
   <a href="/cactusjack/cactusjack-playstation-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-playstation-oversized-tshirt/img-0354.jpg" alt="Oversized T-Shirt" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-playstation-oversized-tshirt/img-0355.jpg" alt="Oversized T-Shirt" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/cactusjack-playstation-oversized-tshirt/img-0356.jpg" alt="Oversized T-Shirt" style="width:33.333333333333336%;" /></div>
   </a>
@@ -1246,12 +1269,14 @@
     }
 
     function applyFilter() {
-      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedColors = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedSleeves = Array.prototype.slice.call(document.querySelectorAll('.sleeve-filter-checkbox:checked')).map(function(cb) { return cb.value; });
       var cards = grid.querySelectorAll('.product-card');
       cards.forEach(function(card) {
         var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
-        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
-        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+        var colorMatch = checkedColors.length === 0 || groups.some(function(g) { return checkedColors.indexOf(g) !== -1; });
+        var sleeveMatch = checkedSleeves.length === 0 || checkedSleeves.indexOf(card.dataset.sleeveLength || '') !== -1;
+        card.style.display = (colorMatch && sleeveMatch && searchMatches(card)) ? '' : 'none';
       });
     }
 
@@ -1261,12 +1286,12 @@
     document.addEventListener('click', function(e) {
       if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
     });
-    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+    document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) {
       cb.addEventListener('change', applyFilter);
     });
     if (clearBtn) {
       clearBtn.addEventListener('click', function() {
-        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) { cb.checked = false; });
         applyFilter();
       });
     }
@@ -1529,29 +1554,32 @@
   let pendingItem = null;
   let selectedSize = null;
   let selectedColor = null;
+  let currentStockBySize = new Map();
 
   function checkConfirmReady() {
     const confirm = document.getElementById('size-confirm');
-    const ready = selectedSize && selectedColor !== null;
+    const bothSelected = selectedSize && selectedColor !== null;
+    const inStock = !bothSelected || (currentStockBySize.has(selectedSize) ? currentStockBySize.get(selectedSize) : true);
+    confirm.textContent = bothSelected && !inStock ? 'OUT OF STOCK' : 'ADD TO CART';
+    const ready = bothSelected && inStock;
     confirm.style.opacity = ready ? '1' : '.4';
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
-  // Stock is per color, not per product -- grey out (disable) whichever
-  // sizes are out of stock for the given color's variants, and drop the
-  // current size selection if it's no longer available after a color
-  // switch (rather than silently letting a shopper "confirm" a size that
-  // isn't actually in stock for the color they just picked).
+  // Stock is per color, not per product -- sizes stay clickable regardless
+  // of stock (a shopper can select an out-of-stock size and see exactly
+  // that reflected on the confirm button, rather than the size silently
+  // being unselectable) via a visual .out-of-stock class instead of the
+  // native disabled attribute. The selection also no longer auto-clears on
+  // a color switch -- it stays sticky, and checkConfirmReady reflects
+  // whether it's actually available for whichever color is now selected.
   function applySizeAvailability(variants) {
-    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    currentStockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
     document.querySelectorAll('.size-btn').forEach(btn => {
-      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
-      btn.disabled = !inStock;
-      if (!inStock && btn.classList.contains('selected')) {
-        btn.classList.remove('selected');
-        selectedSize = null;
-      }
+      const inStock = currentStockBySize.has(btn.dataset.size) ? currentStockBySize.get(btn.dataset.size) : true;
+      btn.classList.toggle('out-of-stock', !inStock);
     });
+    checkConfirmReady();
   }
 
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
@@ -1562,6 +1590,7 @@
     document.getElementById('selected-color-label').textContent = '';
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     const confirm = document.getElementById('size-confirm');
+    confirm.textContent = 'ADD TO CART';
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 

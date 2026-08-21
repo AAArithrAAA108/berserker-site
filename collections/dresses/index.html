@@ -425,6 +425,15 @@
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  .filter-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .filter-section-label:first-child { margin-top: 0; }
   .color-filter-option {
     display: flex;
     align-items: center;
@@ -434,6 +443,14 @@
     color: var(--white);
     cursor: pointer;
     white-space: nowrap;
+  }
+  .color-filter-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    flex-shrink: 0;
   }
   .filter-clear {
     background: none;
@@ -890,6 +907,11 @@
     cursor: not-allowed;
     color: #888;
   }
+  /* Out-of-stock sizes stay clickable (see applySizeAvailability) -- a
+     shopper can still select one, at which point the confirm button shows
+     "Out of Stock" instead of silently clearing the selection. */
+  .size-btn.out-of-stock { opacity: .35; color: #888; }
+  .size-btn.selected.out-of-stock { background: #2a2a2a; color: #ff3c1e; border-color: #ff3c1e; opacity: 1; }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1027,7 +1049,7 @@
 
 <section class="section" id="all-products-grid">
   <h2 class="section-title">DRESSES</h2>
-  <div class="product-grid"><div class="product-card fade-in" id="product-39" data-color-groups="Black,Pink,Cream">
+  <div class="product-grid"><div class="product-card fade-in" id="product-39" data-color-groups="Black,Pink,Cream" data-sleeve-length="sleeveless">
   <a href="/skims/skims-rhinestone-logo-mini-dress/" class="product-img product-img-slider">
     <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0365.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0366.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0367.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0368.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/img-0369.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" /></div>
   </a>
@@ -1297,29 +1319,32 @@
   let pendingItem = null;
   let selectedSize = null;
   let selectedColor = null;
+  let currentStockBySize = new Map();
 
   function checkConfirmReady() {
     const confirm = document.getElementById('size-confirm');
-    const ready = selectedSize && selectedColor !== null;
+    const bothSelected = selectedSize && selectedColor !== null;
+    const inStock = !bothSelected || (currentStockBySize.has(selectedSize) ? currentStockBySize.get(selectedSize) : true);
+    confirm.textContent = bothSelected && !inStock ? 'OUT OF STOCK' : 'ADD TO CART';
+    const ready = bothSelected && inStock;
     confirm.style.opacity = ready ? '1' : '.4';
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
-  // Stock is per color, not per product -- grey out (disable) whichever
-  // sizes are out of stock for the given color's variants, and drop the
-  // current size selection if it's no longer available after a color
-  // switch (rather than silently letting a shopper "confirm" a size that
-  // isn't actually in stock for the color they just picked).
+  // Stock is per color, not per product -- sizes stay clickable regardless
+  // of stock (a shopper can select an out-of-stock size and see exactly
+  // that reflected on the confirm button, rather than the size silently
+  // being unselectable) via a visual .out-of-stock class instead of the
+  // native disabled attribute. The selection also no longer auto-clears on
+  // a color switch -- it stays sticky, and checkConfirmReady reflects
+  // whether it's actually available for whichever color is now selected.
   function applySizeAvailability(variants) {
-    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    currentStockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
     document.querySelectorAll('.size-btn').forEach(btn => {
-      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
-      btn.disabled = !inStock;
-      if (!inStock && btn.classList.contains('selected')) {
-        btn.classList.remove('selected');
-        selectedSize = null;
-      }
+      const inStock = currentStockBySize.has(btn.dataset.size) ? currentStockBySize.get(btn.dataset.size) : true;
+      btn.classList.toggle('out-of-stock', !inStock);
     });
+    checkConfirmReady();
   }
 
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
@@ -1330,6 +1355,7 @@
     document.getElementById('selected-color-label').textContent = '';
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     const confirm = document.getElementById('size-confirm');
+    confirm.textContent = 'ADD TO CART';
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 

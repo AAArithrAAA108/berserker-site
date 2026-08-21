@@ -425,6 +425,15 @@
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  .filter-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .filter-section-label:first-child { margin-top: 0; }
   .color-filter-option {
     display: flex;
     align-items: center;
@@ -434,6 +443,14 @@
     color: var(--white);
     cursor: pointer;
     white-space: nowrap;
+  }
+  .color-filter-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    flex-shrink: 0;
   }
   .filter-clear {
     background: none;
@@ -890,6 +907,11 @@
     cursor: not-allowed;
     color: #888;
   }
+  /* Out-of-stock sizes stay clickable (see applySizeAvailability) -- a
+     shopper can still select one, at which point the confirm button shows
+     "Out of Stock" instead of silently clearing the selection. */
+  .size-btn.out-of-stock { opacity: .35; color: #888; }
+  .size-btn.selected.out-of-stock { background: #2a2a2a; color: #ff3c1e; border-color: #ff3c1e; opacity: 1; }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1251,9 +1273,10 @@
     <div class="list-controls">
       
 <div class="filter-bar">
-  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
   <div id="filter-panel" class="filter-panel">
-    <label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /> Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /> Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /> Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Denim" /> Denim</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /> Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /> Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /> Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /> Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /> White</label>
+    <div class="filter-section-label">Color</div><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /><span class="color-filter-swatch" style="background:#1c4aa0;"></span>Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /><span class="color-filter-swatch" style="background:#5a3f2a;"></span>Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Denim" /><span class="color-filter-swatch" style="background:#6b9fd4;"></span>Denim</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /><span class="color-filter-swatch" style="background:#8a8a8a;"></span>Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /><span class="color-filter-swatch" style="background:#c41e8a;"></span>Pink</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /><span class="color-filter-swatch" style="background:#c41e1e;"></span>Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /><span class="color-filter-swatch" style="background:#f0ede8;"></span>White</label>
+    <div class="filter-section-label">Sleeve Length</div><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="full" />Full Sleeve</label><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="half" />Half Sleeve</label>
     <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
   </div>
 </div>
@@ -1268,7 +1291,7 @@
 </div>
     </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-28" data-color-groups="Black,Blue,White,Pink,Red,Grey">
+  <div class="product-grid"><div class="product-card fade-in" id="product-28" data-color-groups="Black,Blue,White,Pink,Red,Grey" data-sleeve-length="half">
   <a href="/chromehearts/chromehearts-retro-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:4000%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0211.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0212.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0213.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0214.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0215.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0216.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0217.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0218.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0219.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0220.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0221.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0222.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0223.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0224.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0225.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0226.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0227.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0228.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0229.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0230.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0231.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0232.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0233.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0234.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0235.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0236.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0237.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0238.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0239.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0240.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0241.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0242.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0243.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0244.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0245.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0246.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0247.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0248.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0249.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-oversized-tshirt/img-0250.jpg" alt="Retro Oversized T-Shirt" style="width:2.5%;" /></div>
   </a>
@@ -1280,7 +1303,7 @@
   </div>
   <button class="product-add" data-cod-advance="3100">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-29" data-color-groups="Black,Grey,White,Red,Pink">
+<div class="product-card fade-in" id="product-29" data-color-groups="Black,Grey,White,Red,Pink" data-sleeve-length="half">
   <a href="/chromehearts/chromehearts-vintage-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:900%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0251.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0252.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0253.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0254.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0255.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0256.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0257.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0258.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-vintage-oversized-tshirt/img-0259.jpg" alt="Vintage Oversized T-Shirt" style="width:11.11111111111111%;" /></div>
   </a>
@@ -1292,7 +1315,7 @@
   </div>
   <button class="product-add" data-cod-advance="3100">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-30" data-color-groups="Black,White,Grey,Pink,Red">
+<div class="product-card fade-in" id="product-30" data-color-groups="Black,White,Grey,Pink,Red" data-sleeve-length="full">
   <a href="/chromehearts/chromehearts-retro-hoodie/" class="product-img product-img-slider">
     <div class="slider-track" style="width:4200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0260.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0261.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0262.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0263.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0264.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0265.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0266.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0267.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0268.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0269.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0270.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0271.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0272.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0273.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0274.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0275.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0276.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0277.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0278.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0279.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0280.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0281.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0282.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0283.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0284.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0285.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0286.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0287.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0288.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0289.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0290.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0291.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0292.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0293.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0294.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0295.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0296.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0297.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0298.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0299.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0300.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-hoodie/img-0301.jpg" alt="Retro Hoodie" style="width:2.380952380952381%;" /></div>
   </a>
@@ -1304,7 +1327,7 @@
   </div>
   <button class="product-add" data-cod-advance="5100">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-31" data-color-groups="Black,Denim">
+<div class="product-card fade-in" id="product-31" data-color-groups="Black,Denim" data-sleeve-length="full">
   <a href="/chromehearts/chromehearts-forever-denim-jacket/" class="product-img product-img-slider">
     <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0302.jpg" alt="Forever Black Denim Jacket" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0303.jpg" alt="Forever Black Denim Jacket" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0304.jpg" alt="Forever Black Denim Jacket" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0305.jpg" alt="Forever Black Denim Jacket" style="width:25%;" /></div>
   </a>
@@ -1316,7 +1339,7 @@
   </div>
   <button class="product-add" data-cod-advance="7300">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-32" data-color-groups="Denim">
+<div class="product-card fade-in" id="product-32" data-color-groups="Denim" data-sleeve-length="full">
   <a href="/chromehearts/chromehearts-mastermind-ripped-denim-jacket/" class="product-img product-img-slider">
     <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-mastermind-ripped-denim-jacket/img-0306.jpg" alt="Ripped Denim Jacket" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-mastermind-ripped-denim-jacket/img-0307.jpg" alt="Ripped Denim Jacket" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-mastermind-ripped-denim-jacket/img-0308.jpg" alt="Ripped Denim Jacket" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-mastermind-ripped-denim-jacket/img-0309.jpg" alt="Ripped Denim Jacket" style="width:25%;" /></div>
   </a>
@@ -1328,7 +1351,7 @@
   </div>
   <button class="product-add" data-cod-advance="7300">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-33" data-color-groups="Denim,White,Black,Blue,Brown,Green">
+<div class="product-card fade-in" id="product-33" data-color-groups="Denim,White,Black,Blue,Brown,Green" data-sleeve-length="">
   <a href="/chromehearts/chromehearts-retro-jeans/" class="product-img product-img-slider">
     <div class="slider-track" style="width:600%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0310.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0311.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0312.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0313.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0314.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-retro-jeans/img-0315.jpg" alt="Retro Jeans" style="width:16.666666666666668%;" /></div>
   </a>
@@ -1390,12 +1413,14 @@
     }
 
     function applyFilter() {
-      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedColors = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedSleeves = Array.prototype.slice.call(document.querySelectorAll('.sleeve-filter-checkbox:checked')).map(function(cb) { return cb.value; });
       var cards = grid.querySelectorAll('.product-card');
       cards.forEach(function(card) {
         var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
-        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
-        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+        var colorMatch = checkedColors.length === 0 || groups.some(function(g) { return checkedColors.indexOf(g) !== -1; });
+        var sleeveMatch = checkedSleeves.length === 0 || checkedSleeves.indexOf(card.dataset.sleeveLength || '') !== -1;
+        card.style.display = (colorMatch && sleeveMatch && searchMatches(card)) ? '' : 'none';
       });
     }
 
@@ -1405,12 +1430,12 @@
     document.addEventListener('click', function(e) {
       if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
     });
-    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+    document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) {
       cb.addEventListener('change', applyFilter);
     });
     if (clearBtn) {
       clearBtn.addEventListener('click', function() {
-        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) { cb.checked = false; });
         applyFilter();
       });
     }
@@ -1673,29 +1698,32 @@
   let pendingItem = null;
   let selectedSize = null;
   let selectedColor = null;
+  let currentStockBySize = new Map();
 
   function checkConfirmReady() {
     const confirm = document.getElementById('size-confirm');
-    const ready = selectedSize && selectedColor !== null;
+    const bothSelected = selectedSize && selectedColor !== null;
+    const inStock = !bothSelected || (currentStockBySize.has(selectedSize) ? currentStockBySize.get(selectedSize) : true);
+    confirm.textContent = bothSelected && !inStock ? 'OUT OF STOCK' : 'ADD TO CART';
+    const ready = bothSelected && inStock;
     confirm.style.opacity = ready ? '1' : '.4';
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
-  // Stock is per color, not per product -- grey out (disable) whichever
-  // sizes are out of stock for the given color's variants, and drop the
-  // current size selection if it's no longer available after a color
-  // switch (rather than silently letting a shopper "confirm" a size that
-  // isn't actually in stock for the color they just picked).
+  // Stock is per color, not per product -- sizes stay clickable regardless
+  // of stock (a shopper can select an out-of-stock size and see exactly
+  // that reflected on the confirm button, rather than the size silently
+  // being unselectable) via a visual .out-of-stock class instead of the
+  // native disabled attribute. The selection also no longer auto-clears on
+  // a color switch -- it stays sticky, and checkConfirmReady reflects
+  // whether it's actually available for whichever color is now selected.
   function applySizeAvailability(variants) {
-    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    currentStockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
     document.querySelectorAll('.size-btn').forEach(btn => {
-      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
-      btn.disabled = !inStock;
-      if (!inStock && btn.classList.contains('selected')) {
-        btn.classList.remove('selected');
-        selectedSize = null;
-      }
+      const inStock = currentStockBySize.has(btn.dataset.size) ? currentStockBySize.get(btn.dataset.size) : true;
+      btn.classList.toggle('out-of-stock', !inStock);
     });
+    checkConfirmReady();
   }
 
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
@@ -1706,6 +1734,7 @@
     document.getElementById('selected-color-label').textContent = '';
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     const confirm = document.getElementById('size-confirm');
+    confirm.textContent = 'ADD TO CART';
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 

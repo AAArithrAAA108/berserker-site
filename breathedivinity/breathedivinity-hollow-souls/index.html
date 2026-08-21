@@ -425,6 +425,15 @@
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  .filter-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .filter-section-label:first-child { margin-top: 0; }
   .color-filter-option {
     display: flex;
     align-items: center;
@@ -434,6 +443,14 @@
     color: var(--white);
     cursor: pointer;
     white-space: nowrap;
+  }
+  .color-filter-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    flex-shrink: 0;
   }
   .filter-clear {
     background: none;
@@ -890,6 +907,11 @@
     cursor: not-allowed;
     color: #888;
   }
+  /* Out-of-stock sizes stay clickable (see applySizeAvailability) -- a
+     shopper can still select one, at which point the confirm button shows
+     "Out of Stock" instead of silently clearing the selection. */
+  .size-btn.out-of-stock { opacity: .35; color: #888; }
+  .size-btn.selected.out-of-stock { background: #2a2a2a; color: #ff3c1e; border-color: #ff3c1e; opacity: 1; }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1081,7 +1103,7 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0122.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0123.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0124.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0125.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0126.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0127.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0128.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0129.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0130.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0131.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0132.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-hollow-souls/img-0133.jpg"];
-    var swatchList = [{"label":"Red","imgIndex":0,"indices":[0,1],"variant":null},{"label":"Charcoal","imgIndex":2,"indices":[2,3],"variant":null},{"label":"Blue","imgIndex":4,"indices":[4],"variant":null},{"label":"Green","imgIndex":5,"indices":[5,6],"variant":null},{"label":"Black","imgIndex":7,"indices":[7,8],"variant":null},{"label":"Purple","imgIndex":9,"indices":[9],"variant":null},{"label":"Orange","imgIndex":10,"indices":[10],"variant":null},{"label":"Pink","imgIndex":11,"indices":[11],"variant":null}];
+    var swatchList = [{"label":"Red","imgIndex":0,"indices":[0,1],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Charcoal","imgIndex":2,"indices":[2,3],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Blue","imgIndex":4,"indices":[4],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Green","imgIndex":5,"indices":[5,6],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Black","imgIndex":7,"indices":[7,8],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Purple","imgIndex":9,"indices":[9],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Orange","imgIndex":10,"indices":[10],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Pink","imgIndex":11,"indices":[11],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -1092,6 +1114,23 @@
 
     var selectedColor = swatchList.length ? swatchList[0] : null;
     var selectedSizeLocal = null;
+    var currentStockBySize = {};
+
+    // Stock is per color, not per product -- sizes stay clickable regardless
+    // of stock (mirrors shell.ts's Add-to-Cart size picker: a shopper can
+    // select an out-of-stock size and see that reflected on the Add to Cart
+    // button, rather than the button being unselectable). Re-applied on
+    // every color change, unlike the old version which only ever reflected
+    // whichever color happened to be colors[0] at render time.
+    function applySizeAvailability(variants) {
+      currentStockBySize = {};
+      (variants || []).forEach(function(v) { currentStockBySize[v.size] = v.inStock; });
+      sizeBtns.forEach(function(btn) {
+        var inStock = currentStockBySize.hasOwnProperty(btn.dataset.size) ? currentStockBySize[btn.dataset.size] : true;
+        btn.classList.toggle('out-of-stock', !inStock);
+      });
+      updateAddBtn();
+    }
 
     function setMainImage(index, label) {
       mainImg.src = images[index];
@@ -1119,26 +1158,40 @@
           selectedColor = owner;
           colorLabel.textContent = owner.label;
           selectSwatchForIndex(idx);
+          applySizeAvailability(owner.variants);
         }
         setMainImage(idx, owner ? owner.label : (imageLabel ? imageLabel.textContent : ''));
       });
     });
 
-    colorSwatches.forEach(function(sw) {
+    colorSwatches.forEach(function(sw, i) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
+        // swatchList and colorSwatches are built from the same product.colors
+        // list in the same order, so index i in one is index i in the other
+        // -- this is how the click handler gets at that color's real .variants
+        // (a DOM data attribute would work too, but swatchList already has it).
+        var variants = swatchList[i] ? swatchList[i].variants : [];
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null, variants: variants };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
+        applySizeAvailability(variants);
       });
     });
 
     function updateAddBtn() {
-      var ready = selectedSizeLocal && selectedColor;
-      addBtn.classList.toggle('ready', !!ready);
-      addBtn.textContent = ready ? 'Add to Cart' : 'Select Size & Color';
+      var bothSelected = selectedSizeLocal && selectedColor;
+      var inStock = !bothSelected || (currentStockBySize.hasOwnProperty(selectedSizeLocal) ? currentStockBySize[selectedSizeLocal] : true);
+      addBtn.classList.toggle('ready', !!(bothSelected && inStock));
+      if (!bothSelected) {
+        addBtn.textContent = 'Select Size & Color';
+      } else if (!inStock) {
+        addBtn.textContent = 'Out of Stock';
+      } else {
+        addBtn.textContent = 'Add to Cart';
+      }
     }
 
     sizeBtns.forEach(function(btn) {
@@ -1159,6 +1212,8 @@
         if (typeof showToast === 'function') showToast('Please select a color');
         return;
       }
+      var inStock = currentStockBySize.hasOwnProperty(selectedSizeLocal) ? currentStockBySize[selectedSizeLocal] : true;
+      if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = "Hollow Souls Oversized T-Shirt" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
@@ -1168,7 +1223,7 @@
       }
     });
 
-    updateAddBtn();
+    applySizeAvailability(selectedColor ? selectedColor.variants : []);
   })();
 </script>
 <footer>
@@ -1428,29 +1483,32 @@
   let pendingItem = null;
   let selectedSize = null;
   let selectedColor = null;
+  let currentStockBySize = new Map();
 
   function checkConfirmReady() {
     const confirm = document.getElementById('size-confirm');
-    const ready = selectedSize && selectedColor !== null;
+    const bothSelected = selectedSize && selectedColor !== null;
+    const inStock = !bothSelected || (currentStockBySize.has(selectedSize) ? currentStockBySize.get(selectedSize) : true);
+    confirm.textContent = bothSelected && !inStock ? 'OUT OF STOCK' : 'ADD TO CART';
+    const ready = bothSelected && inStock;
     confirm.style.opacity = ready ? '1' : '.4';
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
-  // Stock is per color, not per product -- grey out (disable) whichever
-  // sizes are out of stock for the given color's variants, and drop the
-  // current size selection if it's no longer available after a color
-  // switch (rather than silently letting a shopper "confirm" a size that
-  // isn't actually in stock for the color they just picked).
+  // Stock is per color, not per product -- sizes stay clickable regardless
+  // of stock (a shopper can select an out-of-stock size and see exactly
+  // that reflected on the confirm button, rather than the size silently
+  // being unselectable) via a visual .out-of-stock class instead of the
+  // native disabled attribute. The selection also no longer auto-clears on
+  // a color switch -- it stays sticky, and checkConfirmReady reflects
+  // whether it's actually available for whichever color is now selected.
   function applySizeAvailability(variants) {
-    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    currentStockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
     document.querySelectorAll('.size-btn').forEach(btn => {
-      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
-      btn.disabled = !inStock;
-      if (!inStock && btn.classList.contains('selected')) {
-        btn.classList.remove('selected');
-        selectedSize = null;
-      }
+      const inStock = currentStockBySize.has(btn.dataset.size) ? currentStockBySize.get(btn.dataset.size) : true;
+      btn.classList.toggle('out-of-stock', !inStock);
     });
+    checkConfirmReady();
   }
 
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
@@ -1461,6 +1519,7 @@
     document.getElementById('selected-color-label').textContent = '';
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     const confirm = document.getElementById('size-confirm');
+    confirm.textContent = 'ADD TO CART';
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 

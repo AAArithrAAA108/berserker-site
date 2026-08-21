@@ -425,6 +425,15 @@
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  .filter-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .filter-section-label:first-child { margin-top: 0; }
   .color-filter-option {
     display: flex;
     align-items: center;
@@ -434,6 +443,14 @@
     color: var(--white);
     cursor: pointer;
     white-space: nowrap;
+  }
+  .color-filter-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    flex-shrink: 0;
   }
   .filter-clear {
     background: none;
@@ -890,6 +907,11 @@
     cursor: not-allowed;
     color: #888;
   }
+  /* Out-of-stock sizes stay clickable (see applySizeAvailability) -- a
+     shopper can still select one, at which point the confirm button shows
+     "Out of Stock" instead of silently clearing the selection. */
+  .size-btn.out-of-stock { opacity: .35; color: #888; }
+  .size-btn.selected.out-of-stock { background: #2a2a2a; color: #ff3c1e; border-color: #ff3c1e; opacity: 1; }
   .modal-swatch {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1125,9 +1147,10 @@
     <div class="list-controls">
       
 <div class="filter-bar">
-  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
   <div id="filter-panel" class="filter-panel">
-    <label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /> Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /> Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /> Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Cream" /> Cream</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Gold" /> Gold</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /> Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /> Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Maroon" /> Maroon</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Navy" /> Navy</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Purple" /> Purple</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /> Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /> White</label>
+    <div class="filter-section-label">Color</div><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Blue" /><span class="color-filter-swatch" style="background:#1c4aa0;"></span>Blue</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Brown" /><span class="color-filter-swatch" style="background:#5a3f2a;"></span>Brown</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Cream" /><span class="color-filter-swatch" style="background:#ede9e3;"></span>Cream</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Gold" /><span class="color-filter-swatch" style="background:#c4a01c;"></span>Gold</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Grey" /><span class="color-filter-swatch" style="background:#8a8a8a;"></span>Grey</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Maroon" /><span class="color-filter-swatch" style="background:#5a1a1a;"></span>Maroon</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Navy" /><span class="color-filter-swatch" style="background:#1c2c4a;"></span>Navy</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Purple" /><span class="color-filter-swatch" style="background:#5a1ca0;"></span>Purple</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Red" /><span class="color-filter-swatch" style="background:#c41e1e;"></span>Red</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="White" /><span class="color-filter-swatch" style="background:#f0ede8;"></span>White</label>
+    <div class="filter-section-label">Sleeve Length</div><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="full" />Full Sleeve</label><label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="half" />Half Sleeve</label>
     <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
   </div>
 </div>
@@ -1142,7 +1165,7 @@
 </div>
     </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-6" data-color-groups="Black,Grey,White">
+  <div class="product-grid"><div class="product-card fade-in" id="product-6" data-color-groups="Black,Grey,White" data-sleeve-length="half">
   <a href="/youngla/youngla-batman-half-sleeve/" class="product-img product-img-slider">
     <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0042.jpg" alt="Compression Half Sleeve" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0043.jpg" alt="Compression Half Sleeve" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0044.jpg" alt="Compression Half Sleeve" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0045.jpg" alt="Compression Half Sleeve" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-batman-half-sleeve/img-0046.jpg" alt="Compression Half Sleeve" style="width:20%;" /></div>
   </a>
@@ -1154,7 +1177,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-7" data-color-groups="Black,Grey,Red,Blue">
+<div class="product-card fade-in" id="product-7" data-color-groups="Black,Grey,Red,Blue" data-sleeve-length="half">
   <a href="/youngla/youngla-superman-half-sleeve/" class="product-img product-img-slider">
     <div class="slider-track" style="width:300%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-superman-half-sleeve/img-0047.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-superman-half-sleeve/img-0048.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-superman-half-sleeve/img-0049.jpg" alt="Compression Half Sleeve" style="width:33.333333333333336%;" /></div>
   </a>
@@ -1166,7 +1189,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-8" data-color-groups="Maroon,Cream,Black,Gold,Brown">
+<div class="product-card fade-in" id="product-8" data-color-groups="Maroon,Cream,Black,Gold,Brown" data-sleeve-length="half">
   <a href="/youngla/youngla-gold&#39;s-gym-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-gold&#39;s-gym-tshirt/img-0050.jpg" alt="Slim Fit T-Shirt" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-gold&#39;s-gym-tshirt/img-0051.jpg" alt="Slim Fit T-Shirt" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-gold&#39;s-gym-tshirt/img-0052.jpg" alt="Slim Fit T-Shirt" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-gold&#39;s-gym-tshirt/img-0053.jpg" alt="Slim Fit T-Shirt" style="width:20%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-gold&#39;s-gym-tshirt/img-0054.jpg" alt="Slim Fit T-Shirt" style="width:20%;" /></div>
   </a>
@@ -1178,7 +1201,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-9" data-color-groups="Maroon,Brown,Black">
+<div class="product-card fade-in" id="product-9" data-color-groups="Maroon,Brown,Black" data-sleeve-length="half">
   <a href="/youngla/youngla-drip-oversized-tshirt/" class="product-img product-img-slider">
     <div class="slider-track" style="width:900%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0055.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0056.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0057.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0058.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0059.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0060.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0061.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0062.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0063.jpg" alt="Drip Oversized T-Shirt" style="width:11.11111111111111%;" /></div>
   </a>
@@ -1190,7 +1213,7 @@
   </div>
   <button class="product-add" data-cod-advance="2800">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-10" data-color-groups="Green,Grey,White,Black">
+<div class="product-card fade-in" id="product-10" data-color-groups="Green,Grey,White,Black" data-sleeve-length="full">
   <a href="/youngla/youngla-revenge-hoodie/" class="product-img product-img-slider">
     <div class="slider-track" style="width:400%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-hoodie/img-0064.jpg" alt="Revenge Hoodie" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-hoodie/img-0065.jpg" alt="Revenge Hoodie" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-hoodie/img-0066.jpg" alt="Revenge Hoodie" style="width:25%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-hoodie/img-0067.jpg" alt="Revenge Hoodie" style="width:25%;" /></div>
   </a>
@@ -1202,7 +1225,7 @@
   </div>
   <button class="product-add" data-cod-advance="3500">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-11" data-color-groups="Purple,White,Black,Green,Red">
+<div class="product-card fade-in" id="product-11" data-color-groups="Purple,White,Black,Green,Red" data-sleeve-length="">
   <a href="/youngla/youngla-revenge-joggers/" class="product-img product-img-slider">
     <div class="slider-track" style="width:800%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0068.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0069.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0070.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0071.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0072.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0073.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0074.jpg" alt="Revenge Joggers" style="width:12.5%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-revenge-joggers/img-0075.jpg" alt="Revenge Joggers" style="width:12.5%;" /></div>
   </a>
@@ -1214,7 +1237,7 @@
   </div>
   <button class="product-add" data-cod-advance="3000">Add to Cart</button>
 </div>
-<div class="product-card fade-in" id="product-12" data-color-groups="Maroon,Black,Navy,Purple,Grey">
+<div class="product-card fade-in" id="product-12" data-color-groups="Maroon,Black,Navy,Purple,Grey" data-sleeve-length="">
   <a href="/youngla/youngla-divine-sweats/" class="product-img product-img-slider">
     <div class="slider-track" style="width:600%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0076.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0077.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0078.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0079.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0080.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-divine-sweats/img-0081.jpg" alt="Divine Sweats Sweatpants" style="width:16.666666666666668%;" /></div>
   </a>
@@ -1276,12 +1299,14 @@
     }
 
     function applyFilter() {
-      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedColors = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedSleeves = Array.prototype.slice.call(document.querySelectorAll('.sleeve-filter-checkbox:checked')).map(function(cb) { return cb.value; });
       var cards = grid.querySelectorAll('.product-card');
       cards.forEach(function(card) {
         var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
-        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
-        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+        var colorMatch = checkedColors.length === 0 || groups.some(function(g) { return checkedColors.indexOf(g) !== -1; });
+        var sleeveMatch = checkedSleeves.length === 0 || checkedSleeves.indexOf(card.dataset.sleeveLength || '') !== -1;
+        card.style.display = (colorMatch && sleeveMatch && searchMatches(card)) ? '' : 'none';
       });
     }
 
@@ -1291,12 +1316,12 @@
     document.addEventListener('click', function(e) {
       if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
     });
-    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+    document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) {
       cb.addEventListener('change', applyFilter);
     });
     if (clearBtn) {
       clearBtn.addEventListener('click', function() {
-        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) { cb.checked = false; });
         applyFilter();
       });
     }
@@ -1559,29 +1584,32 @@
   let pendingItem = null;
   let selectedSize = null;
   let selectedColor = null;
+  let currentStockBySize = new Map();
 
   function checkConfirmReady() {
     const confirm = document.getElementById('size-confirm');
-    const ready = selectedSize && selectedColor !== null;
+    const bothSelected = selectedSize && selectedColor !== null;
+    const inStock = !bothSelected || (currentStockBySize.has(selectedSize) ? currentStockBySize.get(selectedSize) : true);
+    confirm.textContent = bothSelected && !inStock ? 'OUT OF STOCK' : 'ADD TO CART';
+    const ready = bothSelected && inStock;
     confirm.style.opacity = ready ? '1' : '.4';
     confirm.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
-  // Stock is per color, not per product -- grey out (disable) whichever
-  // sizes are out of stock for the given color's variants, and drop the
-  // current size selection if it's no longer available after a color
-  // switch (rather than silently letting a shopper "confirm" a size that
-  // isn't actually in stock for the color they just picked).
+  // Stock is per color, not per product -- sizes stay clickable regardless
+  // of stock (a shopper can select an out-of-stock size and see exactly
+  // that reflected on the confirm button, rather than the size silently
+  // being unselectable) via a visual .out-of-stock class instead of the
+  // native disabled attribute. The selection also no longer auto-clears on
+  // a color switch -- it stays sticky, and checkConfirmReady reflects
+  // whether it's actually available for whichever color is now selected.
   function applySizeAvailability(variants) {
-    const stockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
+    currentStockBySize = new Map((variants || []).map(v => [v.size, v.inStock]));
     document.querySelectorAll('.size-btn').forEach(btn => {
-      const inStock = stockBySize.has(btn.dataset.size) ? stockBySize.get(btn.dataset.size) : true;
-      btn.disabled = !inStock;
-      if (!inStock && btn.classList.contains('selected')) {
-        btn.classList.remove('selected');
-        selectedSize = null;
-      }
+      const inStock = currentStockBySize.has(btn.dataset.size) ? currentStockBySize.get(btn.dataset.size) : true;
+      btn.classList.toggle('out-of-stock', !inStock);
     });
+    checkConfirmReady();
   }
 
   function openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allImgs) {
@@ -1592,6 +1620,7 @@
     document.getElementById('selected-color-label').textContent = '';
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     const confirm = document.getElementById('size-confirm');
+    confirm.textContent = 'ADD TO CART';
     confirm.style.opacity = '1';
     confirm.style.pointerEvents = 'auto';
 
