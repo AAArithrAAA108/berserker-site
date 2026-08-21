@@ -401,6 +401,21 @@ Deno.test("renderListingPage/renderBrandPage: include a color-filter checkbox fo
   }
 });
 
+Deno.test("renderListingPage/renderBrandPage: Color and Sleeve Length render as side-by-side facet columns, not stacked one above the other", () => {
+  const html = renderListingPage(sampleCatalog);
+  assertStringIncludes(html, '<div class="filter-facets">');
+  assertStringIncludes(html, '<div class="filter-facet"><div class="filter-section-label">Color</div>');
+  assertStringIncludes(html, '<div class="filter-facet"><div class="filter-section-label">Sleeve Length</div>');
+  // Both facet columns must sit inside the same .filter-facets row, not one
+  // per top-level section like the old stacked layout.
+  const facetsIdx = html.indexOf('<div class="filter-facets">');
+  const colorFacetIdx = html.indexOf('<div class="filter-facet"><div class="filter-section-label">Color</div>');
+  const sleeveFacetIdx = html.indexOf('<div class="filter-facet"><div class="filter-section-label">Sleeve Length</div>');
+  if (!(facetsIdx < colorFacetIdx && colorFacetIdx < sleeveFacetIdx)) {
+    throw new Error("Color and Sleeve Length facets must both be nested inside .filter-facets, in that order");
+  }
+});
+
 Deno.test("renderListingPage/renderBrandPage: include a sleeve-length checkbox for every distinct sleeve length present in the given products, and filter cards on it via AND with the color facet", () => {
   // sampleCatalog's products all reuse twoColorProduct's sleeveLength: "half".
   for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {

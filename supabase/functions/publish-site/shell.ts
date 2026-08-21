@@ -476,6 +476,20 @@ export function renderShell(opts: ShellOptions): string {
     min-width: 180px;
   }
   .filter-panel.open { display: flex; }
+  /* Color and Sleeve Length are two side-by-side columns rather than
+     stacked sections -- .filter-facets is the row, .filter-facet is each
+     column (its own label + checkboxes stacked). */
+  .filter-facets {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .filter-facet {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
   .filter-section-label {
     font-family: var(--font-mono);
     font-size: 10px;

@@ -347,8 +347,10 @@ function renderFilterBar(products: CatalogProduct[]): string {
 <div class="filter-bar">
   <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
   <div id="filter-panel" class="filter-panel">
-    ${colorSection}
-    ${sleeveSection}
+    <div class="filter-facets">
+      ${colorSection ? `<div class="filter-facet">${colorSection}</div>` : ""}
+      ${sleeveSection ? `<div class="filter-facet">${sleeveSection}</div>` : ""}
+    </div>
     <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
   </div>
 </div>`;
