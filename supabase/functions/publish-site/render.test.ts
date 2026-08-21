@@ -393,12 +393,31 @@ Deno.test("renderProductCard: carries every distinct color group as a comma-join
 Deno.test("renderListingPage/renderBrandPage: include a color-filter checkbox for every distinct group present in the given products, and the filter script", () => {
   // sampleCatalog's products all reuse twoColorProduct's colors: Green + Black.
   for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {
-    assertStringIncludes(html, '<button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>');
+    assertStringIncludes(html, '<button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>');
     assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black');
     assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green');
-    assertStringIncludes(html, "document.querySelectorAll('.color-filter-checkbox')");
+    assertStringIncludes(html, "document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox')");
     assertStringIncludes(html, "card.dataset.colorGroups");
   }
+});
+
+Deno.test("renderListingPage/renderBrandPage: include a sleeve-length checkbox for every distinct sleeve length present in the given products, and filter cards on it via AND with the color facet", () => {
+  // sampleCatalog's products all reuse twoColorProduct's sleeveLength: "half".
+  for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {
+    assertStringIncludes(html, '<div class="filter-section-label">Sleeve Length</div>');
+    assertStringIncludes(html, '<input type="checkbox" class="sleeve-filter-checkbox" value="half" />Half Sleeve');
+    if (html.includes('value="full"') || html.includes('value="sleeveless"')) {
+      throw new Error("should not offer a sleeve-length option with no matching products");
+    }
+    assertStringIncludes(html, "card.dataset.sleeveLength");
+  }
+});
+
+Deno.test("renderProductCard: carries data-sleeve-length so the filter script can match on it, empty string when unset", () => {
+  const withSleeve = renderProductCard(twoColorProduct);
+  assertStringIncludes(withSleeve, 'data-sleeve-length="half"');
+  const withoutSleeve = renderProductCard({ ...twoColorProduct, sleeveLength: null });
+  assertStringIncludes(withoutSleeve, 'data-sleeve-length=""');
 });
 
 Deno.test("renderColorFilterBar (via renderBrandPage): each checkbox's swatch dot uses that exact group's representative hex, not a generic placeholder", () => {
@@ -432,11 +451,21 @@ Deno.test("renderColorFilterBar (via renderListingPage): omits a checkbox for a 
   }
 });
 
-Deno.test("renderBrandPage: emits no filter bar at all when the brand's products have no color groups set (regression: an empty checkbox panel is worse than no button)", () => {
-  const colorlessProduct: CatalogProduct = { ...twoColorProduct, colors: [] };
-  const html = renderBrandPage({ products: [colorlessProduct] }, "gymshark");
+Deno.test("renderBrandPage: emits no filter bar at all when the brand's products have no color groups and no sleeve length set (regression: an empty checkbox panel is worse than no button)", () => {
+  const emptyFacetsProduct: CatalogProduct = { ...twoColorProduct, colors: [], sleeveLength: null };
+  const html = renderBrandPage({ products: [emptyFacetsProduct] }, "gymshark");
   if (html.includes('id="filter-toggle-btn"')) {
-    throw new Error("should not render a Filter by Color button with nothing to filter by");
+    throw new Error("should not render a Filter button with nothing to filter by");
+  }
+});
+
+Deno.test("renderBrandPage: still renders the filter bar (sleeve length only, no color section) when products have a sleeve length but no color groups", () => {
+  const noColorProduct: CatalogProduct = { ...twoColorProduct, colors: [] };
+  const html = renderBrandPage({ products: [noColorProduct] }, "gymshark");
+  assertStringIncludes(html, 'id="filter-toggle-btn"');
+  assertStringIncludes(html, '<div class="filter-section-label">Sleeve Length</div>');
+  if (html.includes('<div class="filter-section-label">Color</div>')) {
+    throw new Error("should not render an empty Color section with zero color groups");
   }
 });
 
@@ -554,9 +583,13 @@ Deno.test("renderPdpPage: includes the Instagram caption present on every real P
   assertStringIncludes(html, "@berserker.in");
 });
 
-Deno.test("renderPdpPage: marks an out-of-stock size as disabled", () => {
+Deno.test("renderPdpPage: out-of-stock sizes stay clickable (no disabled attribute); stock data is embedded for client-side availability styling", () => {
   const html = renderPdpPage(sampleProduct); // sampleProduct's only color has L: inStock:false
-  assertStringIncludes(html, 'data-size="L" disabled');
+  assertStringIncludes(html, 'data-size="L">L</button>');
+  if (html.includes('data-size="L" disabled')) {
+    throw new Error("out-of-stock PDP sizes must stay clickable, not disabled");
+  }
+  assertStringIncludes(html, '"inStock":false');
 });
 
 Deno.test("renderPdpPage: zero colors renders without crashing or dividing by zero", () => {

@@ -108,7 +108,7 @@ export function renderProductCard(product: CatalogProduct): string {
   const colorGroupsAttr = esc(productColorGroups(product).join(","));
 
   return `
-<div class="product-card fade-in" id="product-${product.position}" data-color-groups="${colorGroupsAttr}">
+<div class="product-card fade-in" id="product-${product.position}" data-color-groups="${colorGroupsAttr}" data-sleeve-length="${esc(product.sleeveLength ?? "")}">
   <a href="${esc(pdpPath)}" class="product-img product-img-slider">
     <div class="slider-track"${trackStyle}>${sliderImgs}</div>
   </a>
@@ -298,47 +298,77 @@ const SORT_SCRIPT = `
   })();
 </script>`;
 
-// Checkbox list built from whichever color groups actually appear among
-// the products passed in (a brand page only lists that brand's colors;
-// the all-products page lists every color site-wide) -- keeps the filter
-// from showing a "Denim" option on a brand with zero denim products.
-// Sorted alphabetically since there's no shared canonical palette order
+// Sleeve-length facet: DB constraint restricts sleeve_length to these three
+// values (or null) -- see products_sleeve_length_check in schema.sql. Fixed
+// display order (not alphabetical, unlike colors) since there's no natural
+// alphabetical order that reads well for this facet.
+const SLEEVE_LABELS: Record<string, string> = { full: "Full Sleeve", half: "Half Sleeve", sleeveless: "Sleeveless" };
+const SLEEVE_ORDER = ["full", "half", "sleeveless"];
+
+// Checkbox list built from whichever color groups and sleeve lengths
+// actually appear among the products passed in (a brand page only lists
+// that brand's colors; the all-products page lists every color site-wide)
+// -- keeps the filter from showing a "Denim" option on a brand with zero
+// denim products, or a "Sleeveless" option on a brand with none. Colors are
+// sorted alphabetically since there's no shared canonical palette order
 // between this Deno module and the admin panel's own JS-side constant.
-function renderColorFilterBar(products: CatalogProduct[]): string {
+function renderFilterBar(products: CatalogProduct[]): string {
   const groups = new Set<string>();
+  const sleeveLengths = new Set<string>();
   for (const p of products) {
     for (const g of productColorGroups(p)) groups.add(g);
+    if (p.sleeveLength) sleeveLengths.add(p.sleeveLength);
   }
   const sortedGroups = Array.from(groups).sort();
-  if (sortedGroups.length === 0) return "";
-  const checkboxes = sortedGroups
-    .map(
-      (g) =>
-        `<label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="${esc(g)}" /><span class="color-filter-swatch" style="background:${esc(representativeHex(g))};"></span>${esc(g)}</label>`
-    )
-    .join("");
+  const sortedSleeves = SLEEVE_ORDER.filter((s) => sleeveLengths.has(s));
+  if (sortedGroups.length === 0 && sortedSleeves.length === 0) return "";
+
+  const colorSection = sortedGroups.length
+    ? `<div class="filter-section-label">Color</div>` +
+      sortedGroups
+        .map(
+          (g) =>
+            `<label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="${esc(g)}" /><span class="color-filter-swatch" style="background:${esc(representativeHex(g))};"></span>${esc(g)}</label>`
+        )
+        .join("")
+    : "";
+
+  const sleeveSection = sortedSleeves.length
+    ? `<div class="filter-section-label">Sleeve Length</div>` +
+      sortedSleeves
+        .map(
+          (s) =>
+            `<label class="color-filter-option"><input type="checkbox" class="sleeve-filter-checkbox" value="${esc(s)}" />${esc(SLEEVE_LABELS[s])}</label>`
+        )
+        .join("")
+    : "";
+
   return `
 <div class="filter-bar">
-  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>
+  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
   <div id="filter-panel" class="filter-panel">
-    ${checkboxes}
+    ${colorSection}
+    ${sleeveSection}
     <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
   </div>
 </div>`;
 }
 
-// A card matches the color filter if ANY selected group is in its own
-// data-color-groups (set by productColorGroups at render time) -- OR
-// semantics, matching the "Black or Green" example in the feature
-// request, not "must have every selected color". No filters selected
-// shows everything, same as the search box being empty.
+// A card matches the color facet if ANY selected group is in its own
+// data-color-groups (set by productColorGroups at render time), and matches
+// the sleeve-length facet if its data-sleeve-length is among the checked
+// values -- OR within each facet (matching the "Black or Green" example in
+// the feature request), AND between facets (a shopper picking both "Black"
+// and "Sleeveless" wants black sleeveless items, not everything black plus
+// everything sleeveless). No filters selected in a facet matches everything
+// for that facet, same as the search box being empty.
 //
 // Re-derives the ?q= search match from scratch on every filter change
 // (same logic as SEARCH_FILTER_SCRIPT) instead of relying on the DOM
 // state SEARCH_FILTER_SCRIPT already applied, so combined visibility is
-// correct regardless of whether the shopper touches search or the color
-// filter first -- neither script needs to know the other ran.
-const COLOR_FILTER_SCRIPT = `
+// correct regardless of whether the shopper touches search or the filter
+// panel first -- neither script needs to know the other ran.
+const FILTER_SCRIPT = `
 <script>
   (function() {
     var toggleBtn = document.getElementById('filter-toggle-btn');
@@ -359,12 +389,14 @@ const COLOR_FILTER_SCRIPT = `
     }
 
     function applyFilter() {
-      var checked = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedColors = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
+      var checkedSleeves = Array.prototype.slice.call(document.querySelectorAll('.sleeve-filter-checkbox:checked')).map(function(cb) { return cb.value; });
       var cards = grid.querySelectorAll('.product-card');
       cards.forEach(function(card) {
         var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
-        var colorMatch = checked.length === 0 || groups.some(function(g) { return checked.indexOf(g) !== -1; });
-        card.style.display = (colorMatch && searchMatches(card)) ? '' : 'none';
+        var colorMatch = checkedColors.length === 0 || groups.some(function(g) { return checkedColors.indexOf(g) !== -1; });
+        var sleeveMatch = checkedSleeves.length === 0 || checkedSleeves.indexOf(card.dataset.sleeveLength || '') !== -1;
+        card.style.display = (colorMatch && sleeveMatch && searchMatches(card)) ? '' : 'none';
       });
     }
 
@@ -374,12 +406,12 @@ const COLOR_FILTER_SCRIPT = `
     document.addEventListener('click', function(e) {
       if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
     });
-    document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) {
+    document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) {
       cb.addEventListener('change', applyFilter);
     });
     if (clearBtn) {
       clearBtn.addEventListener('click', function() {
-        document.querySelectorAll('.color-filter-checkbox').forEach(function(cb) { cb.checked = false; });
+        document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) { cb.checked = false; });
         applyFilter();
       });
     }
@@ -394,7 +426,7 @@ export function renderListingPage(catalog: Catalog): string {
   <div class="section-header">
     <h2 class="section-title">ALL<br><span>PRODUCTS</span></h2>
     <div class="list-controls">
-      ${renderColorFilterBar(sorted)}
+      ${renderFilterBar(sorted)}
       ${SORT_BAR_HTML}
     </div>
   </div>
@@ -402,7 +434,7 @@ export function renderListingPage(catalog: Catalog): string {
 </section>
 ${SEARCH_FILTER_SCRIPT}
 ${SORT_SCRIPT}
-${COLOR_FILTER_SCRIPT}`;
+${FILTER_SCRIPT}`;
   return renderShell({
     title: "All Products — BERSERKER",
     bodyContent,
@@ -438,14 +470,14 @@ export function renderBrandPage(catalog: Catalog, folder: string, brandName: str
   <div class="section-header">
     <h2 class="section-title">${esc(brandName.toUpperCase())}</h2>
     <div class="list-controls">
-      ${renderColorFilterBar(filtered)}
+      ${renderFilterBar(filtered)}
       ${SORT_BAR_HTML}
     </div>
   </div>
   <div class="product-grid">${cards}</div>
 </section>
 ${SORT_SCRIPT}
-${COLOR_FILTER_SCRIPT}`;
+${FILTER_SCRIPT}`;
   return renderShell({
     title: `${esc(brandName)} — BERSERKER`,
     bodyContent,
@@ -568,14 +600,14 @@ export function renderPdpPage(product: CatalogProduct): string {
     .join("");
 
   // Real PDP hardcodes S/M/L/XL buttons regardless of stock; this rewrite
-  // instead derives buttons (and out-of-stock disabling) from the first
-  // color's real variant rows, same "drive markup from real data instead of
-  // a hand-authored constant" approach already used for renderProductCard.
+  // instead derives which size buttons exist from the first color's real
+  // variant rows (every color gets all 4 sizes seeded when created, so the
+  // *set* of sizes is consistent across colors -- only in_stock varies).
+  // Availability itself is applied client-side per the selected color (see
+  // applySizeAvailability in the script below) rather than baked in here,
+  // since the initially-selected color isn't always colors[0].
   const sizeButtons = (product.colors[0]?.variants ?? [])
-    .map(
-      (v) =>
-        `<button class="size-btn" data-size="${esc(v.size)}"${v.inStock ? "" : " disabled"}>${esc(v.size)}</button>`
-    )
+    .map((v) => `<button class="size-btn" data-size="${esc(v.size)}">${esc(v.size)}</button>`)
     .join("");
 
   const bodyContent = `
@@ -619,7 +651,7 @@ export function renderPdpPage(product: CatalogProduct): string {
 <script>
   (function() {
     var images = ${jsonForScript(images)};
-    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), indices: colorImgIndices(c), variant: c.variantLabel })))};
+    var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), indices: colorImgIndices(c), variant: c.variantLabel, variants: c.variants })))};
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
     var thumbs = document.querySelectorAll('.pdp-thumb');
@@ -630,6 +662,23 @@ export function renderPdpPage(product: CatalogProduct): string {
 
     var selectedColor = swatchList.length ? swatchList[${selectedIdx}] : null;
     var selectedSizeLocal = null;
+    var currentStockBySize = {};
+
+    // Stock is per color, not per product -- sizes stay clickable regardless
+    // of stock (mirrors shell.ts's Add-to-Cart size picker: a shopper can
+    // select an out-of-stock size and see that reflected on the Add to Cart
+    // button, rather than the button being unselectable). Re-applied on
+    // every color change, unlike the old version which only ever reflected
+    // whichever color happened to be colors[0] at render time.
+    function applySizeAvailability(variants) {
+      currentStockBySize = {};
+      (variants || []).forEach(function(v) { currentStockBySize[v.size] = v.inStock; });
+      sizeBtns.forEach(function(btn) {
+        var inStock = currentStockBySize.hasOwnProperty(btn.dataset.size) ? currentStockBySize[btn.dataset.size] : true;
+        btn.classList.toggle('out-of-stock', !inStock);
+      });
+      updateAddBtn();
+    }
 
     function setMainImage(index, label) {
       mainImg.src = images[index];
@@ -657,26 +706,40 @@ export function renderPdpPage(product: CatalogProduct): string {
           selectedColor = owner;
           colorLabel.textContent = owner.label;
           selectSwatchForIndex(idx);
+          applySizeAvailability(owner.variants);
         }
         setMainImage(idx, owner ? owner.label : (imageLabel ? imageLabel.textContent : ''));
       });
     });
 
-    colorSwatches.forEach(function(sw) {
+    colorSwatches.forEach(function(sw, i) {
       sw.addEventListener('click', function() {
         var imgIndex = parseInt(sw.dataset.imgIndex, 10);
         var indices = JSON.parse(sw.dataset.imgIndices || '[]');
         selectSwatchForIndex(imgIndex);
-        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null };
+        // swatchList and colorSwatches are built from the same product.colors
+        // list in the same order, so index i in one is index i in the other
+        // -- this is how the click handler gets at that color's real .variants
+        // (a DOM data attribute would work too, but swatchList already has it).
+        var variants = swatchList[i] ? swatchList[i].variants : [];
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null, variants: variants };
         colorLabel.textContent = sw.title;
         setMainImage(imgIndex, sw.title);
+        applySizeAvailability(variants);
       });
     });
 
     function updateAddBtn() {
-      var ready = selectedSizeLocal && selectedColor;
-      addBtn.classList.toggle('ready', !!ready);
-      addBtn.textContent = ready ? 'Add to Cart' : 'Select Size & Color';
+      var bothSelected = selectedSizeLocal && selectedColor;
+      var inStock = !bothSelected || (currentStockBySize.hasOwnProperty(selectedSizeLocal) ? currentStockBySize[selectedSizeLocal] : true);
+      addBtn.classList.toggle('ready', !!(bothSelected && inStock));
+      if (!bothSelected) {
+        addBtn.textContent = 'Select Size & Color';
+      } else if (!inStock) {
+        addBtn.textContent = 'Out of Stock';
+      } else {
+        addBtn.textContent = 'Add to Cart';
+      }
     }
 
     sizeBtns.forEach(function(btn) {
@@ -697,6 +760,8 @@ export function renderPdpPage(product: CatalogProduct): string {
         if (typeof showToast === 'function') showToast('Please select a color');
         return;
       }
+      var inStock = currentStockBySize.hasOwnProperty(selectedSizeLocal) ? currentStockBySize[selectedSizeLocal] : true;
+      if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = ${jsonForScript(product.name)} + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
       var imgSrc = images[selectedColor.imgIndex];
@@ -706,7 +771,7 @@ export function renderPdpPage(product: CatalogProduct): string {
       }
     });
 
-    updateAddBtn();
+    applySizeAvailability(selectedColor ? selectedColor.variants : []);
   })();
 </script>`;
 
