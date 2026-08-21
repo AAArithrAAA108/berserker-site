@@ -314,7 +314,7 @@ function renderColorFilterBar(products: CatalogProduct[]): string {
   const checkboxes = sortedGroups
     .map(
       (g) =>
-        `<label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="${esc(g)}" /> ${esc(g)}</label>`
+        `<label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="${esc(g)}" /><span class="color-filter-swatch" style="background:${esc(representativeHex(g))};"></span>${esc(g)}</label>`
     )
     .join("");
   return `

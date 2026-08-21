@@ -486,6 +486,14 @@ export function renderShell(opts: ShellOptions): string {
     cursor: pointer;
     white-space: nowrap;
   }
+  .color-filter-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    flex-shrink: 0;
+  }
   .filter-clear {
     background: none;
     border: none;

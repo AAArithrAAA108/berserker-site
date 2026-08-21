@@ -394,11 +394,25 @@ Deno.test("renderListingPage/renderBrandPage: include a color-filter checkbox fo
   // sampleCatalog's products all reuse twoColorProduct's colors: Green + Black.
   for (const html of [renderListingPage(sampleCatalog), renderBrandPage(sampleCatalog, "youngla")]) {
     assertStringIncludes(html, '<button type="button" id="filter-toggle-btn" class="filter-toggle">Filter by Color</button>');
-    assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Black" /> Black');
-    assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Green" /> Green');
+    assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black');
+    assertStringIncludes(html, '<input type="checkbox" class="color-filter-checkbox" value="Green" /><span class="color-filter-swatch" style="background:#1c8a3a;"></span>Green');
     assertStringIncludes(html, "document.querySelectorAll('.color-filter-checkbox')");
     assertStringIncludes(html, "card.dataset.colorGroups");
   }
+});
+
+Deno.test("renderColorFilterBar (via renderBrandPage): each checkbox's swatch dot uses that exact group's representative hex, not a generic placeholder", () => {
+  const multiGroupProduct: CatalogProduct = {
+    ...twoColorProduct,
+    colors: [
+      { ...twoColorProduct.colors[0], colorGroup: "Navy", secondaryColorGroup: "Gold" },
+      { ...twoColorProduct.colors[1], colorGroup: "Cream", secondaryColorGroup: null },
+    ],
+  };
+  const html = renderBrandPage({ products: [multiGroupProduct] }, "gymshark");
+  assertStringIncludes(html, '<span class="color-filter-swatch" style="background:#1c2c4a;"></span>Navy');
+  assertStringIncludes(html, '<span class="color-filter-swatch" style="background:#c4a01c;"></span>Gold');
+  assertStringIncludes(html, '<span class="color-filter-swatch" style="background:#ede9e3;"></span>Cream');
 });
 
 Deno.test("renderListingPage/renderBrandPage: filter panel starts closed via a real CSS class toggle, not the [hidden] attribute (regression: shell.ts's own .filter-panel rule set display:flex unconditionally, and since [hidden] and .filter-panel tie in CSS specificity, this stylesheet's later position in the cascade silently kept the panel visible on page load)", () => {
