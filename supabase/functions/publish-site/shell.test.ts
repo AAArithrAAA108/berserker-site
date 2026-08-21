@@ -20,6 +20,15 @@ Deno.test("renderShell uses root-relative image paths for branding assets, not r
   }
 });
 
+Deno.test("renderShell: out-of-stock size buttons stay clickable (styled via a class, not the disabled attribute) and the confirm button shows OUT OF STOCK instead of being cleared", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  assertStringIncludes(html, ".size-btn.out-of-stock");
+  assertStringIncludes(html, "OUT OF STOCK");
+  if (html.includes("btn.disabled = !inStock")) {
+    throw new Error("out-of-stock sizes must stay clickable -- the old disabled-attribute approach must not come back");
+  }
+});
+
 Deno.test("renderShell injects perPageStyle into the style block", () => {
   const html = renderShell({ title: "Test", bodyContent: "", perPageStyle: ".marker-xyz { color: red; }" });
   assertStringIncludes(html, ".marker-xyz { color: red; }");
