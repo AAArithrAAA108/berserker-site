@@ -478,11 +478,15 @@ export function renderShell(opts: ShellOptions): string {
   .filter-panel.open { display: flex; }
   /* Color and Sleeve Length are two side-by-side columns rather than
      stacked sections -- .filter-facets is the row, .filter-facet is each
-     column (its own label + checkboxes stacked). */
+     column (its own label + checkboxes stacked). nowrap keeps them side by
+     side on every screen size, including mobile -- .filter-panel's own
+     max-width/overflow-x (mobile media query below) is what handles a row
+     too wide for a narrow phone, via horizontal scroll inside the panel
+     rather than dropping Sleeve Length to a second line under Color. */
   .filter-facets {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: flex-start;
     gap: 24px;
   }

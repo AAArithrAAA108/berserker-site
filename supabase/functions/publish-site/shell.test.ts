@@ -20,6 +20,14 @@ Deno.test("renderShell uses root-relative image paths for branding assets, not r
   }
 });
 
+Deno.test("renderShell: filter facets never wrap to a second line, on mobile or desktop -- Color and Sleeve Length always stay side by side (a too-narrow phone scrolls the panel horizontally instead, via .filter-panel's overflow-x)", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  assertStringIncludes(html, "flex-wrap: nowrap;");
+  if (html.includes(".filter-facets") && /\.filter-facets\s*\{[^}]*flex-wrap:\s*wrap[^-]/.test(html)) {
+    throw new Error("filter facets must not wrap -- Color and Sleeve Length should stay side by side on every screen size");
+  }
+});
+
 Deno.test("renderShell: on mobile, the filter panel anchors to the left edge instead of the right (regression: right:0 anchored it to the toggle button's right edge, which on a narrow screen sits close enough to the left edge of the viewport that the now-two-column panel extended off-screen to the left, cutting off every option)", () => {
   const html = renderShell({ title: "Test", bodyContent: "" });
   assertStringIncludes(html, ".filter-panel { left: 0; right: auto;");
