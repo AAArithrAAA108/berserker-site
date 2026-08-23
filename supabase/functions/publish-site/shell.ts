@@ -1080,6 +1080,7 @@ export function renderShell(opts: ShellOptions): string {
   }
 ${opts.perPageStyle ?? ''}
 </style>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <nav>
