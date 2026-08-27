@@ -223,7 +223,7 @@
   async function initAuth() {
     var { data } = await sb.auth.getSession();
     if (!data || !data.session) {
-      window.location.href = '/admin/';
+      window.location.href = '/gunjaisanuska/';
       return false;
     }
     currentUser = data.session.user;
@@ -231,7 +231,7 @@
     var { data: profile } = await sb.from('admin_profiles').select('role').eq('id', currentUser.id).maybeSingle();
     if (!profile) {
       await sb.auth.signOut();
-      window.location.href = '/admin/';
+      window.location.href = '/gunjaisanuska/';
       return false;
     }
     currentRole = profile.role;
@@ -247,7 +247,7 @@
 
   document.getElementById('signout-btn').addEventListener('click', async function() {
     await sb.auth.signOut();
-    window.location.href = '/admin/';
+    window.location.href = '/gunjaisanuska/';
   });
 
   // ── TABS ──

@@ -1,4 +1,4 @@
-// admin/dashboard/brands.js
+// gunjaisanuska/dashboard/brands.js
 // Depends on globals from index.html's inline script, loaded first: sb, esc.
 
 var brandsCache = [];
@@ -7,7 +7,7 @@ var brandsCache = [];
 // rename_brand_folder (supabase/migrations/20260815120100_add_brand_rpcs.sql)
 // and in supabase/functions/publish-site/membership.ts (RESERVED_BRAND_SLUGS).
 // The server-side check is authoritative -- this is a UX pre-check only.
-var RESERVED_SLUGS = ['admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy', 'docs', 'scripts', 'supabase', 'images'];
+var RESERVED_SLUGS = ['gunjaisanuska', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy', 'docs', 'scripts', 'supabase', 'images'];
 
 async function loadBrandsList() {
   var { data, error } = await sb.from('brands').select('*').order('name', { ascending: true });

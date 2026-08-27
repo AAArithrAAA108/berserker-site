@@ -24,9 +24,9 @@ export function brandFolderFor(product: { brandFolder: string }): string {
 // Reserved site routes -- never a valid brand folder_slug. Mirrors the
 // identical list enforced server-side in create_primary_brand/rename_brand_folder
 // (supabase/migrations/20260815120100_add_brand_rpcs.sql) and client-side in
-// admin/dashboard/brands.js. All three copies must stay in sync.
+// gunjaisanuska/dashboard/brands.js. All three copies must stay in sync.
 export const RESERVED_BRAND_SLUGS = [
-  "admin",
+  "gunjaisanuska",
   "checkout",
   "collections",
   "all-products",

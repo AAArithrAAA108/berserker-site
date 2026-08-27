@@ -508,7 +508,7 @@ begin
     raise exception 'create_primary_brand: admin privileges required';
   end if;
 
-  if p_folder_slug in ('admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy', 'docs', 'scripts', 'supabase', 'images') then
+  if p_folder_slug in ('gunjaisanuska', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy', 'docs', 'scripts', 'supabase', 'images') then
     raise exception 'create_primary_brand: % is a reserved folder name', p_folder_slug;
   end if;
 
@@ -560,7 +560,7 @@ begin
     raise exception 'rename_brand_folder: admin privileges required';
   end if;
 
-  if p_new_slug in ('admin', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy', 'docs', 'scripts', 'supabase', 'images') then
+  if p_new_slug in ('gunjaisanuska', 'checkout', 'collections', 'all-products', 'about-berserker', 'contact-berserker', 'returns-and-refunds', 'shipping-info', 'brands', 'terms-of-service', 'privacy-policy', 'docs', 'scripts', 'supabase', 'images') then
     raise exception 'rename_brand_folder: % is a reserved folder name', p_new_slug;
   end if;
 

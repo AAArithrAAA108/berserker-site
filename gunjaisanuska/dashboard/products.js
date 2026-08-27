@@ -1,4 +1,4 @@
-// admin/dashboard/products.js
+// gunjaisanuska/dashboard/products.js
 // Depends on globals from index.html's inline script, loaded first: sb, esc, fmtMoney.
 
 var productsCache = [];
