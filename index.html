@@ -1722,6 +1722,7 @@
         div.classList.add('selected');
         selectedColor = { label, imgIndex };
         document.getElementById('selected-color-label').textContent = label;
+        checkConfirmReady();
       });
       swatchContainer.appendChild(div);
     });
