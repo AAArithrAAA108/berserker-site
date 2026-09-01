@@ -1080,7 +1080,7 @@
   <h2 class="section-title">DRESSES</h2>
   <div class="product-grid"><div class="product-card fade-in" id="product-39" data-color-groups="Black,Pink,Cream" data-sleeve-length="sleeveless">
   <a href="/skims/skims-rhinestone-logo-mini-dress/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:500%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0365.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" decoding="async" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0366.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0367.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0368.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0369.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /></div>
+    <div class="slider-track" style="width:500%;"><picture><source type="image/avif" srcset="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs-avif/img-0365.jpg" /><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0365.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" decoding="async" /></picture><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0366.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0367.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0368.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/skims-rhinestone-logo-mini-dress/thumbs/img-0369.jpg" alt="Rhinestone Logo Pointelle Mini Slip Dress" style="width:20%;" loading="lazy" decoding="async" /></div>
   </a>
   <div class="product-info">
     <div class="product-brand">Skims</div>
@@ -1498,6 +1498,25 @@
       e.stopPropagation();
       openSizePicker(brand, name, price, codAdvance, imgSrc, colors, allCardImgs);
     });
+  });
+
+  // Slider images beyond the first are data-src only (see render.ts's
+  // renderProductCard) -- populate real src on the same hover/tap trigger
+  // the CSS already uses to reveal the Add to Cart button (.product-card:hover
+  // .product-add), so by the time that button is clickable, allCardImgs
+  // above already reads real .src values instead of empty/undefined ones.
+  document.querySelectorAll('.product-img-slider').forEach(slider => {
+    let populated = false;
+    const populate = () => {
+      if (populated) return;
+      populated = true;
+      slider.querySelectorAll('img[data-src]').forEach(img => {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+      });
+    };
+    slider.addEventListener('mouseenter', populate);
+    slider.addEventListener('touchstart', populate, { passive: true });
   });
 
   // Init
