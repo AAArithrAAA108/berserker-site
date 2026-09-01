@@ -137,7 +137,7 @@ function wireDeleteButtons() {
       }
       if (images && images.length) {
         var paths = images.map(function(img) { return img.storage_path; });
-        var allPaths = paths.concat(paths.map(thumbStoragePath));
+        var allPaths = paths.concat(paths.map(thumbStoragePath), paths.map(thumbAvifStoragePath));
         var { error: removeError } = await sb.storage.from('product-images').remove(allPaths);
         if (removeError) {
           alert('Delete failed: could not remove this product\'s images from storage (' + removeError.message + '). Product was NOT deleted.');
@@ -394,6 +394,15 @@ function thumbStoragePath(storagePath) {
   return storagePath.slice(0, slashIdx) + '/thumbs/' + storagePath.slice(slashIdx + 1);
 }
 
+// Mirrors thumbStoragePath but into a thumbs-avif/ sibling dir -- kept
+// separate from thumbs/ (not overwriting it) since AVIF generation can
+// silently fail per-browser (see resizeToAvifIfSupported), so a product
+// must never end up with only an AVIF derivative and no WebP fallback.
+function thumbAvifStoragePath(storagePath) {
+  var slashIdx = storagePath.lastIndexOf('/');
+  return storagePath.slice(0, slashIdx) + '/thumbs-avif/' + storagePath.slice(slashIdx + 1);
+}
+
 // Resizes `file` down to at most maxDim on its longest side and re-encodes as
 // WebP (real measured savings over JPEG: ~20% at full size, ~35% at thumb
 // size, same visual quality) via canvas. Used for both derivatives this
@@ -439,6 +448,40 @@ function resizeToWebp(file, maxDim, quality) {
   });
 }
 
+// Same resize logic as resizeToWebp, but for AVIF, with an explicit
+// support check: canvas.toBlob silently falls back to PNG on a browser
+// that can't encode the requested type (spec-defined behavior), so this
+// checks the returned blob's actual MIME type and resolves null if it
+// isn't really AVIF -- the caller must treat null as "skip this
+// derivative", never as "upload whatever came back".
+function resizeToAvifIfSupported(file, maxDim, quality) {
+  return new Promise(function (resolve) {
+    var img = new Image();
+    var objectUrl = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(objectUrl);
+      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      var w = Math.max(1, Math.round(img.width * scale));
+      var h = Math.max(1, Math.round(img.height * scale));
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(function (blob) {
+        resolve(blob && blob.type === 'image/avif' ? blob : null);
+      }, 'image/avif', quality);
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(objectUrl);
+      resolve(null);
+    };
+    img.src = objectUrl;
+  });
+}
+
 async function renderImagesSection(product) {
   var container = document.getElementById('images-section-' + product.id);
   container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Images</p><div id="images-grid-' + product.id + '" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="file" id="image-upload-' + product.id + '" accept="image/jpeg,image/png,image/webp" multiple style="margin-top:8px;" /><p class="msg" id="image-upload-msg-' + product.id + '"></p>';
@@ -461,8 +504,8 @@ async function renderImagesSection(product) {
       // successfully instead of being silently dropped.
       var mainBlob = await resizeToWebp(file, 1200, 0.82);
       var { error: uploadError } = mainBlob
-        ? await sb.storage.from('product-images').upload(storagePath, mainBlob, { contentType: 'image/webp' })
-        : await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
+        ? await sb.storage.from('product-images').upload(storagePath, mainBlob, { contentType: 'image/webp', cacheControl: '31536000' })
+        : await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type, cacheControl: '31536000' });
       if (uploadError) { failureMessages.push(file.name + ': ' + uploadError.message); continue; }
       // Thumbnail derivative lives one path segment down (see
       // thumbStoragePath) -- data.ts derives this exact path from
@@ -475,10 +518,16 @@ async function renderImagesSection(product) {
       var thumbPath = thumbStoragePath(storagePath);
       var thumbBlob = await resizeToWebp(file, 380, 0.8);
       if (thumbBlob) {
-        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/webp' });
+        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/webp', cacheControl: '31536000' });
         if (thumbError) console.warn('thumbnail upload failed for ' + file.name + ':', thumbError.message);
       } else {
         console.warn('thumbnail generation failed for ' + file.name);
+      }
+      var thumbAvifPath = thumbAvifStoragePath(storagePath);
+      var thumbAvifBlob = await resizeToAvifIfSupported(file, 380, 0.6);
+      if (thumbAvifBlob) {
+        var { error: avifError } = await sb.storage.from('product-images').upload(thumbAvifPath, thumbAvifBlob, { contentType: 'image/avif', cacheControl: '31536000' });
+        if (avifError) console.warn('AVIF thumbnail upload failed for ' + file.name + ':', avifError.message);
       }
       var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort });
       if (rowError) { failureMessages.push(file.name + ': ' + rowError.message); continue; }
@@ -553,7 +602,7 @@ async function refreshImagesGrid(product) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this image? If it was assigned to a color, that color loses this photo (and its thumbnail, if this was the one selected).')) return;
       var msg = document.getElementById('image-upload-msg-' + productId);
-      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath, thumbStoragePath(btn.dataset.storagePath)]);
+      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath, thumbStoragePath(btn.dataset.storagePath), thumbAvifStoragePath(btn.dataset.storagePath)]);
       if (removeError) {
         if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: ' + removeError.message; }
         return;

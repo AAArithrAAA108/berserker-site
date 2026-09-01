@@ -1523,6 +1523,25 @@ ${opts.bodyContent}
     });
   });
 
+  // Slider images beyond the first are data-src only (see render.ts's
+  // renderProductCard) -- populate real src on the same hover/tap trigger
+  // the CSS already uses to reveal the Add to Cart button (.product-card:hover
+  // .product-add), so by the time that button is clickable, allCardImgs
+  // above already reads real .src values instead of empty/undefined ones.
+  document.querySelectorAll('.product-img-slider').forEach(slider => {
+    let populated = false;
+    const populate = () => {
+      if (populated) return;
+      populated = true;
+      slider.querySelectorAll('img[data-src]').forEach(img => {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+      });
+    };
+    slider.addEventListener('mouseenter', populate);
+    slider.addEventListener('touchstart', populate, { passive: true });
+  });
+
   // Init
   updateCart();
 

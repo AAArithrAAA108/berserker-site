@@ -91,7 +91,7 @@ function renderAddBrandForm() {
     }
     var storagePath = '_brands/' + folderSlug + '-' + Date.now() + '.' + file.name.split('.').pop();
 
-    var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
+    var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type, cacheControl: '31536000' });
     if (uploadError) { msg.style.color = '#ff3c1e'; msg.textContent = 'Thumbnail upload failed: ' + uploadError.message; return; }
 
     var { error } = await sb.rpc('create_primary_brand', {
@@ -270,7 +270,7 @@ function wireBrandRowButtons() {
         var file = input.files[0];
         if (!file) return;
         var storagePath = '_brands/' + btn.dataset.folder + '-' + Date.now() + '.' + file.name.split('.').pop();
-        var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
+        var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type, cacheControl: '31536000' });
         if (uploadError) { alert('Upload failed: ' + uploadError.message); return; }
         var { error } = await sb.from('brands').update({ thumbnail_storage_path: storagePath }).eq('id', btn.dataset.id);
         if (error) { alert('Update failed: ' + error.message); return; }
