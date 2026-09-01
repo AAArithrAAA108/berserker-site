@@ -137,7 +137,7 @@ function wireDeleteButtons() {
       }
       if (images && images.length) {
         var paths = images.map(function(img) { return img.storage_path; });
-        var allPaths = paths.concat(paths.map(thumbStoragePath));
+        var allPaths = paths.concat(paths.map(thumbStoragePath), paths.map(thumbAvifStoragePath));
         var { error: removeError } = await sb.storage.from('product-images').remove(allPaths);
         if (removeError) {
           alert('Delete failed: could not remove this product\'s images from storage (' + removeError.message + '). Product was NOT deleted.');
@@ -394,6 +394,15 @@ function thumbStoragePath(storagePath) {
   return storagePath.slice(0, slashIdx) + '/thumbs/' + storagePath.slice(slashIdx + 1);
 }
 
+// Mirrors thumbStoragePath but into a thumbs-avif/ sibling dir -- kept
+// separate from thumbs/ (not overwriting it) since AVIF generation can
+// silently fail per-browser (see resizeToAvifIfSupported), so a product
+// must never end up with only an AVIF derivative and no WebP fallback.
+function thumbAvifStoragePath(storagePath) {
+  var slashIdx = storagePath.lastIndexOf('/');
+  return storagePath.slice(0, slashIdx) + '/thumbs-avif/' + storagePath.slice(slashIdx + 1);
+}
+
 // Resizes `file` down to at most maxDim on its longest side and re-encodes as
 // WebP (real measured savings over JPEG: ~20% at full size, ~35% at thumb
 // size, same visual quality) via canvas. Used for both derivatives this
@@ -430,6 +439,40 @@ function resizeToWebp(file, maxDim, quality) {
       ctx.fillRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
       canvas.toBlob(function (blob) { resolve(blob); }, 'image/webp', quality);
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(objectUrl);
+      resolve(null);
+    };
+    img.src = objectUrl;
+  });
+}
+
+// Same resize logic as resizeToWebp, but for AVIF, with an explicit
+// support check: canvas.toBlob silently falls back to PNG on a browser
+// that can't encode the requested type (spec-defined behavior), so this
+// checks the returned blob's actual MIME type and resolves null if it
+// isn't really AVIF -- the caller must treat null as "skip this
+// derivative", never as "upload whatever came back".
+function resizeToAvifIfSupported(file, maxDim, quality) {
+  return new Promise(function (resolve) {
+    var img = new Image();
+    var objectUrl = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(objectUrl);
+      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      var w = Math.max(1, Math.round(img.width * scale));
+      var h = Math.max(1, Math.round(img.height * scale));
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(function (blob) {
+        resolve(blob && blob.type === 'image/avif' ? blob : null);
+      }, 'image/avif', quality);
     };
     img.onerror = function () {
       URL.revokeObjectURL(objectUrl);
@@ -479,6 +522,12 @@ async function renderImagesSection(product) {
         if (thumbError) console.warn('thumbnail upload failed for ' + file.name + ':', thumbError.message);
       } else {
         console.warn('thumbnail generation failed for ' + file.name);
+      }
+      var thumbAvifPath = thumbAvifStoragePath(storagePath);
+      var thumbAvifBlob = await resizeToAvifIfSupported(file, 380, 0.6);
+      if (thumbAvifBlob) {
+        var { error: avifError } = await sb.storage.from('product-images').upload(thumbAvifPath, thumbAvifBlob, { contentType: 'image/avif', cacheControl: '31536000' });
+        if (avifError) console.warn('AVIF thumbnail upload failed for ' + file.name + ':', avifError.message);
       }
       var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort });
       if (rowError) { failureMessages.push(file.name + ': ' + rowError.message); continue; }
@@ -553,7 +602,7 @@ async function refreshImagesGrid(product) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this image? If it was assigned to a color, that color loses this photo (and its thumbnail, if this was the one selected).')) return;
       var msg = document.getElementById('image-upload-msg-' + productId);
-      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath, thumbStoragePath(btn.dataset.storagePath)]);
+      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath, thumbStoragePath(btn.dataset.storagePath), thumbAvifStoragePath(btn.dataset.storagePath)]);
       if (removeError) {
         if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: ' + removeError.message; }
         return;
