@@ -115,6 +115,27 @@ Deno.test("renderProductCard: slider <img> src uses each image's small thumbUrl,
   }
 });
 
+Deno.test("renderProductCard: only the first slider image has a real src -- the rest carry data-src so they aren't fetched until hover (Chrome Hearts SKUs upload 40+ photos; loading=lazy alone doesn't help since the whole card is already in-viewport)", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    images: [
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", sortOrder: 1 },
+      { url: "https://example.com/full-2.jpg", thumbUrl: "https://example.com/thumbs/2.jpg", sortOrder: 2 },
+    ],
+  };
+  const html = renderProductCard(product);
+  assertStringIncludes(html, ' src="https://example.com/thumbs/0.jpg"');
+  // Leading space distinguishes a real `src=` from `data-src=` -- bare
+  // `.includes('src="...")` would false-positive-match inside
+  // `data-src="..."` since that string literally contains `src="..."`.
+  if (html.includes(' src="https://example.com/thumbs/1.jpg"') || html.includes(' src="https://example.com/thumbs/2.jpg"')) {
+    throw new Error("images after the first should not have a real src attribute -- they should be data-src only");
+  }
+  assertStringIncludes(html, 'data-src="https://example.com/thumbs/1.jpg"');
+  assertStringIncludes(html, 'data-src="https://example.com/thumbs/2.jpg"');
+});
+
 Deno.test("renderProductCard: swatch data-img-index matches that color's slider position, not a color-group string", () => {
   const html = renderProductCard(twoColorProduct);
   assertStringIncludes(html, 'data-img-index="0"'); // Forest Green is the first slider image
@@ -159,7 +180,10 @@ Deno.test("renderProductCard: slider shows every uploaded photo, and swatches po
     ],
   };
   const html = renderProductCard(multiPhotoProduct);
-  const sliderImgCount = [...html.matchAll(/<img src="https:\/\/example\.com\//g)].length;
+  // Every photo appears in the slider markup regardless of whether it loads
+  // eagerly (src, image 0 only) or is hover-deferred (data-src, the rest --
+  // see the "only the first slider image has a real src" test above).
+  const sliderImgCount = [...html.matchAll(/<img (?:src|data-src)="https:\/\/example\.com\//g)].length;
   assertEquals(sliderImgCount, 3);
   assertStringIncludes(html, "black-2.jpg"); // the extra angle shot is actually reachable
   // Forest Green's swatch points at index 0 (its own photo); Stealth Black's

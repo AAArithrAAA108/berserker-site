@@ -80,10 +80,21 @@ export function renderProductCard(product: CatalogProduct): string {
   // an empty track.
   const trackStyle = imgCount > 0 ? ` style="width:${imgCount * 100}%;"` : "";
   const imgWidthPct = imgCount > 0 ? 100 / imgCount : 0;
+  // Image 0 loads eagerly (it's the always-visible card thumbnail). Every
+  // later image is a hover-slider frame the shopper only sees by hovering
+  // (see shell.ts's mouseenter/touchstart listener on .product-img-slider)
+  // -- giving it a real `src` here would defeat the point: native
+  // loading="lazy" doesn't help because the whole card, and every image
+  // inside it, is already in/near the viewport as soon as the card scrolls
+  // into view, so the browser fetches all of them regardless (this is what
+  // let Chrome Hearts' 40-42-image SKUs blow up listing-page egress).
+  // data-src only becomes src on that hover/tap trigger.
   const sliderImgs = product.images
     .map(
       (img, i) =>
-        `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
+        i === 0
+          ? `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" decoding="async" />`
+          : `<img data-src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" loading="lazy" decoding="async" />`
     )
     .join("");
   const images = product.images.map((img) => img.url);
