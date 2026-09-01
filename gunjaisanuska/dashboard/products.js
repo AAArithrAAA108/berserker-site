@@ -461,8 +461,8 @@ async function renderImagesSection(product) {
       // successfully instead of being silently dropped.
       var mainBlob = await resizeToWebp(file, 1200, 0.82);
       var { error: uploadError } = mainBlob
-        ? await sb.storage.from('product-images').upload(storagePath, mainBlob, { contentType: 'image/webp' })
-        : await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
+        ? await sb.storage.from('product-images').upload(storagePath, mainBlob, { contentType: 'image/webp', cacheControl: '31536000' })
+        : await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type, cacheControl: '31536000' });
       if (uploadError) { failureMessages.push(file.name + ': ' + uploadError.message); continue; }
       // Thumbnail derivative lives one path segment down (see
       // thumbStoragePath) -- data.ts derives this exact path from
@@ -475,7 +475,7 @@ async function renderImagesSection(product) {
       var thumbPath = thumbStoragePath(storagePath);
       var thumbBlob = await resizeToWebp(file, 380, 0.8);
       if (thumbBlob) {
-        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/webp' });
+        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/webp', cacheControl: '31536000' });
         if (thumbError) console.warn('thumbnail upload failed for ' + file.name + ':', thumbError.message);
       } else {
         console.warn('thumbnail generation failed for ' + file.name);
