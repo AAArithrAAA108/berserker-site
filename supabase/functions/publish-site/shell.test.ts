@@ -96,3 +96,10 @@ Deno.test("renderShell: .filter-panel defaults to display:none, with .filter-pan
   assertStringIncludes(baseRule[0], "display: none");
   assertStringIncludes(html, ".filter-panel.open { display: flex; }");
 });
+
+Deno.test("renderShell: product-img-slider populates data-src images on hover/tap, not on page load", () => {
+  const html = renderShell({ title: "Test", bodyContent: "" });
+  assertStringIncludes(html, "querySelectorAll('.product-img-slider')");
+  assertStringIncludes(html, "addEventListener('mouseenter', populate)");
+  assertStringIncludes(html, "addEventListener('touchstart', populate");
+});
