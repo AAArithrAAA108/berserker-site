@@ -136,7 +136,7 @@ Deno.test("renderProductCard: only the first slider image has a real src -- the 
   assertStringIncludes(html, 'data-src="https://example.com/thumbs/2.jpg"');
 });
 
-Deno.test("renderProductCard: only the first (eager) slider image is wrapped in <picture> with an AVIF source -- later images stay plain <img data-src> so wrapping them doesn't reintroduce eager loading via <source>", () => {
+Deno.test("renderProductCard: slider images are plain <img> tags, never wrapped in a <picture>/AVIF <source> (regression: <picture> selects a source by type match at parse time, not by whether that URL actually resolves -- an AVIF-capable browser locks onto the AVIF <source> and shows a broken image if it 404s, it does NOT fall back to the img's own src the way a <picture> polyfill mental model suggests. Every image uploaded before the AVIF-derivative feature existed has no thumbs-avif/ object, so wrapping image 0 broke it sitewide in production on 2026-09-01)", () => {
   const product: CatalogProduct = {
     ...twoColorProduct,
     images: [
@@ -145,11 +145,10 @@ Deno.test("renderProductCard: only the first (eager) slider image is wrapped in 
     ],
   };
   const html = renderProductCard(product);
-  assertStringIncludes(html, '<source type="image/avif" srcset="https://example.com/thumbs-avif/0.jpg" />');
-  assertStringIncludes(html, '<img src="https://example.com/thumbs/0.jpg"');
+  assertStringIncludes(html, ' src="https://example.com/thumbs/0.jpg"');
   assertStringIncludes(html, 'data-src="https://example.com/thumbs/1.jpg"');
-  if (html.includes("thumbs-avif/1.jpg")) {
-    throw new Error("the second (hover-only) slider image must not reference an AVIF source -- <source> fetches eagerly regardless of the sibling img's data-src, which would defeat the hover-deferred loading Track B added");
+  if (html.includes("<picture") || html.includes("<source") || html.includes("thumbs-avif")) {
+    throw new Error("slider markup must not reference AVIF/<picture> until derivative existence can be guaranteed per-image");
   }
 });
 

@@ -89,16 +89,21 @@ export function renderProductCard(product: CatalogProduct): string {
   // into view, so the browser fetches all of them regardless (this is what
   // let Chrome Hearts' 40-42-image SKUs blow up listing-page egress).
   // data-src only becomes src on that hover/tap trigger.
-  // Only image 0 gets the AVIF <picture> wrapper: a <source> element fetches
-  // as soon as it's inserted into the document, independent of whether the
-  // sibling <img> has a real src or only data-src -- wrapping a deferred
-  // (i > 0) image here would silently reintroduce eager loading for every
-  // AVIF-capable browser and defeat the hover-deferred loading above.
+  // NOT wrapped in a <picture>/AVIF <source> -- <picture> selects a source
+  // by type match at parse time, not by whether that URL actually resolves,
+  // so an AVIF-capable browser locks onto the AVIF <source> and shows a
+  // broken image if it 404s instead of falling back to this <img>'s own
+  // src. Every image uploaded before the AVIF-derivative feature existed
+  // has no thumbs-avif/ object, so this broke images sitewide in
+  // production on 2026-09-01 (regression, reverted same day). Revisit only
+  // once AVIF-derivative existence can be tracked per-image (e.g. a DB
+  // column set by the upload flow) so this can gate on it instead of
+  // assuming the file is there.
   const sliderImgs = product.images
     .map(
       (img, i) =>
         i === 0
-          ? `<picture><source type="image/avif" srcset="${esc(img.thumbAvifUrl)}" /><img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" decoding="async" /></picture>`
+          ? `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" decoding="async" />`
           : `<img data-src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" loading="lazy" decoding="async" />`
     )
     .join("");
@@ -595,15 +600,15 @@ export function renderPdpPage(product: CatalogProduct): string {
   // (data-index is unchanged), so quality is unaffected, only the strip's own
   // 64x80px <img> src is.
   const thumbUrls = product.images.map((img) => img.thumbUrl);
-  // Every strip thumbnail already renders with a real src (unlike the
-  // listing-page card slider, this strip was never switched to hover-
-  // deferred loading), so wrapping all of them in an AVIF <picture> here
-  // doesn't have the card slider's eager-<source>-vs-deferred-<img> conflict.
-  const thumbAvifUrls = product.images.map((img) => img.thumbAvifUrl);
+  // Not wrapped in a <picture>/AVIF <source> -- see renderProductCard's
+  // sliderImgs comment: an AVIF-capable browser locks onto that <source>
+  // and shows a broken image on a 404 instead of falling back to this
+  // <img>'s own src, which is what most existing images hit (no
+  // thumbs-avif/ derivative yet). Reverted same-day regression, 2026-09-01.
   const thumbs = images
     .map(
       (_url, i) =>
-        `<picture><source type="image/avif" srcset="${esc(thumbAvifUrls[i])}" /><img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" /></picture>`
+        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
     )
     .join("");
 
