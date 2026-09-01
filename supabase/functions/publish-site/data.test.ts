@@ -209,6 +209,22 @@ Deno.test("fetchCatalog: joins brand name and folder onto each product", async (
   assertEquals(catalog.products[0].brandFolder, "youngla");
 });
 
+Deno.test("fetchCatalog: each image's thumbAvifUrl points at the thumbs-avif/ derivative path", async () => {
+  const supabase = fakeSupabase({
+    products: [
+      { id: "p1", brand_id: "b1", name: "Test Product", slug: "test-product", price: 100, cod_advance: 10, position: 1, category: "jacket", sleeve_length: null, description: null },
+    ],
+    product_colors: [],
+    product_images: [
+      { id: "i1", product_id: "p1", storage_path: "test-product/img-0001.webp", sort_order: 0, color_id: null },
+    ],
+    product_variants: [],
+    brands: [{ id: "b1", name: "Test Brand", folder_slug: "test", is_primary: false, thumbnail_storage_path: null }],
+  });
+  const catalog = await fetchCatalog(supabase);
+  assertEquals(catalog.products[0].images[0].thumbAvifUrl, "https://fake.test/test-product/thumbs-avif/img-0001.webp");
+});
+
 Deno.test("fetchPrimaryBrands: returns only primary rows, with their thumbnail URL", async () => {
   const supabase = fakeSupabase({
     products: [], product_colors: [], product_images: [], product_variants: [],

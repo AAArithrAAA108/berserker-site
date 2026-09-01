@@ -7,7 +7,7 @@ export interface CatalogVariant { size: string; inStock: boolean; }
 // so those contexts don't pay full-resolution egress for a 64-380px box. url
 // stays full-resolution for the one context that actually needs it: the PDP
 // hero image.
-export interface CatalogImage { url: string; thumbUrl: string; sortOrder: number; }
+export interface CatalogImage { url: string; thumbUrl: string; thumbAvifUrl: string; sortOrder: number; }
 export interface CatalogColor {
   id: string; label: string; hex: string | null; colorGroup: string;
   secondaryColorGroup: string | null;
@@ -75,14 +75,24 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
     return slashIdx === -1 ? `thumbs/${path}` : `${path.slice(0, slashIdx)}/thumbs/${path.slice(slashIdx + 1)}`;
   };
 
+  // Same shape as thumbPath, but for the AVIF derivative (see products.js's
+  // resizeToAvifIfSupported) -- kept in a separate thumbs-avif/ dir since
+  // not every image has one (older uploads, or browsers that can't encode
+  // AVIF), unlike thumbPath's WebP derivative which is always generated.
+  const avifPath = (path: string) => {
+    const slashIdx = path.lastIndexOf("/");
+    return slashIdx === -1 ? `thumbs-avif/${path}` : `${path.slice(0, slashIdx)}/thumbs-avif/${path.slice(slashIdx + 1)}`;
+  };
+
   const imagesByProduct = new Map<string, CatalogImage[]>();
   const imagesByColor = new Map<string, CatalogImage[]>();
   const imageUrlById = new Map<string, string>();
   for (const img of images ?? []) {
     const url = publicUrl(img.storage_path);
     const thumbUrl = publicUrl(thumbPath(img.storage_path));
+    const thumbAvifUrl = publicUrl(avifPath(img.storage_path));
     imageUrlById.set(img.id, url);
-    const catalogImg: CatalogImage = { url, thumbUrl, sortOrder: img.sort_order };
+    const catalogImg: CatalogImage = { url, thumbUrl, thumbAvifUrl, sortOrder: img.sort_order };
 
     const productList = imagesByProduct.get(img.product_id) ?? [];
     productList.push(catalogImg);

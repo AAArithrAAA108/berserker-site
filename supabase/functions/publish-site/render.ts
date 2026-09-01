@@ -89,11 +89,16 @@ export function renderProductCard(product: CatalogProduct): string {
   // into view, so the browser fetches all of them regardless (this is what
   // let Chrome Hearts' 40-42-image SKUs blow up listing-page egress).
   // data-src only becomes src on that hover/tap trigger.
+  // Only image 0 gets the AVIF <picture> wrapper: a <source> element fetches
+  // as soon as it's inserted into the document, independent of whether the
+  // sibling <img> has a real src or only data-src -- wrapping a deferred
+  // (i > 0) image here would silently reintroduce eager loading for every
+  // AVIF-capable browser and defeat the hover-deferred loading above.
   const sliderImgs = product.images
     .map(
       (img, i) =>
         i === 0
-          ? `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" decoding="async" />`
+          ? `<picture><source type="image/avif" srcset="${esc(img.thumbAvifUrl)}" /><img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" decoding="async" /></picture>`
           : `<img data-src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" loading="lazy" decoding="async" />`
     )
     .join("");
@@ -590,10 +595,15 @@ export function renderPdpPage(product: CatalogProduct): string {
   // (data-index is unchanged), so quality is unaffected, only the strip's own
   // 64x80px <img> src is.
   const thumbUrls = product.images.map((img) => img.thumbUrl);
+  // Every strip thumbnail already renders with a real src (unlike the
+  // listing-page card slider, this strip was never switched to hover-
+  // deferred loading), so wrapping all of them in an AVIF <picture> here
+  // doesn't have the card slider's eager-<source>-vs-deferred-<img> conflict.
+  const thumbAvifUrls = product.images.map((img) => img.thumbAvifUrl);
   const thumbs = images
     .map(
       (_url, i) =>
-        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
+        `<picture><source type="image/avif" srcset="${esc(thumbAvifUrls[i])}" /><img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" /></picture>`
     )
     .join("");
 
