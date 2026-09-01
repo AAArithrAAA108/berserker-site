@@ -684,6 +684,12 @@ export function renderPdpPage(product: CatalogProduct): string {
 <script>
   (function() {
     var images = ${jsonForScript(images)};
+    // Cart-image-only lookup, kept separate from images[] above: images[]
+    // feeds the hero <img> and the thumb-click swap (both must stay
+    // full-resolution -- this IS the main product-page image), while the
+    // cart drawer/checkout only ever display this at 72x90px, so Add to
+    // Cart reads the small derivative here instead.
+    var pdpThumbUrls = ${jsonForScript(thumbUrls)};
     var swatchList = ${jsonForScript(product.colors.map((c) => ({ label: c.label, imgIndex: colorImgIndex(c), indices: colorImgIndices(c), variant: c.variantLabel, variants: c.variants })))};
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
@@ -797,7 +803,7 @@ export function renderPdpPage(product: CatalogProduct): string {
       if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = ${jsonForScript(product.name)} + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
-      var imgSrc = images[selectedColor.imgIndex];
+      var imgSrc = pdpThumbUrls[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart(${jsonForScript(product.brand)}, name, ${product.price}, ${product.codAdvance}, imgSrc);
         if (typeof openCart === 'function') openCart();

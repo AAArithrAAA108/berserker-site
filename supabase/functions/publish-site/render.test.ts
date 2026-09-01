@@ -631,6 +631,27 @@ Deno.test("renderPdpPage: thumbnail strip uses each image's small thumbUrl, but 
   }
 });
 
+Deno.test("renderPdpPage: Add to Cart sends the small thumbUrl as imgSrc, not the full-resolution url (regression: the cart drawer/checkout only ever display this at 72x90px, so it was paying full-res egress for a thumbnail-sized box -- the PDP hero and thumb-click swap-array, covered by the previous test, correctly stay full-res since those ARE the main product-page image)", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    images: [
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "", sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "", sortOrder: 1 },
+    ],
+  };
+  const html = renderPdpPage(product);
+  const scriptMatch = html.match(/var pdpThumbUrls = (\[.*?\]);/);
+  if (!scriptMatch) throw new Error("expected a `var pdpThumbUrls = [...]` array in the PDP script for the cart-image lookup");
+  const thumbUrls = JSON.parse(scriptMatch[1]);
+  if (thumbUrls[0] !== "https://example.com/thumbs/0.jpg" || thumbUrls[1] !== "https://example.com/thumbs/1.jpg") {
+    throw new Error("pdpThumbUrls should hold each image's small thumbUrl, in the same order as images[]");
+  }
+  assertStringIncludes(html, "var imgSrc = pdpThumbUrls[selectedColor.imgIndex];");
+  if (html.includes("var imgSrc = images[selectedColor.imgIndex];")) {
+    throw new Error("addToCart's imgSrc must no longer read from the full-resolution images[] array");
+  }
+});
+
 Deno.test("renderPdpPage: preserves the direct addToCart(brand, name, price, codAdvance, imgSrc) call signature", () => {
   const html = renderPdpPage(twoColorProduct);
   assertStringIncludes(html, "addToCart(");
