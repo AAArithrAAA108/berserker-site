@@ -137,7 +137,8 @@ function wireDeleteButtons() {
       }
       if (images && images.length) {
         var paths = images.map(function(img) { return img.storage_path; });
-        var { error: removeError } = await sb.storage.from('product-images').remove(paths);
+        var allPaths = paths.concat(paths.map(thumbStoragePath));
+        var { error: removeError } = await sb.storage.from('product-images').remove(allPaths);
         if (removeError) {
           alert('Delete failed: could not remove this product\'s images from storage (' + removeError.message + '). Product was NOT deleted.');
           btn.disabled = false;
@@ -386,6 +387,49 @@ document.getElementById('publish-btn').addEventListener('click', async function(
   btn.disabled = false;
 });
 
+// Mirrors data.ts's thumbPath() -- "<dir>/<file>" -> "<dir>/thumbs/<file>".
+// Kept as pure string logic (no DB column) so both sides stay in sync.
+function thumbStoragePath(storagePath) {
+  var slashIdx = storagePath.lastIndexOf('/');
+  return storagePath.slice(0, slashIdx) + '/thumbs/' + storagePath.slice(slashIdx + 1);
+}
+
+// Resizes `file` down to at most 380px on its longest side and re-encodes as
+// JPEG (quality 0.8) via canvas -- publish-site's data.ts/render.ts point the
+// product-card slider and PDP thumbnail strip at this derivative instead of
+// the full-resolution original, since those contexts only ever display an
+// image at 64-380px and serving the original there wastes Supabase's cached
+// egress quota for no visible benefit. Resolves null (not a rejection) on
+// any decode failure so a single bad file can't abort the whole upload loop.
+function makeThumbBlob(file) {
+  return new Promise(function (resolve) {
+    var img = new Image();
+    var objectUrl = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(objectUrl);
+      var scale = Math.min(1, 380 / Math.max(img.width, img.height));
+      var w = Math.max(1, Math.round(img.width * scale));
+      var h = Math.max(1, Math.round(img.height * scale));
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      // White background first -- canvas defaults to transparent, and toBlob
+      // with 'image/jpeg' drops alpha by flattening onto black, which would
+      // put a black matte behind any image with real transparency.
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(function (blob) { resolve(blob); }, 'image/jpeg', 0.8);
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(objectUrl);
+      resolve(null);
+    };
+    img.src = objectUrl;
+  });
+}
+
 async function renderImagesSection(product) {
   var container = document.getElementById('images-section-' + product.id);
   container.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Images</p><div id="images-grid-' + product.id + '" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="file" id="image-upload-' + product.id + '" accept="image/jpeg,image/png,image/webp" multiple style="margin-top:8px;" /><p class="msg" id="image-upload-msg-' + product.id + '"></p>';
@@ -404,6 +448,21 @@ async function renderImagesSection(product) {
       var storagePath = product.slug + '/' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
       if (uploadError) { failureMessages.push(file.name + ': ' + uploadError.message); continue; }
+      // Thumbnail derivative lives one path segment down (see makeThumbBlob's
+      // doc comment) -- data.ts derives this exact path from storage_path
+      // alone, so it must be "<same dir>/thumbs/<same filename>" with no DB
+      // column to keep the two in sync. A thumb-generation/upload failure is
+      // logged but never blocks the real image from being saved -- a missing
+      // thumb just means that one image temporarily falls back to whatever
+      // the browser does with a 404 src, not a lost upload.
+      var thumbPath = thumbStoragePath(storagePath);
+      var thumbBlob = await makeThumbBlob(file);
+      if (thumbBlob) {
+        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/jpeg' });
+        if (thumbError) console.warn('thumbnail upload failed for ' + file.name + ':', thumbError.message);
+      } else {
+        console.warn('thumbnail generation failed for ' + file.name);
+      }
       var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort });
       if (rowError) { failureMessages.push(file.name + ': ' + rowError.message); continue; }
       successCount++;
@@ -477,7 +536,7 @@ async function refreshImagesGrid(product) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this image? If it was assigned to a color, that color loses this photo (and its thumbnail, if this was the one selected).')) return;
       var msg = document.getElementById('image-upload-msg-' + productId);
-      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath]);
+      var { error: removeError } = await sb.storage.from('product-images').remove([btn.dataset.storagePath, thumbStoragePath(btn.dataset.storagePath)]);
       if (removeError) {
         if (msg) { msg.style.color = '#ff3c1e'; msg.textContent = 'Delete failed: ' + removeError.message; }
         return;

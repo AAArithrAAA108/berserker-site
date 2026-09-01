@@ -83,7 +83,7 @@ export function renderProductCard(product: CatalogProduct): string {
   const sliderImgs = product.images
     .map(
       (img, i) =>
-        `<img src="${esc(img.url)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
+        `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
     )
     .join("");
   const images = product.images.map((img) => img.url);
@@ -574,10 +574,15 @@ export function renderPdpPage(product: CatalogProduct): string {
   // the whole page.
   const colorSectionLabel = firstColor && firstColor.hex === null ? "Variant" : "Color";
 
+  // Thumbnail strip uses the small derivative -- clicking one still swaps the
+  // main image to the full-resolution url via the images[] JS array below
+  // (data-index is unchanged), so quality is unaffected, only the strip's own
+  // 64x80px <img> src is.
+  const thumbUrls = product.images.map((img) => img.thumbUrl);
   const thumbs = images
     .map(
-      (url, i) =>
-        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(url)}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
+      (_url, i) =>
+        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
     )
     .join("");
 

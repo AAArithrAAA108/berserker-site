@@ -11,14 +11,14 @@ const sampleProduct: CatalogProduct = {
     {
       id: "c1", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", secondaryColorGroup: null, variantLabel: null,
       coverImageUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg",
-      images: [{ url: "https://example.supabase.co/.../img-0001.jpg", sortOrder: 0 }],
+      images: [{ url: "https://example.supabase.co/.../img-0001.jpg", thumbUrl: "https://example.supabase.co/.../img-0001.jpg", sortOrder: 0 }],
       variants: [
         { size: "S", inStock: true }, { size: "M", inStock: true },
         { size: "L", inStock: false }, { size: "XL", inStock: true },
       ],
     },
   ],
-  images: [{ url: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", sortOrder: 0 }],
+  images: [{ url: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", thumbUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", sortOrder: 0 }],
 };
 
 Deno.test("renderProductCard includes brand, name, and strikethrough price", () => {
@@ -76,8 +76,8 @@ const twoColorProduct: CatalogProduct = {
     },
   ],
   images: [
-    { url: "https://example.supabase.co/.../green.jpg", sortOrder: 0 },
-    { url: "https://example.supabase.co/.../black.jpg", sortOrder: 1 },
+    { url: "https://example.supabase.co/.../green.jpg", thumbUrl: "https://example.supabase.co/.../green.jpg", sortOrder: 0 },
+    { url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", sortOrder: 1 },
   ],
 };
 
@@ -96,6 +96,22 @@ Deno.test("renderProductCard: image slider has one <img> per color, in color ord
   const blackPos = html.indexOf("black.jpg");
   if (greenPos === -1 || blackPos === -1 || greenPos > blackPos) {
     throw new Error("expected green.jpg image before black.jpg image in slider order");
+  }
+});
+
+Deno.test("renderProductCard: slider <img> src uses each image's small thumbUrl, not the full-resolution url (card display is ~300px, full-res would waste egress)", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    images: [
+      { url: "https://example.supabase.co/.../green-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../black-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", sortOrder: 1 },
+    ],
+  };
+  const html = renderProductCard(product);
+  assertStringIncludes(html, "thumbs/green-full.jpg");
+  assertStringIncludes(html, "thumbs/black-full.jpg");
+  if (html.includes('src="https://example.supabase.co/.../green-full.jpg"') || html.includes('src="https://example.supabase.co/.../black-full.jpg"')) {
+    throw new Error("slider <img> src should use thumbUrl, not the full-resolution url");
   }
 });
 
@@ -137,9 +153,9 @@ Deno.test("renderProductCard: slider shows every uploaded photo, and swatches po
       { ...twoColorProduct.colors[1], id: "c2", coverImageUrl: "https://example.com/black-1.jpg" },
     ],
     images: [
-      { url: "https://example.com/green-1.jpg", sortOrder: 0 },
-      { url: "https://example.com/black-1.jpg", sortOrder: 1 },
-      { url: "https://example.com/black-2.jpg", sortOrder: 2 },
+      { url: "https://example.com/green-1.jpg", thumbUrl: "https://example.com/green-1.jpg", sortOrder: 0 },
+      { url: "https://example.com/black-1.jpg", thumbUrl: "https://example.com/black-1.jpg", sortOrder: 1 },
+      { url: "https://example.com/black-2.jpg", thumbUrl: "https://example.com/black-2.jpg", sortOrder: 2 },
     ],
   };
   const html = renderProductCard(multiPhotoProduct);
@@ -201,10 +217,10 @@ Deno.test("renderProductCard: slider track/img widths are inline, computed from 
       { ...twoColorProduct.colors[1], id: "c2", coverImageUrl: "https://example.com/2.jpg" },
     ],
     images: [
-      { url: "https://example.com/1.jpg", sortOrder: 0 },
-      { url: "https://example.com/2.jpg", sortOrder: 1 },
-      { url: "https://example.com/3.jpg", sortOrder: 2 },
-      { url: "https://example.com/4.jpg", sortOrder: 3 },
+      { url: "https://example.com/1.jpg", thumbUrl: "https://example.com/1.jpg", sortOrder: 0 },
+      { url: "https://example.com/2.jpg", thumbUrl: "https://example.com/2.jpg", sortOrder: 1 },
+      { url: "https://example.com/3.jpg", thumbUrl: "https://example.com/3.jpg", sortOrder: 2 },
+      { url: "https://example.com/4.jpg", thumbUrl: "https://example.com/4.jpg", sortOrder: 3 },
     ],
   };
   const html = renderProductCard(fourImageProduct);
@@ -282,7 +298,7 @@ Deno.test("renderSliderCss: matches the real reference's exact keyframe percenta
     ...twoColorProduct,
     position: 9,
     colors: Array.from({ length: 8 }, (_, i) => ({ ...twoColorProduct.colors[0], id: `c${i}` })),
-    images: Array.from({ length: 8 }, (_, i) => ({ url: `https://example.com/${i}.jpg`, sortOrder: i })),
+    images: Array.from({ length: 8 }, (_, i) => ({ url: `https://example.com/${i}.jpg`, thumbUrl: `https://example.com/${i}.jpg`, sortOrder: i })),
   };
   const css = renderSliderCss([eightColorProduct]);
   assertStringIncludes(css, "animation: slideProduct9 16.1000s linear infinite");
@@ -542,6 +558,39 @@ Deno.test("renderPdpPage: handles a null description without crashing or emittin
   }
 });
 
+Deno.test("renderPdpPage: thumbnail strip uses each image's small thumbUrl, but the hero image and the JS images[] swap-array stay full-resolution (a 64x80px thumb should not pay full-res egress, but the big hero image and thumb-click swap must not lose quality)", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    images: [
+      { url: "https://example.supabase.co/.../green-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../black-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", sortOrder: 1 },
+    ],
+  };
+  const html = renderPdpPage(product);
+
+  // Hero <img id="pdp-main-image"> must use the full-resolution url.
+  assertStringIncludes(html, 'id="pdp-main-image" src="https://example.supabase.co/.../green-full.jpg"');
+
+  // Thumbnail strip <img class="pdp-thumb"> must use the small thumbUrl.
+  const thumbTagMatches = [...html.matchAll(/<img class="pdp-thumb[^>]*>/g)];
+  if (thumbTagMatches.length !== 2) throw new Error(`expected 2 pdp-thumb tags, got ${thumbTagMatches.length}`);
+  if (!thumbTagMatches[0][0].includes("thumbs/green-full.jpg")) throw new Error("first pdp-thumb should use its thumbUrl");
+  if (!thumbTagMatches[1][0].includes("thumbs/black-full.jpg")) throw new Error("second pdp-thumb should use its thumbUrl");
+  if (thumbTagMatches.some((m) => m[0].includes("full.jpg") && !m[0].includes("thumbs/"))) {
+    throw new Error("pdp-thumb <img> src should never be the full-resolution url");
+  }
+
+  // The inline script's images[] array (used to swap the hero image on thumb
+  // click) must stay full-resolution too -- clicking a thumb should show the
+  // real photo, not the small derivative, in the hero slot.
+  const scriptMatch = html.match(/var images = (\[.*?\]);/);
+  if (!scriptMatch) throw new Error("expected a `var images = [...]` array in the PDP script");
+  const images = JSON.parse(scriptMatch[1]);
+  if (images.some((u: string) => u.includes("thumbs/"))) {
+    throw new Error("the JS images[] swap-array must use full-resolution urls, not thumbUrls");
+  }
+});
+
 Deno.test("renderPdpPage: preserves the direct addToCart(brand, name, price, codAdvance, imgSrc) call signature", () => {
   const html = renderPdpPage(twoColorProduct);
   assertStringIncludes(html, "addToCart(");
@@ -619,10 +668,10 @@ Deno.test("renderPdpPage: gallery shows every uploaded product photo, not just o
     ...twoColorProduct,
     colors: [twoColorProduct.colors[0]],
     images: [
-      { url: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
-      { url: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
-      { url: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
+      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../3.jpg", thumbUrl: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
+      { url: "https://example.supabase.co/.../4.jpg", thumbUrl: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
     ],
   };
   const html = renderPdpPage(oneColorFourPhotos);
@@ -635,10 +684,10 @@ Deno.test("renderPdpPage: a color swatch's data-img-index points at that color's
     ...twoColorProduct,
     colors: [{ ...twoColorProduct.colors[0], coverImageUrl: "https://example.supabase.co/.../3.jpg" }],
     images: [
-      { url: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
-      { url: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
-      { url: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
+      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../3.jpg", thumbUrl: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
+      { url: "https://example.supabase.co/.../4.jpg", thumbUrl: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
     ],
   };
   const html = renderPdpPage(oneColorFourPhotos);
@@ -653,20 +702,20 @@ Deno.test("renderPdpPage: a color's swatch carries its own explicit, possibly no
         ...twoColorProduct.colors[0],
         coverImageUrl: "https://example.supabase.co/.../0.jpg",
         images: [
-          { url: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
-          { url: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
+          { url: "https://example.supabase.co/.../0.jpg", thumbUrl: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
+          { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
         ],
       },
       {
         ...twoColorProduct.colors[1],
         coverImageUrl: "https://example.supabase.co/.../1.jpg",
-        images: [{ url: "https://example.supabase.co/.../1.jpg", sortOrder: 1 }],
+        images: [{ url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 1 }],
       },
     ],
     images: [
-      { url: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../1.jpg", sortOrder: 1 },
-      { url: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
+      { url: "https://example.supabase.co/.../0.jpg", thumbUrl: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
+      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
     ],
   };
   const html = renderPdpPage(nonContiguous);
@@ -690,9 +739,9 @@ Deno.test("renderPdpPage: a zero-image color never causes two swatches to render
     ...twoColorProduct,
     colors: [
       { ...twoColorProduct.colors[0], label: "Denim Black", coverImageUrl: "", images: [] },
-      { ...twoColorProduct.colors[1], label: "Denim Blue", coverImageUrl: "https://example.supabase.co/.../black.jpg", images: [{ url: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }] },
+      { ...twoColorProduct.colors[1], label: "Denim Blue", coverImageUrl: "https://example.supabase.co/.../black.jpg", images: [{ url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }] },
     ],
-    images: [{ url: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }],
+    images: [{ url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }],
   };
   const html = renderPdpPage(zeroImageColorFirst);
   const selectedCount = (html.match(/class="modal-swatch selected"/g) || []).length;
