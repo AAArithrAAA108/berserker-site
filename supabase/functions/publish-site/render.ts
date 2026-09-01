@@ -64,7 +64,14 @@ export function productColorGroups(product: CatalogProduct): string[] {
   return Array.from(groups);
 }
 
-export function renderProductCard(product: CatalogProduct): string {
+export function renderProductCard(product: CatalogProduct, opts: { eagerImage?: boolean } = {}): string {
+  // Defaults to eager (current behavior, unchanged for every existing
+  // call site) -- callers rendering a long grid pass eagerImage: false for
+  // cards beyond the first screenful. Unlike the within-card slider images
+  // (Track B), separate cards further down a listing page really are far
+  // from the viewport, so native loading="lazy" correctly defers them
+  // instead of being a no-op.
+  const eagerImage = opts.eagerImage ?? true;
   const wasPrice = strikethroughPrice(product.price);
   // The hover-slider cycles through every uploaded photo (not one per
   // color) -- a color can own more than one photo (e.g. front/back shots;
@@ -103,7 +110,7 @@ export function renderProductCard(product: CatalogProduct): string {
     .map(
       (img, i) =>
         i === 0
-          ? `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" decoding="async" />`
+          ? `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${eagerImage ? "" : ' loading="lazy"'} decoding="async" />`
           : `<img data-src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" loading="lazy" decoding="async" />`
     )
     .join("");
@@ -143,13 +150,21 @@ export function renderProductCard(product: CatalogProduct): string {
 </div>`.trim();
 }
 
+// How many cards at the top of a product grid render eagerly. Generous
+// enough to cover a first screenful on any real layout (grid columns
+// range from 2 on mobile to ~5 on wide desktop -- 8 covers 2 full rows
+// even at the narrowest common breakpoint) without under-serving an
+// above-the-fold card, which would be a real LCP regression rather than
+// just extra egress.
+const EAGER_CARD_COUNT = 8;
+
+function renderProductCards(products: CatalogProduct[]): string {
+  return products.map((p, i) => renderProductCard(p, { eagerImage: i < EAGER_CARD_COUNT })).join("\n");
+}
+
 export function renderAllProductsPage(catalog: Catalog): string {
-  const cards = catalog.products
-    .slice()
-    .sort((a, b) => a.position - b.position)
-    .map(renderProductCard)
-    .join("\n");
-  return cards; // wrapped into the full page shell in Task 12
+  const sorted = catalog.products.slice().sort((a, b) => a.position - b.position);
+  return renderProductCards(sorted); // wrapped into the full page shell in Task 12
 }
 
 // Hover-triggered slider animation CSS, one @keyframes + hover rule per
@@ -443,7 +458,7 @@ const FILTER_SCRIPT = `
 
 export function renderListingPage(catalog: Catalog): string {
   const sorted = catalog.products.slice().sort((a, b) => a.position - b.position);
-  const cards = sorted.map(renderProductCard).join("\n");
+  const cards = renderProductCards(sorted);
   const bodyContent = `
 <section class="section" id="all-products-grid">
   <div class="section-header">
@@ -469,7 +484,7 @@ export function renderCollectionPage(catalog: Catalog, slug: string): string {
   const filtered = catalog.products
     .filter((p) => isInCollection(p, slug))
     .sort((a, b) => a.position - b.position);
-  const cards = filtered.map(renderProductCard).join("\n");
+  const cards = renderProductCards(filtered);
   const heading = slug.replace(/-/g, " ").toUpperCase();
   const bodyContent = `
 <section class="section" id="all-products-grid">
@@ -487,7 +502,7 @@ export function renderBrandPage(catalog: Catalog, folder: string, brandName: str
   const filtered = catalog.products
     .filter((p) => brandFolderFor(p) === folder)
     .sort((a, b) => a.position - b.position);
-  const cards = filtered.map(renderProductCard).join("\n");
+  const cards = renderProductCards(filtered);
   const bodyContent = `
 <section class="section" id="all-products-grid">
   <div class="section-header">

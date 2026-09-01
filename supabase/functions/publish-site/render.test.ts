@@ -152,6 +152,40 @@ Deno.test("renderProductCard: slider images are plain <img> tags, never wrapped 
   }
 });
 
+Deno.test("renderProductCard: image 0 defaults to eager (no loading attribute) when eagerImage is omitted -- preserves every existing single-arg call site's behavior", () => {
+  const html = renderProductCard(twoColorProduct);
+  const img0 = html.match(/<img src="[^"]*green\.jpg"[^>]*>/)?.[0] ?? "";
+  if (img0.includes("loading=")) {
+    throw new Error("image 0 should have no loading attribute by default (eager)");
+  }
+});
+
+Deno.test("renderProductCard: passing { eagerImage: false } marks image 0 loading=\"lazy\" -- unlike the within-card slider images, separate cards further down a long listing page really are far from the viewport, so native lazy-loading correctly defers them (used for cards beyond the first screenful, see renderListingPage/renderCollectionPage/renderBrandPage)", () => {
+  const html = renderProductCard(twoColorProduct, { eagerImage: false });
+  const img0 = html.match(/<img src="[^"]*green\.jpg"[^>]*>/)?.[0] ?? "";
+  assertStringIncludes(img0, 'loading="lazy"');
+});
+
+Deno.test("renderListingPage: only the first 8 cards render with an eager image 0 -- the rest get loading=\"lazy\" (cuts eager image-0 fetches on a long catalog page down from one-per-product to one-per-first-screenful)", () => {
+  const products: CatalogProduct[] = Array.from({ length: 10 }, (_, i) => ({
+    ...twoColorProduct,
+    id: `p${i}`,
+    position: i + 1,
+    images: [{ url: `https://example.com/${i}.jpg`, thumbUrl: `https://example.com/thumbs/${i}.jpg`, thumbAvifUrl: "", sortOrder: 0 }],
+  }));
+  const html = renderListingPage({ products });
+  for (let i = 0; i < 10; i++) {
+    const img = html.match(new RegExp(`<img src="https://example\\.com/thumbs/${i}\\.jpg"[^>]*>`))?.[0] ?? "";
+    const shouldBeLazy = i >= 8;
+    if (shouldBeLazy && !img.includes('loading="lazy"')) {
+      throw new Error(`card ${i} (beyond the first 8) should be lazy-loaded`);
+    }
+    if (!shouldBeLazy && img.includes("loading=")) {
+      throw new Error(`card ${i} (within the first 8) should be eager, not lazy`);
+    }
+  }
+});
+
 Deno.test("renderProductCard: swatch data-img-index matches that color's slider position, not a color-group string", () => {
   const html = renderProductCard(twoColorProduct);
   assertStringIncludes(html, 'data-img-index="0"'); // Forest Green is the first slider image
