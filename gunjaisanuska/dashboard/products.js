@@ -394,33 +394,42 @@ function thumbStoragePath(storagePath) {
   return storagePath.slice(0, slashIdx) + '/thumbs/' + storagePath.slice(slashIdx + 1);
 }
 
-// Resizes `file` down to at most 380px on its longest side and re-encodes as
-// JPEG (quality 0.8) via canvas -- publish-site's data.ts/render.ts point the
-// product-card slider and PDP thumbnail strip at this derivative instead of
-// the full-resolution original, since those contexts only ever display an
-// image at 64-380px and serving the original there wastes Supabase's cached
-// egress quota for no visible benefit. Resolves null (not a rejection) on
-// any decode failure so a single bad file can't abort the whole upload loop.
-function makeThumbBlob(file) {
+// Resizes `file` down to at most maxDim on its longest side and re-encodes as
+// WebP (real measured savings over JPEG: ~20% at full size, ~35% at thumb
+// size, same visual quality) via canvas. Used for both derivatives this
+// upload flow produces:
+//   - the thumb (maxDim 380, quality 0.8) -- publish-site's render.ts points
+//     the product-card slider and the PDP thumbnail strip at this instead of
+//     the full-resolution original, since those contexts only ever display
+//     an image at 64-380px and serving the original there wastes cached
+//     egress for no visible benefit.
+//   - the main/hero image itself (maxDim 1200, quality 0.82) -- capped so a
+//     raw multi-thousand-pixel camera/phone photo can't quietly reintroduce
+//     the same oversized-original problem a batch fix just cleaned up
+//     (existing live photos already sit at 600-800px and look fine at the
+//     PDP hero's 80vh display, so 1200px leaves real headroom).
+// Resolves null (not a rejection) on any decode failure so a single bad file
+// can't abort the whole upload loop.
+function resizeToWebp(file, maxDim, quality) {
   return new Promise(function (resolve) {
     var img = new Image();
     var objectUrl = URL.createObjectURL(file);
     img.onload = function () {
       URL.revokeObjectURL(objectUrl);
-      var scale = Math.min(1, 380 / Math.max(img.width, img.height));
+      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
       var w = Math.max(1, Math.round(img.width * scale));
       var h = Math.max(1, Math.round(img.height * scale));
       var canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
       var ctx = canvas.getContext('2d');
-      // White background first -- canvas defaults to transparent, and toBlob
-      // with 'image/jpeg' drops alpha by flattening onto black, which would
-      // put a black matte behind any image with real transparency.
+      // White background first -- canvas defaults to transparent, and WebP
+      // export would otherwise composite onto black, putting a black matte
+      // behind any image with real transparency.
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
-      canvas.toBlob(function (blob) { resolve(blob); }, 'image/jpeg', 0.8);
+      canvas.toBlob(function (blob) { resolve(blob); }, 'image/webp', quality);
     };
     img.onerror = function () {
       URL.revokeObjectURL(objectUrl);
@@ -446,19 +455,27 @@ async function renderImagesSection(product) {
       var { data: existing } = await sb.from('product_images').select('sort_order').eq('product_id', product.id).order('sort_order', { ascending: false }).limit(1).maybeSingle();
       var nextSort = (existing ? existing.sort_order : -1) + 1;
       var storagePath = product.slug + '/' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-      var { error: uploadError } = await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
+      // Main image is capped/re-encoded too (see resizeToWebp's doc comment)
+      // -- falls back to uploading the original file untouched if canvas
+      // decoding fails for some reason, so an unusual format still uploads
+      // successfully instead of being silently dropped.
+      var mainBlob = await resizeToWebp(file, 1200, 0.82);
+      var { error: uploadError } = mainBlob
+        ? await sb.storage.from('product-images').upload(storagePath, mainBlob, { contentType: 'image/webp' })
+        : await sb.storage.from('product-images').upload(storagePath, file, { contentType: file.type });
       if (uploadError) { failureMessages.push(file.name + ': ' + uploadError.message); continue; }
-      // Thumbnail derivative lives one path segment down (see makeThumbBlob's
-      // doc comment) -- data.ts derives this exact path from storage_path
-      // alone, so it must be "<same dir>/thumbs/<same filename>" with no DB
-      // column to keep the two in sync. A thumb-generation/upload failure is
-      // logged but never blocks the real image from being saved -- a missing
-      // thumb just means that one image temporarily falls back to whatever
-      // the browser does with a 404 src, not a lost upload.
+      // Thumbnail derivative lives one path segment down (see
+      // thumbStoragePath) -- data.ts derives this exact path from
+      // storage_path alone, so it must be "<same dir>/thumbs/<same
+      // filename>" with no DB column to keep the two in sync. A
+      // thumb-generation/upload failure is logged but never blocks the real
+      // image from being saved -- a missing thumb just means that one image
+      // temporarily falls back to whatever the browser does with a 404 src,
+      // not a lost upload.
       var thumbPath = thumbStoragePath(storagePath);
-      var thumbBlob = await makeThumbBlob(file);
+      var thumbBlob = await resizeToWebp(file, 380, 0.8);
       if (thumbBlob) {
-        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/jpeg' });
+        var { error: thumbError } = await sb.storage.from('product-images').upload(thumbPath, thumbBlob, { contentType: 'image/webp' });
         if (thumbError) console.warn('thumbnail upload failed for ' + file.name + ':', thumbError.message);
       } else {
         console.warn('thumbnail generation failed for ' + file.name);
