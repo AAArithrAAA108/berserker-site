@@ -82,8 +82,8 @@ export function renderProductCard(product: CatalogProduct): string {
   const imgWidthPct = imgCount > 0 ? 100 / imgCount : 0;
   const sliderImgs = product.images
     .map(
-      (img) =>
-        `<img src="${esc(img.url)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" />`
+      (img, i) =>
+        `<img src="${esc(img.url)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
     )
     .join("");
   const images = product.images.map((img) => img.url);
@@ -492,7 +492,7 @@ export function renderBrandsIndexPage(brands: PrimaryBrand[]): string {
     .map(
       (b) =>
         `<a href="/${esc(b.folderSlug)}/" class="cat-card" style="display:block;text-decoration:none;">
-      ${b.thumbnailUrl ? `<img src="${esc(b.thumbnailUrl)}" alt="${esc(b.name)}" style="width:100%;height:100%;object-fit:cover;" />` : ""}
+      ${b.thumbnailUrl ? `<img src="${esc(b.thumbnailUrl)}" alt="${esc(b.name)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" decoding="async" />` : ""}
       <div class="cat-label">${esc(b.name)}</div>
     </a>`
     )
@@ -577,7 +577,7 @@ export function renderPdpPage(product: CatalogProduct): string {
   const thumbs = images
     .map(
       (url, i) =>
-        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(url)}" alt="View ${i + 1}" />`
+        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(url)}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
     )
     .join("");
 
