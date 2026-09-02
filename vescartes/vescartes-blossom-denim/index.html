@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark" />
-<title>Vescartes — BERSERKER</title>
+<title>Blossom Denim Jeans — BERSERKER</title>
 <link rel="icon" type="image/png" href="/all-products/images/img-0001.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1028,33 +1028,35 @@
     display: block;
   }
 
-  #product-42:hover .slider-track { animation: slideProduct42 25.3000s linear infinite; }
-  @keyframes slideProduct42 {
-    0% { transform: translateX(0); }
-    1.1858% { transform: translateX(-8.3333%); }
-    9.0909% { transform: translateX(-8.3333%); }
-    10.2767% { transform: translateX(-16.6667%); }
-    18.1818% { transform: translateX(-16.6667%); }
-    19.3676% { transform: translateX(-25.0000%); }
-    27.2727% { transform: translateX(-25.0000%); }
-    28.4585% { transform: translateX(-33.3333%); }
-    36.3636% { transform: translateX(-33.3333%); }
-    37.5494% { transform: translateX(-41.6667%); }
-    45.4545% { transform: translateX(-41.6667%); }
-    46.6403% { transform: translateX(-50.0000%); }
-    54.5455% { transform: translateX(-50.0000%); }
-    55.7312% { transform: translateX(-58.3333%); }
-    63.6364% { transform: translateX(-58.3333%); }
-    64.8221% { transform: translateX(-66.6667%); }
-    72.7273% { transform: translateX(-66.6667%); }
-    73.9130% { transform: translateX(-75.0000%); }
-    81.8182% { transform: translateX(-75.0000%); }
-    83.0040% { transform: translateX(-83.3333%); }
-    90.9091% { transform: translateX(-83.3333%); }
-    92.0949% { transform: translateX(-91.6667%); }
-    100% { transform: translateX(-91.6667%); }
+  .pdp-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:start; }
+  .pdp-main-img { overflow:hidden; background:var(--mid); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; max-height:80vh; }
+  .pdp-main-img img { width:100%; height:auto; max-height:80vh; object-fit:contain; display:block; }
+  .pdp-thumbs { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .pdp-thumb { width:64px; height:80px; object-fit:contain; background:var(--mid); cursor:pointer; border:1px solid var(--border); opacity:.55; transition:opacity .2s, border-color .2s; }
+  .pdp-thumb:hover { opacity:.85; }
+  .pdp-thumb.active { opacity:1; border-color:var(--accent); }
+  .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:25px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--white); margin-top:14px; }
+  .pdp-insta-note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; max-width:420px; }
+  .pdp-title { font-family:var(--font-display); font-size:clamp(32px,3.5vw,48px); letter-spacing:.02em; line-height:1.05; color:var(--white); margin:10px 0 16px; }
+  .pdp-price { font-family:var(--font-display); font-size:36px; color:var(--white); letter-spacing:.03em; }
+  .pdp-cod { font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:6px; letter-spacing:.04em; }
+  .pdp-section-label { font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#888; margin:28px 0 12px; }
+  .pdp-swatches { display:flex; gap:10px; flex-wrap:wrap; }
+  .pdp-size-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; max-width:320px; }
+  .pdp-add-btn { width:100%; max-width:320px; margin-top:28px; opacity:.4; pointer-events:none; }
+  .pdp-add-btn.ready { opacity:1; pointer-events:auto; }
+  .pdp-trust { display:flex; flex-direction:column; gap:10px; margin-top:32px; padding-top:28px; border-top:1px solid var(--border); }
+  .pdp-description { margin-top:32px; padding-top:28px; border-top:1px solid var(--border); max-width:520px; }
+  .pdp-description h3 { font-family:var(--font-display); font-size:20px; letter-spacing:.04em; color:var(--white); margin-bottom:12px; }
+  .pdp-description p { color:#aaa; font-size:14px; line-height:1.8; }
+  @media(max-width:1100px) {
+    .pdp-grid { grid-template-columns:1fr; gap:32px; }
+    #product-detail { padding:60px 40px; }
   }
-  #product-42 .slider-track { transform: translateX(0); transition: transform 0.4s ease; }
+  @media(max-width:640px) {
+    #product-detail { padding:48px 24px; }
+    .pdp-thumb { width:52px; height:66px; }
+  }
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -1090,120 +1092,173 @@
   </div>
 </div>
 
-<section class="section" id="all-products-grid">
-  <div class="section-header">
-    <h2 class="section-title">VESCARTES</h2>
-    <div class="list-controls">
-      
-<div class="filter-bar">
-  <button type="button" id="filter-toggle-btn" class="filter-toggle">Filter</button>
-  <div id="filter-panel" class="filter-panel">
-    <div class="filter-facets">
-      <div class="filter-facet"><div class="filter-section-label">Color</div><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Black" /><span class="color-filter-swatch" style="background:#141414;"></span>Black</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Denim" /><span class="color-filter-swatch" style="background:#6b9fd4;"></span>Denim</label><label class="color-filter-option"><input type="checkbox" class="color-filter-checkbox" value="Pink" /><span class="color-filter-swatch" style="background:#c41e8a;"></span>Pink</label></div>
-      
+<section class="section" id="product-detail" style="padding-top:48px;">
+  <div class="pdp-grid">
+    <div class="pdp-gallery">
+      <div class="pdp-main-img">
+        <img id="pdp-main-image" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365516919-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans — Denim Blue" />
+      </div>
+      <div class="pdp-image-label" id="pdp-image-label">Denim Blue</div>
+      <div class="pdp-thumbs" id="pdp-thumbs"><img class="pdp-thumb active" data-index="0" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365516919-Screenshot_2026-08-16_172050.png" alt="View 1" decoding="async" /><img class="pdp-thumb" data-index="1" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365518805-Screenshot_2026-08-16_172126.png" alt="View 2" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="2" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365521600-Screenshot_2026-08-16_172235.png" alt="View 3" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="3" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365522882-Screenshot_2026-08-16_172236.png" alt="View 4" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="4" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365524096-Screenshot_2026-08-16_172309.png" alt="View 5" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="5" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365525548-Screenshot_2026-08-16_172336.png" alt="View 6" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="6" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365527081-Screenshot_2026-08-16_172424.png" alt="View 7" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="7" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365529065-Screenshot_2026-08-16_172444.png" alt="View 8" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="8" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365532959-Screenshot_2026-08-16_172540.png" alt="View 9" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="9" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365535986-Screenshot_2026-08-16_172541.png" alt="View 10" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="10" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365537720-Screenshot_2026-08-16_172601.png" alt="View 11" loading="lazy" decoding="async" /><img class="pdp-thumb" data-index="11" src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365540442-Screenshot_2026-08-16_172618.png" alt="View 12" loading="lazy" decoding="async" /></div>
+      <p class="pdp-insta-note">Want to see real in-hand photos before you buy? DM us on Instagram <a href="https://instagram.com/berserker.in" target="_blank" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">@berserker.in</a> and we'll send them over.</p>
     </div>
-    <button type="button" id="filter-clear-btn" class="filter-clear">Clear</button>
-  </div>
-</div>
-      
-<div class="sort-bar">
-  <label for="sort-select">Sort by</label>
-  <select id="sort-select">
-    <option value="relevance">Relevance</option>
-    <option value="price-asc">Price: Low to High</option>
-    <option value="price-desc">Price: High to Low</option>
-  </select>
-</div>
+    <div class="pdp-info">
+      <div class="product-brand">Vescartes</div>
+      <h1 class="pdp-title">Blossom Denim Jeans</h1>
+      <div class="pdp-price">₹5,599</div>
+      <div class="pdp-cod">COD Advance Amount: ₹4,000</div>
+
+      <div class="pdp-section-label">Color — <span id="pdp-color-label">Denim Blue</span></div>
+      <div class="pdp-swatches" id="pdp-color-swatches"><div class="modal-swatch selected" style="background:#1560BD;" title="Denim Blue" data-img-index="0" data-img-indices="[0,1,2,3,4,5]" data-variant=""></div><div class="modal-swatch" style="background:#171E27;" title="Denim Black" data-img-index="6" data-img-indices="[6,7,8,9,10,11]" data-variant=""></div></div>
+
+      <div class="pdp-section-label">Size</div>
+      <div class="pdp-size-grid" id="pdp-size-grid"><button class="size-btn" data-size="S">S</button><button class="size-btn" data-size="M">M</button><button class="size-btn" data-size="L">L</button><button class="size-btn" data-size="XL">XL</button></div>
+
+      <button class="btn-primary pdp-add-btn" id="pdp-add-btn">Select Size &amp; Color</button>
+
+      <div class="pdp-trust">
+        <div class="trust-item"><span class="trust-icon">🔍</span> Quality Verified Before Dispatch</div>
+        <div class="trust-item"><span class="trust-icon">🚚</span> Free Shipping, All Over India</div>
+        <div class="trust-item"><span class="trust-icon">↩️</span> 24-Hour Unboxing Video Required for Claims</div>
+      </div>
+
+      <div class="pdp-description">
+        <h3>Product Details</h3>
+        <p> See <a href="/shipping-info/" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">Shipping Info</a> and <a href="/returns-and-refunds/" style="color:#f5f2ee;border-bottom:1px solid #333;text-decoration:none;">Returns &amp; Refunds</a> for full policy details.</p>
+      </div>
     </div>
   </div>
-  <div class="product-grid"><div class="product-card fade-in" id="product-42" data-color-groups="Denim,Pink,Black" data-sleeve-length="">
-  <a href="/vescartes/vescartes-blossom-denim/" class="product-img product-img-slider">
-    <div class="slider-track" style="width:1200%;"><img src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365516919-Screenshot_2026-08-16_172050.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365518805-Screenshot_2026-08-16_172126.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365521600-Screenshot_2026-08-16_172235.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365522882-Screenshot_2026-08-16_172236.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365524096-Screenshot_2026-08-16_172309.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365525548-Screenshot_2026-08-16_172336.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365527081-Screenshot_2026-08-16_172424.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365529065-Screenshot_2026-08-16_172444.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365532959-Screenshot_2026-08-16_172540.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365535986-Screenshot_2026-08-16_172541.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365537720-Screenshot_2026-08-16_172601.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /><img data-src="https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365540442-Screenshot_2026-08-16_172618.png" alt="Blossom Denim Jeans" style="width:8.333333333333334%;" loading="lazy" decoding="async" /></div>
-  </a>
-  <div class="product-info">
-    <div class="product-brand">Vescartes</div>
-    <a href="/vescartes/vescartes-blossom-denim/"><div class="product-name">Blossom Denim Jeans</div></a>
-    <div class="product-price">₹5,599<span class="original">₹15,999</span></div>
-    <div class="product-swatches"><div class="swatch" style="background:#1560BD;" title="Denim Blue" data-img-index="0" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true" data-secondary-hex="#c41e8a"></div><div class="swatch" style="background:#171E27;" title="Denim Black" data-img-index="6" data-variants="[{&quot;size&quot;:&quot;S&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;M&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;L&quot;,&quot;inStock&quot;:true},{&quot;size&quot;:&quot;XL&quot;,&quot;inStock&quot;:true}]" data-variant="" data-has-color="true" data-secondary-hex="#c41e8a"></div></div>
-  </div>
-  <button class="product-add" data-cod-advance="4000">Add to Cart</button>
-</div></div>
 </section>
-
 <script>
   (function() {
-    var select = document.getElementById('sort-select');
-    var grid = document.querySelector('.product-grid');
-    if (!select || !grid) return;
+    var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365516919-Screenshot_2026-08-16_172050.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365518805-Screenshot_2026-08-16_172126.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365521600-Screenshot_2026-08-16_172235.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365522882-Screenshot_2026-08-16_172236.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365524096-Screenshot_2026-08-16_172309.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365525548-Screenshot_2026-08-16_172336.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365527081-Screenshot_2026-08-16_172424.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365529065-Screenshot_2026-08-16_172444.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365532959-Screenshot_2026-08-16_172540.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365535986-Screenshot_2026-08-16_172541.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365537720-Screenshot_2026-08-16_172601.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/1788365540442-Screenshot_2026-08-16_172618.png"];
+    // Cart-image-only lookup, kept separate from images[] above: images[]
+    // feeds the hero <img> and the thumb-click swap (both must stay
+    // full-resolution -- this IS the main product-page image), while the
+    // cart drawer/checkout only ever display this at 72x90px, so Add to
+    // Cart reads the small derivative here instead.
+    var pdpThumbUrls = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365516919-Screenshot_2026-08-16_172050.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365518805-Screenshot_2026-08-16_172126.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365521600-Screenshot_2026-08-16_172235.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365522882-Screenshot_2026-08-16_172236.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365524096-Screenshot_2026-08-16_172309.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365525548-Screenshot_2026-08-16_172336.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365527081-Screenshot_2026-08-16_172424.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365529065-Screenshot_2026-08-16_172444.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365532959-Screenshot_2026-08-16_172540.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365535986-Screenshot_2026-08-16_172541.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365537720-Screenshot_2026-08-16_172601.png","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/vescartes-blossom-denim/thumbs/1788365540442-Screenshot_2026-08-16_172618.png"];
+    var swatchList = [{"label":"Denim Blue","imgIndex":0,"indices":[0,1,2,3,4,5],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Denim Black","imgIndex":6,"indices":[6,7,8,9,10,11],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]}];
+    var mainImg = document.getElementById('pdp-main-image');
+    var imageLabel = document.getElementById('pdp-image-label');
+    var thumbs = document.querySelectorAll('.pdp-thumb');
+    var colorSwatches = document.querySelectorAll('#pdp-color-swatches .modal-swatch');
+    var colorLabel = document.getElementById('pdp-color-label');
+    var sizeBtns = document.querySelectorAll('#pdp-size-grid .size-btn');
+    var addBtn = document.getElementById('pdp-add-btn');
 
-    function priceOf(card) {
-      var priceEl = card.querySelector('.product-price');
-      var text = priceEl && priceEl.childNodes[0] ? priceEl.childNodes[0].textContent : '0';
-      return parseInt(text.replace(/[^0-9]/g, ''), 10) || 0;
-    }
-    function positionOf(card) {
-      return parseInt((card.id || '').replace('product-', ''), 10) || 0;
-    }
+    var selectedColor = swatchList.length ? swatchList[0] : null;
+    var selectedSizeLocal = null;
+    var currentStockBySize = {};
 
-    select.addEventListener('change', function() {
-      var mode = select.value;
-      var cards = Array.prototype.slice.call(grid.querySelectorAll('.product-card'));
-      cards.sort(function(a, b) {
-        if (mode === 'price-asc') return priceOf(a) - priceOf(b);
-        if (mode === 'price-desc') return priceOf(b) - priceOf(a);
-        return positionOf(a) - positionOf(b);
+    // Stock is per color, not per product -- sizes stay clickable regardless
+    // of stock (mirrors shell.ts's Add-to-Cart size picker: a shopper can
+    // select an out-of-stock size and see that reflected on the Add to Cart
+    // button, rather than the button being unselectable). Re-applied on
+    // every color change, unlike the old version which only ever reflected
+    // whichever color happened to be colors[0] at render time.
+    function applySizeAvailability(variants) {
+      currentStockBySize = {};
+      (variants || []).forEach(function(v) { currentStockBySize[v.size] = v.inStock; });
+      sizeBtns.forEach(function(btn) {
+        var inStock = currentStockBySize.hasOwnProperty(btn.dataset.size) ? currentStockBySize[btn.dataset.size] : true;
+        btn.classList.toggle('out-of-stock', !inStock);
       });
-      cards.forEach(function(card) { grid.appendChild(card); });
-    });
-  })();
-</script>
-
-<script>
-  (function() {
-    var toggleBtn = document.getElementById('filter-toggle-btn');
-    var panel = document.getElementById('filter-panel');
-    var clearBtn = document.getElementById('filter-clear-btn');
-    var grid = document.querySelector('.product-grid');
-    if (!toggleBtn || !panel || !grid) return;
-
-    function searchMatches(card) {
-      var params = new URLSearchParams(window.location.search);
-      var q = (params.get('q') || '').trim().toLowerCase();
-      if (!q) return true;
-      var brandEl = card.querySelector('.product-brand');
-      var nameEl = card.querySelector('.product-name');
-      var brand = brandEl ? brandEl.textContent : '';
-      var name = nameEl ? nameEl.textContent : '';
-      return (brand + ' ' + name).toLowerCase().indexOf(q) !== -1;
+      updateAddBtn();
     }
 
-    function applyFilter() {
-      var checkedColors = Array.prototype.slice.call(document.querySelectorAll('.color-filter-checkbox:checked')).map(function(cb) { return cb.value; });
-      var checkedSleeves = Array.prototype.slice.call(document.querySelectorAll('.sleeve-filter-checkbox:checked')).map(function(cb) { return cb.value; });
-      var cards = grid.querySelectorAll('.product-card');
-      cards.forEach(function(card) {
-        var groups = (card.dataset.colorGroups || '').split(',').filter(Boolean);
-        var colorMatch = checkedColors.length === 0 || groups.some(function(g) { return checkedColors.indexOf(g) !== -1; });
-        var sleeveMatch = checkedSleeves.length === 0 || checkedSleeves.indexOf(card.dataset.sleeveLength || '') !== -1;
-        card.style.display = (colorMatch && sleeveMatch && searchMatches(card)) ? '' : 'none';
+    function setMainImage(index, label) {
+      mainImg.src = images[index];
+      thumbs.forEach(function(t) { t.classList.toggle('active', parseInt(t.dataset.index, 10) === index); });
+      if (imageLabel) imageLabel.textContent = label || '';
+    }
+
+    function colorForIndex(idx) {
+      var matches = swatchList.filter(function(s) { return s.indices.indexOf(idx) !== -1; });
+      return matches.length ? matches[0] : null;
+    }
+
+    function selectSwatchForIndex(idx) {
+      colorSwatches.forEach(function(s) {
+        var indices = JSON.parse(s.dataset.imgIndices || '[]');
+        s.classList.toggle('selected', indices.indexOf(idx) !== -1);
       });
     }
 
-    toggleBtn.addEventListener('click', function() {
-      panel.classList.toggle('open');
-    });
-    document.addEventListener('click', function(e) {
-      if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== toggleBtn) panel.classList.remove('open');
-    });
-    document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) {
-      cb.addEventListener('change', applyFilter);
-    });
-    if (clearBtn) {
-      clearBtn.addEventListener('click', function() {
-        document.querySelectorAll('.color-filter-checkbox, .sleeve-filter-checkbox').forEach(function(cb) { cb.checked = false; });
-        applyFilter();
+    thumbs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var idx = parseInt(t.dataset.index, 10);
+        var owner = colorForIndex(idx);
+        if (owner) {
+          selectedColor = owner;
+          colorLabel.textContent = owner.label;
+          selectSwatchForIndex(idx);
+          applySizeAvailability(owner.variants);
+        }
+        setMainImage(idx, owner ? owner.label : (imageLabel ? imageLabel.textContent : ''));
       });
+    });
+
+    colorSwatches.forEach(function(sw, i) {
+      sw.addEventListener('click', function() {
+        var imgIndex = parseInt(sw.dataset.imgIndex, 10);
+        var indices = JSON.parse(sw.dataset.imgIndices || '[]');
+        selectSwatchForIndex(imgIndex);
+        // swatchList and colorSwatches are built from the same product.colors
+        // list in the same order, so index i in one is index i in the other
+        // -- this is how the click handler gets at that color's real .variants
+        // (a DOM data attribute would work too, but swatchList already has it).
+        var variants = swatchList[i] ? swatchList[i].variants : [];
+        selectedColor = { label: sw.title, imgIndex: imgIndex, indices: indices, variant: sw.dataset.variant || null, variants: variants };
+        colorLabel.textContent = sw.title;
+        setMainImage(imgIndex, sw.title);
+        applySizeAvailability(variants);
+      });
+    });
+
+    function updateAddBtn() {
+      var bothSelected = selectedSizeLocal && selectedColor;
+      var inStock = !bothSelected || (currentStockBySize.hasOwnProperty(selectedSizeLocal) ? currentStockBySize[selectedSizeLocal] : true);
+      addBtn.classList.toggle('ready', !!(bothSelected && inStock));
+      if (!bothSelected) {
+        addBtn.textContent = 'Select Size & Color';
+      } else if (!inStock) {
+        addBtn.textContent = 'Out of Stock';
+      } else {
+        addBtn.textContent = 'Add to Cart';
+      }
     }
+
+    sizeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        sizeBtns.forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        selectedSizeLocal = btn.dataset.size;
+        updateAddBtn();
+      });
+    });
+
+    addBtn.addEventListener('click', function() {
+      if (!selectedSizeLocal) {
+        if (typeof showToast === 'function') showToast('Please select a size');
+        return;
+      }
+      if (!selectedColor) {
+        if (typeof showToast === 'function') showToast('Please select a color');
+        return;
+      }
+      var inStock = currentStockBySize.hasOwnProperty(selectedSizeLocal) ? currentStockBySize[selectedSizeLocal] : true;
+      if (!inStock) return;
+      var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
+      var name = "Blossom Denim Jeans" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
+      var imgSrc = pdpThumbUrls[selectedColor.imgIndex];
+      if (typeof addToCart === 'function') {
+        addToCart("Vescartes", name, 5599, 4000, imgSrc);
+        if (typeof openCart === 'function') openCart();
+      }
+    });
+
+    applySizeAvailability(selectedColor ? selectedColor.variants : []);
   })();
 </script>
 <footer>
