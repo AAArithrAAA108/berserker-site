@@ -7,7 +7,14 @@ export interface CatalogVariant { size: string; inStock: boolean; }
 // so those contexts don't pay full-resolution egress for a 64-380px box. url
 // stays full-resolution for the one context that actually needs it: the PDP
 // hero image.
-export interface CatalogImage { url: string; thumbUrl: string; thumbAvifUrl: string; sortOrder: number; }
+// hasAvif reflects product_images.has_avif, set by the admin upload flow
+// only when the browser actually produced and uploaded a thumbs-avif/
+// derivative (see products.js's resizeToAvifIfSupported). Required because
+// getPublicUrl() always returns a URL string even for a path that doesn't
+// exist -- thumbAvifUrl alone can't distinguish "real derivative" from
+// "no derivative yet", which is what let render.ts wrap a nonexistent AVIF
+// source in <picture> and break images sitewide on 2026-09-01.
+export interface CatalogImage { url: string; thumbUrl: string; thumbAvifUrl: string; hasAvif: boolean; sortOrder: number; }
 export interface CatalogColor {
   id: string; label: string; hex: string | null; colorGroup: string;
   secondaryColorGroup: string | null;
@@ -53,7 +60,7 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
 
   const { data: images, error: imagesError } = await supabase
     .from("product_images")
-    .select("id, product_id, storage_path, sort_order, color_id")
+    .select("id, product_id, storage_path, sort_order, color_id, has_avif")
     .order("sort_order", { ascending: true });
   if (imagesError) throw new Error(`fetchCatalog images: ${imagesError.message}`);
 
@@ -92,7 +99,7 @@ export async function fetchCatalog(supabase: SupabaseClient): Promise<Catalog> {
     const thumbUrl = publicUrl(thumbPath(img.storage_path));
     const thumbAvifUrl = publicUrl(avifPath(img.storage_path));
     imageUrlById.set(img.id, url);
-    const catalogImg: CatalogImage = { url, thumbUrl, thumbAvifUrl, sortOrder: img.sort_order };
+    const catalogImg: CatalogImage = { url, thumbUrl, thumbAvifUrl, hasAvif: img.has_avif === true, sortOrder: img.sort_order };
 
     const productList = imagesByProduct.get(img.product_id) ?? [];
     productList.push(catalogImg);

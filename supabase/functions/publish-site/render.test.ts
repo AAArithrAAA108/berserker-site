@@ -11,14 +11,14 @@ const sampleProduct: CatalogProduct = {
     {
       id: "c1", label: "Stealth Black", hex: "#1a1a1a", colorGroup: "Black", secondaryColorGroup: null, variantLabel: null,
       coverImageUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg",
-      images: [{ url: "https://example.supabase.co/.../img-0001.jpg", thumbUrl: "https://example.supabase.co/.../img-0001.jpg", thumbAvifUrl: "https://example.supabase.co/.../img-0001.jpg", sortOrder: 0 }],
+      images: [{ url: "https://example.supabase.co/.../img-0001.jpg", thumbUrl: "https://example.supabase.co/.../img-0001.jpg", thumbAvifUrl: "https://example.supabase.co/.../img-0001.jpg", hasAvif: false, sortOrder: 0 }],
       variants: [
         { size: "S", inStock: true }, { size: "M", inStock: true },
         { size: "L", inStock: false }, { size: "XL", inStock: true },
       ],
     },
   ],
-  images: [{ url: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", thumbUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", thumbAvifUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", sortOrder: 0 }],
+  images: [{ url: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", thumbUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", thumbAvifUrl: "https://example.supabase.co/storage/v1/object/public/product-images/gymshark-onyx-5-half-sleeve/img-0001.jpg", hasAvif: false, sortOrder: 0 }],
 };
 
 Deno.test("renderProductCard includes brand, name, and strikethrough price", () => {
@@ -76,8 +76,8 @@ const twoColorProduct: CatalogProduct = {
     },
   ],
   images: [
-    { url: "https://example.supabase.co/.../green.jpg", thumbUrl: "https://example.supabase.co/.../green.jpg", thumbAvifUrl: "https://example.supabase.co/.../green.jpg", sortOrder: 0 },
-    { url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", thumbAvifUrl: "https://example.supabase.co/.../black.jpg", sortOrder: 1 },
+    { url: "https://example.supabase.co/.../green.jpg", thumbUrl: "https://example.supabase.co/.../green.jpg", thumbAvifUrl: "https://example.supabase.co/.../green.jpg", hasAvif: false, sortOrder: 0 },
+    { url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", thumbAvifUrl: "https://example.supabase.co/.../black.jpg", hasAvif: false, sortOrder: 1 },
   ],
 };
 
@@ -103,8 +103,8 @@ Deno.test("renderProductCard: slider <img> src uses each image's small thumbUrl,
   const product: CatalogProduct = {
     ...twoColorProduct,
     images: [
-      { url: "https://example.supabase.co/.../green-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../black-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../green-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.supabase.co/.../black-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", hasAvif: false, sortOrder: 1 },
     ],
   };
   const html = renderProductCard(product);
@@ -119,9 +119,9 @@ Deno.test("renderProductCard: only the first slider image has a real src -- the 
   const product: CatalogProduct = {
     ...twoColorProduct,
     images: [
-      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "https://example.com/thumbs/0.jpg", sortOrder: 0 },
-      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "https://example.com/thumbs/1.jpg", sortOrder: 1 },
-      { url: "https://example.com/full-2.jpg", thumbUrl: "https://example.com/thumbs/2.jpg", thumbAvifUrl: "https://example.com/thumbs/2.jpg", sortOrder: 2 },
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "https://example.com/thumbs/0.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "https://example.com/thumbs/1.jpg", hasAvif: false, sortOrder: 1 },
+      { url: "https://example.com/full-2.jpg", thumbUrl: "https://example.com/thumbs/2.jpg", thumbAvifUrl: "https://example.com/thumbs/2.jpg", hasAvif: false, sortOrder: 2 },
     ],
   };
   const html = renderProductCard(product);
@@ -136,19 +136,36 @@ Deno.test("renderProductCard: only the first slider image has a real src -- the 
   assertStringIncludes(html, 'data-src="https://example.com/thumbs/2.jpg"');
 });
 
-Deno.test("renderProductCard: slider images are plain <img> tags, never wrapped in a <picture>/AVIF <source> (regression: <picture> selects a source by type match at parse time, not by whether that URL actually resolves -- an AVIF-capable browser locks onto the AVIF <source> and shows a broken image if it 404s, it does NOT fall back to the img's own src the way a <picture> polyfill mental model suggests. Every image uploaded before the AVIF-derivative feature existed has no thumbs-avif/ object, so wrapping image 0 broke it sitewide in production on 2026-09-01)", () => {
+Deno.test("renderProductCard: image 0 stays a plain <img>, never wrapped in <picture>/AVIF <source>, when hasAvif is false (regression: <picture> selects a source by type match at parse time, not by whether that URL actually resolves -- an AVIF-capable browser locks onto the AVIF <source> and shows a broken image if it 404s, it does NOT fall back to the img's own src the way a <picture> polyfill mental model suggests. Every image uploaded before the AVIF-derivative feature existed has hasAvif=false, so this is what broke it sitewide in production on 2026-09-01 when the wrapping wasn't gated on this flag)", () => {
   const product: CatalogProduct = {
     ...twoColorProduct,
     images: [
-      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/0.jpg", sortOrder: 0 },
-      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/1.jpg", sortOrder: 1 },
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/0.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/1.jpg", hasAvif: false, sortOrder: 1 },
     ],
   };
   const html = renderProductCard(product);
   assertStringIncludes(html, ' src="https://example.com/thumbs/0.jpg"');
   assertStringIncludes(html, 'data-src="https://example.com/thumbs/1.jpg"');
   if (html.includes("<picture") || html.includes("<source") || html.includes("thumbs-avif")) {
-    throw new Error("slider markup must not reference AVIF/<picture> until derivative existence can be guaranteed per-image");
+    throw new Error("slider markup must not reference AVIF/<picture> for an image whose hasAvif is false");
+  }
+});
+
+Deno.test("renderProductCard: image 0 IS wrapped in <picture>/AVIF <source> when its hasAvif is true -- image 1+ (data-src, hover-deferred) never gets the wrapper even if hasAvif is true, since a <source> fetches eagerly regardless of the sibling img's data-src and would defeat Track B's hover-deferred loading", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    images: [
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/0.jpg", hasAvif: true, sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/1.jpg", hasAvif: true, sortOrder: 1 },
+    ],
+  };
+  const html = renderProductCard(product);
+  assertStringIncludes(html, '<source type="image/avif" srcset="https://example.com/thumbs-avif/0.jpg" />');
+  assertStringIncludes(html, '<img src="https://example.com/thumbs/0.jpg"');
+  assertStringIncludes(html, 'data-src="https://example.com/thumbs/1.jpg"');
+  if (html.includes("thumbs-avif/1.jpg")) {
+    throw new Error("the second (hover-only) slider image must not reference an AVIF source even when hasAvif is true");
   }
 });
 
@@ -171,7 +188,7 @@ Deno.test("renderListingPage: only the first 8 cards render with an eager image 
     ...twoColorProduct,
     id: `p${i}`,
     position: i + 1,
-    images: [{ url: `https://example.com/${i}.jpg`, thumbUrl: `https://example.com/thumbs/${i}.jpg`, thumbAvifUrl: "", sortOrder: 0 }],
+    images: [{ url: `https://example.com/${i}.jpg`, thumbUrl: `https://example.com/thumbs/${i}.jpg`, thumbAvifUrl: "", hasAvif: false, sortOrder: 0 }],
   }));
   const html = renderListingPage({ products });
   for (let i = 0; i < 10; i++) {
@@ -224,9 +241,9 @@ Deno.test("renderProductCard: slider shows every uploaded photo, and swatches po
       { ...twoColorProduct.colors[1], id: "c2", coverImageUrl: "https://example.com/black-1.jpg" },
     ],
     images: [
-      { url: "https://example.com/green-1.jpg", thumbUrl: "https://example.com/green-1.jpg", thumbAvifUrl: "https://example.com/green-1.jpg", sortOrder: 0 },
-      { url: "https://example.com/black-1.jpg", thumbUrl: "https://example.com/black-1.jpg", thumbAvifUrl: "https://example.com/black-1.jpg", sortOrder: 1 },
-      { url: "https://example.com/black-2.jpg", thumbUrl: "https://example.com/black-2.jpg", thumbAvifUrl: "https://example.com/black-2.jpg", sortOrder: 2 },
+      { url: "https://example.com/green-1.jpg", thumbUrl: "https://example.com/green-1.jpg", thumbAvifUrl: "https://example.com/green-1.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.com/black-1.jpg", thumbUrl: "https://example.com/black-1.jpg", thumbAvifUrl: "https://example.com/black-1.jpg", hasAvif: false, sortOrder: 1 },
+      { url: "https://example.com/black-2.jpg", thumbUrl: "https://example.com/black-2.jpg", thumbAvifUrl: "https://example.com/black-2.jpg", hasAvif: false, sortOrder: 2 },
     ],
   };
   const html = renderProductCard(multiPhotoProduct);
@@ -291,10 +308,10 @@ Deno.test("renderProductCard: slider track/img widths are inline, computed from 
       { ...twoColorProduct.colors[1], id: "c2", coverImageUrl: "https://example.com/2.jpg" },
     ],
     images: [
-      { url: "https://example.com/1.jpg", thumbUrl: "https://example.com/1.jpg", thumbAvifUrl: "https://example.com/1.jpg", sortOrder: 0 },
-      { url: "https://example.com/2.jpg", thumbUrl: "https://example.com/2.jpg", thumbAvifUrl: "https://example.com/2.jpg", sortOrder: 1 },
-      { url: "https://example.com/3.jpg", thumbUrl: "https://example.com/3.jpg", thumbAvifUrl: "https://example.com/3.jpg", sortOrder: 2 },
-      { url: "https://example.com/4.jpg", thumbUrl: "https://example.com/4.jpg", thumbAvifUrl: "https://example.com/4.jpg", sortOrder: 3 },
+      { url: "https://example.com/1.jpg", thumbUrl: "https://example.com/1.jpg", thumbAvifUrl: "https://example.com/1.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.com/2.jpg", thumbUrl: "https://example.com/2.jpg", thumbAvifUrl: "https://example.com/2.jpg", hasAvif: false, sortOrder: 1 },
+      { url: "https://example.com/3.jpg", thumbUrl: "https://example.com/3.jpg", thumbAvifUrl: "https://example.com/3.jpg", hasAvif: false, sortOrder: 2 },
+      { url: "https://example.com/4.jpg", thumbUrl: "https://example.com/4.jpg", thumbAvifUrl: "https://example.com/4.jpg", hasAvif: false, sortOrder: 3 },
     ],
   };
   const html = renderProductCard(fourImageProduct);
@@ -372,7 +389,7 @@ Deno.test("renderSliderCss: matches the real reference's exact keyframe percenta
     ...twoColorProduct,
     position: 9,
     colors: Array.from({ length: 8 }, (_, i) => ({ ...twoColorProduct.colors[0], id: `c${i}` })),
-    images: Array.from({ length: 8 }, (_, i) => ({ url: `https://example.com/${i}.jpg`, thumbUrl: `https://example.com/${i}.jpg`, thumbAvifUrl: `https://example.com/${i}.jpg`, sortOrder: i })),
+    images: Array.from({ length: 8 }, (_, i) => ({ url: `https://example.com/${i}.jpg`, thumbUrl: `https://example.com/${i}.jpg`, thumbAvifUrl: `https://example.com/${i}.jpg`, hasAvif: false, sortOrder: i })),
   };
   const css = renderSliderCss([eightColorProduct]);
   assertStringIncludes(css, "animation: slideProduct9 16.1000s linear infinite");
@@ -636,8 +653,8 @@ Deno.test("renderPdpPage: thumbnail strip uses each image's small thumbUrl, but 
   const product: CatalogProduct = {
     ...twoColorProduct,
     images: [
-      { url: "https://example.supabase.co/.../green-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../black-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", sortOrder: 1 },
+      { url: "https://example.supabase.co/.../green-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/green-full.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.supabase.co/.../black-full.jpg", thumbUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", thumbAvifUrl: "https://example.supabase.co/.../thumbs/black-full.jpg", hasAvif: false, sortOrder: 1 },
     ],
   };
   const html = renderPdpPage(product);
@@ -665,12 +682,27 @@ Deno.test("renderPdpPage: thumbnail strip uses each image's small thumbUrl, but 
   }
 });
 
+Deno.test("renderPdpPage: a pdp-thumb is wrapped in <picture>/AVIF <source> only when its own hasAvif is true -- every thumb here has a real src (unlike the card slider's data-src-deferred images), so this can gate per-image without any eager-fetch-defeats-lazy-loading risk", () => {
+  const product: CatalogProduct = {
+    ...twoColorProduct,
+    images: [
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/0.jpg", hasAvif: true, sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "https://example.com/thumbs-avif/1.jpg", hasAvif: false, sortOrder: 1 },
+    ],
+  };
+  const html = renderPdpPage(product);
+  assertStringIncludes(html, '<picture><source type="image/avif" srcset="https://example.com/thumbs-avif/0.jpg" /><img class="pdp-thumb active"');
+  if (html.includes("thumbs-avif/1.jpg")) {
+    throw new Error("a pdp-thumb whose hasAvif is false must not reference an AVIF source");
+  }
+});
+
 Deno.test("renderPdpPage: Add to Cart sends the small thumbUrl as imgSrc, not the full-resolution url (regression: the cart drawer/checkout only ever display this at 72x90px, so it was paying full-res egress for a thumbnail-sized box -- the PDP hero and thumb-click swap-array, covered by the previous test, correctly stay full-res since those ARE the main product-page image)", () => {
   const product: CatalogProduct = {
     ...twoColorProduct,
     images: [
-      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "", sortOrder: 0 },
-      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "", sortOrder: 1 },
+      { url: "https://example.com/full-0.jpg", thumbUrl: "https://example.com/thumbs/0.jpg", thumbAvifUrl: "", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.com/full-1.jpg", thumbUrl: "https://example.com/thumbs/1.jpg", thumbAvifUrl: "", hasAvif: false, sortOrder: 1 },
     ],
   };
   const html = renderPdpPage(product);
@@ -763,10 +795,10 @@ Deno.test("renderPdpPage: gallery shows every uploaded product photo, not just o
     ...twoColorProduct,
     colors: [twoColorProduct.colors[0]],
     images: [
-      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
-      { url: "https://example.supabase.co/.../3.jpg", thumbUrl: "https://example.supabase.co/.../3.jpg", thumbAvifUrl: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
-      { url: "https://example.supabase.co/.../4.jpg", thumbUrl: "https://example.supabase.co/.../4.jpg", thumbAvifUrl: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
+      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", hasAvif: false, sortOrder: 1 },
+      { url: "https://example.supabase.co/.../3.jpg", thumbUrl: "https://example.supabase.co/.../3.jpg", thumbAvifUrl: "https://example.supabase.co/.../3.jpg", hasAvif: false, sortOrder: 2 },
+      { url: "https://example.supabase.co/.../4.jpg", thumbUrl: "https://example.supabase.co/.../4.jpg", thumbAvifUrl: "https://example.supabase.co/.../4.jpg", hasAvif: false, sortOrder: 3 },
     ],
   };
   const html = renderPdpPage(oneColorFourPhotos);
@@ -779,10 +811,10 @@ Deno.test("renderPdpPage: a color swatch's data-img-index points at that color's
     ...twoColorProduct,
     colors: [{ ...twoColorProduct.colors[0], coverImageUrl: "https://example.supabase.co/.../3.jpg" }],
     images: [
-      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 1 },
-      { url: "https://example.supabase.co/.../3.jpg", thumbUrl: "https://example.supabase.co/.../3.jpg", thumbAvifUrl: "https://example.supabase.co/.../3.jpg", sortOrder: 2 },
-      { url: "https://example.supabase.co/.../4.jpg", thumbUrl: "https://example.supabase.co/.../4.jpg", thumbAvifUrl: "https://example.supabase.co/.../4.jpg", sortOrder: 3 },
+      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", hasAvif: false, sortOrder: 1 },
+      { url: "https://example.supabase.co/.../3.jpg", thumbUrl: "https://example.supabase.co/.../3.jpg", thumbAvifUrl: "https://example.supabase.co/.../3.jpg", hasAvif: false, sortOrder: 2 },
+      { url: "https://example.supabase.co/.../4.jpg", thumbUrl: "https://example.supabase.co/.../4.jpg", thumbAvifUrl: "https://example.supabase.co/.../4.jpg", hasAvif: false, sortOrder: 3 },
     ],
   };
   const html = renderPdpPage(oneColorFourPhotos);
@@ -797,20 +829,20 @@ Deno.test("renderPdpPage: a color's swatch carries its own explicit, possibly no
         ...twoColorProduct.colors[0],
         coverImageUrl: "https://example.supabase.co/.../0.jpg",
         images: [
-          { url: "https://example.supabase.co/.../0.jpg", thumbUrl: "https://example.supabase.co/.../0.jpg", thumbAvifUrl: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
-          { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
+          { url: "https://example.supabase.co/.../0.jpg", thumbUrl: "https://example.supabase.co/.../0.jpg", thumbAvifUrl: "https://example.supabase.co/.../0.jpg", hasAvif: false, sortOrder: 0 },
+          { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", hasAvif: false, sortOrder: 2 },
         ],
       },
       {
         ...twoColorProduct.colors[1],
         coverImageUrl: "https://example.supabase.co/.../1.jpg",
-        images: [{ url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 1 }],
+        images: [{ url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", hasAvif: false, sortOrder: 1 }],
       },
     ],
     images: [
-      { url: "https://example.supabase.co/.../0.jpg", thumbUrl: "https://example.supabase.co/.../0.jpg", thumbAvifUrl: "https://example.supabase.co/.../0.jpg", sortOrder: 0 },
-      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", sortOrder: 1 },
-      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", sortOrder: 2 },
+      { url: "https://example.supabase.co/.../0.jpg", thumbUrl: "https://example.supabase.co/.../0.jpg", thumbAvifUrl: "https://example.supabase.co/.../0.jpg", hasAvif: false, sortOrder: 0 },
+      { url: "https://example.supabase.co/.../1.jpg", thumbUrl: "https://example.supabase.co/.../1.jpg", thumbAvifUrl: "https://example.supabase.co/.../1.jpg", hasAvif: false, sortOrder: 1 },
+      { url: "https://example.supabase.co/.../2.jpg", thumbUrl: "https://example.supabase.co/.../2.jpg", thumbAvifUrl: "https://example.supabase.co/.../2.jpg", hasAvif: false, sortOrder: 2 },
     ],
   };
   const html = renderPdpPage(nonContiguous);
@@ -834,9 +866,9 @@ Deno.test("renderPdpPage: a zero-image color never causes two swatches to render
     ...twoColorProduct,
     colors: [
       { ...twoColorProduct.colors[0], label: "Denim Black", coverImageUrl: "", images: [] },
-      { ...twoColorProduct.colors[1], label: "Denim Blue", coverImageUrl: "https://example.supabase.co/.../black.jpg", images: [{ url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", thumbAvifUrl: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }] },
+      { ...twoColorProduct.colors[1], label: "Denim Blue", coverImageUrl: "https://example.supabase.co/.../black.jpg", images: [{ url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", thumbAvifUrl: "https://example.supabase.co/.../black.jpg", hasAvif: false, sortOrder: 0 }] },
     ],
-    images: [{ url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", thumbAvifUrl: "https://example.supabase.co/.../black.jpg", sortOrder: 0 }],
+    images: [{ url: "https://example.supabase.co/.../black.jpg", thumbUrl: "https://example.supabase.co/.../black.jpg", thumbAvifUrl: "https://example.supabase.co/.../black.jpg", hasAvif: false, sortOrder: 0 }],
   };
   const html = renderPdpPage(zeroImageColorFirst);
   const selectedCount = (html.match(/class="modal-swatch selected"/g) || []).length;

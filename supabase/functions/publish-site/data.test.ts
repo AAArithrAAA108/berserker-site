@@ -225,6 +225,24 @@ Deno.test("fetchCatalog: each image's thumbAvifUrl points at the thumbs-avif/ de
   assertEquals(catalog.products[0].images[0].thumbAvifUrl, "https://fake.test/test-product/thumbs-avif/img-0001.webp");
 });
 
+Deno.test("fetchCatalog: an image's hasAvif reflects product_images.has_avif -- getPublicUrl always returns a URL string even for a path that doesn't exist, so render.ts can't tell a real derivative from a missing one without this flag (this is the fix for the 2026-09-01 sitewide broken-image regression)", async () => {
+  const supabase = fakeSupabase({
+    products: [
+      { id: "p1", brand_id: "b1", name: "Test Product", slug: "test-product", price: 100, cod_advance: 10, position: 1, category: "jacket", sleeve_length: null, description: null },
+    ],
+    product_colors: [],
+    product_images: [
+      { id: "i1", product_id: "p1", storage_path: "test-product/img-0001.webp", sort_order: 0, color_id: null, has_avif: true },
+      { id: "i2", product_id: "p1", storage_path: "test-product/img-0002.webp", sort_order: 1, color_id: null, has_avif: false },
+    ],
+    product_variants: [],
+    brands: [{ id: "b1", name: "Test Brand", folder_slug: "test", is_primary: false, thumbnail_storage_path: null }],
+  });
+  const catalog = await fetchCatalog(supabase);
+  assertEquals(catalog.products[0].images[0].hasAvif, true);
+  assertEquals(catalog.products[0].images[1].hasAvif, false);
+});
+
 Deno.test("fetchPrimaryBrands: returns only primary rows, with their thumbnail URL", async () => {
   const supabase = fakeSupabase({
     products: [], product_colors: [], product_images: [], product_variants: [],

@@ -525,11 +525,19 @@ async function renderImagesSection(product) {
       }
       var thumbAvifPath = thumbAvifStoragePath(storagePath);
       var thumbAvifBlob = await resizeToAvifIfSupported(file, 380, 0.6);
+      // hasAvif is what render.ts actually gates the AVIF <picture> wrapper
+      // on (see data.ts) -- it must only go true once the derivative is
+      // confirmed uploaded, never just because a blob was generated,
+      // otherwise a failed upload here would leave the row claiming an
+      // AVIF file exists when it doesn't (the exact gap that broke images
+      // sitewide in production on 2026-09-01).
+      var hasAvif = false;
       if (thumbAvifBlob) {
         var { error: avifError } = await sb.storage.from('product-images').upload(thumbAvifPath, thumbAvifBlob, { contentType: 'image/avif', cacheControl: '31536000' });
         if (avifError) console.warn('AVIF thumbnail upload failed for ' + file.name + ':', avifError.message);
+        else hasAvif = true;
       }
-      var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort });
+      var { error: rowError } = await sb.from('product_images').insert({ product_id: product.id, storage_path: storagePath, sort_order: nextSort, has_avif: hasAvif });
       if (rowError) { failureMessages.push(file.name + ': ' + rowError.message); continue; }
       successCount++;
     }

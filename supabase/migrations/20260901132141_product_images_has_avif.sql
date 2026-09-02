@@ -1,0 +1,16 @@
+-- supabase/migrations/20260901190000_product_images_has_avif.sql
+--
+-- Tracks whether an image's AVIF thumbnail derivative (thumbs-avif/<file>,
+-- see products.js's resizeToAvifIfSupported) actually got uploaded
+-- successfully, instead of assuming it exists. render.ts's AVIF <picture>
+-- wrapper was shipped once already assuming every image had one and broke
+-- images sitewide in production (2026-09-01): a <picture><source
+-- type="image/avif"> is selected by an AVIF-capable browser purely on type
+-- match, not on whether the URL resolves, so a 404 there shows a broken
+-- image instead of falling back to the WebP <img>. Every image uploaded
+-- before the AVIF-derivative feature existed has no such object, and AVIF
+-- generation can also fail per-browser at upload time (canvas.toBlob
+-- silently falling back to another format) -- has_avif lets data.ts/
+-- render.ts only emit a <source> when the upload flow actually confirmed
+-- the file is there.
+alter table product_images add column has_avif boolean not null default false;

@@ -96,23 +96,29 @@ export function renderProductCard(product: CatalogProduct, opts: { eagerImage?: 
   // into view, so the browser fetches all of them regardless (this is what
   // let Chrome Hearts' 40-42-image SKUs blow up listing-page egress).
   // data-src only becomes src on that hover/tap trigger.
-  // NOT wrapped in a <picture>/AVIF <source> -- <picture> selects a source
-  // by type match at parse time, not by whether that URL actually resolves,
-  // so an AVIF-capable browser locks onto the AVIF <source> and shows a
-  // broken image if it 404s instead of falling back to this <img>'s own
-  // src. Every image uploaded before the AVIF-derivative feature existed
-  // has no thumbs-avif/ object, so this broke images sitewide in
-  // production on 2026-09-01 (regression, reverted same day). Revisit only
-  // once AVIF-derivative existence can be tracked per-image (e.g. a DB
-  // column set by the upload flow) so this can gate on it instead of
-  // assuming the file is there.
+  // <picture>/AVIF <source> is only emitted for image 0 when its hasAvif
+  // flag confirms the upload flow actually produced and uploaded a
+  // thumbs-avif/ derivative -- <picture> selects a source by type match at
+  // parse time, not by whether that URL actually resolves, so an
+  // AVIF-capable browser locks onto the AVIF <source> and shows a broken
+  // image if it 404s instead of falling back to this <img>'s own src.
+  // Assuming every image had one (rather than checking hasAvif) broke
+  // images sitewide in production on 2026-09-01 (regression, reverted same
+  // day) -- every image uploaded before the AVIF-derivative feature
+  // existed has hasAvif=false and now correctly stays a plain <img>.
+  // Images beyond 0 are never wrapped even when hasAvif is true: a
+  // <source> fetches eagerly regardless of the sibling img's data-src,
+  // which would defeat Track B's hover-deferred loading.
   const sliderImgs = product.images
-    .map(
-      (img, i) =>
-        i === 0
-          ? `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${eagerImage ? "" : ' loading="lazy"'} decoding="async" />`
-          : `<img data-src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" loading="lazy" decoding="async" />`
-    )
+    .map((img, i) => {
+      if (i !== 0) {
+        return `<img data-src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;" loading="lazy" decoding="async" />`;
+      }
+      const img0 = `<img src="${esc(img.thumbUrl)}" alt="${esc(product.name)}" style="width:${imgWidthPct}%;"${eagerImage ? "" : ' loading="lazy"'} decoding="async" />`;
+      return img.hasAvif
+        ? `<picture><source type="image/avif" srcset="${esc(img.thumbAvifUrl)}" />${img0}</picture>`
+        : img0;
+    })
     .join("");
   const images = product.images.map((img) => img.url);
   const swatches = product.colors
@@ -615,16 +621,21 @@ export function renderPdpPage(product: CatalogProduct): string {
   // (data-index is unchanged), so quality is unaffected, only the strip's own
   // 64x80px <img> src is.
   const thumbUrls = product.images.map((img) => img.thumbUrl);
-  // Not wrapped in a <picture>/AVIF <source> -- see renderProductCard's
-  // sliderImgs comment: an AVIF-capable browser locks onto that <source>
-  // and shows a broken image on a 404 instead of falling back to this
-  // <img>'s own src, which is what most existing images hit (no
-  // thumbs-avif/ derivative yet). Reverted same-day regression, 2026-09-01.
+  // Wrapped in a <picture>/AVIF <source> only when that image's hasAvif
+  // confirms a real thumbs-avif/ derivative exists -- see
+  // renderProductCard's sliderImgs comment for why gating on hasAvif
+  // (rather than assuming every image has one) matters: an AVIF-capable
+  // browser locks onto a <source> and shows a broken image on a 404
+  // instead of falling back to the <img>'s own src. Unlike the card
+  // slider's data-src-deferred images, every thumb here already has a real
+  // src (some with a real loading="lazy" attribute), so wrapping any of
+  // them carries none of Track B's eager-<source>-defeats-lazy-loading risk.
   const thumbs = images
-    .map(
-      (_url, i) =>
-        `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`
-    )
+    .map((_url, i) => {
+      const srcImg = product.images[i];
+      const tag = `<img class="pdp-thumb${i === 0 ? " active" : ""}" data-index="${i}" src="${esc(thumbUrls[i])}" alt="View ${i + 1}"${i === 0 ? "" : ' loading="lazy"'} decoding="async" />`;
+      return srcImg?.hasAvif ? `<picture><source type="image/avif" srcset="${esc(srcImg.thumbAvifUrl)}" />${tag}</picture>` : tag;
+    })
     .join("");
 
   const swatches = product.colors
