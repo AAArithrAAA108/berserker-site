@@ -1132,6 +1132,12 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/img-0025.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/img-0026.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/img-0027.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/img-0028.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/img-0029.jpg"];
+    // Cart-image-only lookup, kept separate from images[] above: images[]
+    // feeds the hero <img> and the thumb-click swap (both must stay
+    // full-resolution -- this IS the main product-page image), while the
+    // cart drawer/checkout only ever display this at 72x90px, so Add to
+    // Cart reads the small derivative here instead.
+    var pdpThumbUrls = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/thumbs/img-0025.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/thumbs/img-0026.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/thumbs/img-0027.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/thumbs/img-0028.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/gymshark-founder-hoodie/thumbs/img-0029.jpg"];
     var swatchList = [{"label":"Forest Green","imgIndex":0,"indices":[0,1],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Black","imgIndex":2,"indices":[2,3,4],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
@@ -1245,7 +1251,7 @@
       if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = "Founder Edition Oversized Hoodie" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
-      var imgSrc = images[selectedColor.imgIndex];
+      var imgSrc = pdpThumbUrls[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart("Gymshark", name, 5299, 4500, imgSrc);
         if (typeof openCart === 'function') openCart();

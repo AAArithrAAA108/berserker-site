@@ -1132,6 +1132,12 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0093.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0094.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0095.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/img-0096.jpg"];
+    // Cart-image-only lookup, kept separate from images[] above: images[]
+    // feeds the hero <img> and the thumb-click swap (both must stay
+    // full-resolution -- this IS the main product-page image), while the
+    // cart drawer/checkout only ever display this at 72x90px, so Add to
+    // Cart reads the small derivative here instead.
+    var pdpThumbUrls = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/thumbs/img-0093.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/thumbs/img-0094.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/thumbs/img-0095.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/breathedivinity-voidtech-cyber-skeleton/thumbs/img-0096.jpg"];
     var swatchList = [{"label":"Black","imgIndex":0,"indices":[0,1],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Purple","imgIndex":2,"indices":[2,3],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
@@ -1245,7 +1251,7 @@
       if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = "VoidTech Cyber Skeleton Compression" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
-      var imgSrc = images[selectedColor.imgIndex];
+      var imgSrc = pdpThumbUrls[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart("BreatheDivinity", name, 5299, 3500, imgSrc);
         if (typeof openCart === 'function') openCart();
