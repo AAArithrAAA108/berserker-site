@@ -1132,6 +1132,12 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0302.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0303.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0304.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/img-0305.jpg"];
+    // Cart-image-only lookup, kept separate from images[] above: images[]
+    // feeds the hero <img> and the thumb-click swap (both must stay
+    // full-resolution -- this IS the main product-page image), while the
+    // cart drawer/checkout only ever display this at 72x90px, so Add to
+    // Cart reads the small derivative here instead.
+    var pdpThumbUrls = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/thumbs/img-0302.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/thumbs/img-0303.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/thumbs/img-0304.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/chromehearts-forever-denim-jacket/thumbs/img-0305.jpg"];
     var swatchList = [{"label":"Black","imgIndex":0,"indices":[0,1,2,3],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
@@ -1245,7 +1251,7 @@
       if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = "Forever Black Denim Jacket" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
-      var imgSrc = images[selectedColor.imgIndex];
+      var imgSrc = pdpThumbUrls[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart("Chrome Hearts", name, 8999, 7300, imgSrc);
         if (typeof openCart === 'function') openCart();

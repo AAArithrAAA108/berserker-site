@@ -1132,6 +1132,12 @@
 <script>
   (function() {
     var images = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0055.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0056.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0057.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0058.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0059.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0060.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0061.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0062.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/img-0063.jpg"];
+    // Cart-image-only lookup, kept separate from images[] above: images[]
+    // feeds the hero <img> and the thumb-click swap (both must stay
+    // full-resolution -- this IS the main product-page image), while the
+    // cart drawer/checkout only ever display this at 72x90px, so Add to
+    // Cart reads the small derivative here instead.
+    var pdpThumbUrls = ["https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0055.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0056.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0057.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0058.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0059.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0060.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0061.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0062.jpg","https://gvddahtgbhbqusyczxuo.supabase.co/storage/v1/object/public/product-images/youngla-drip-oversized-tshirt/thumbs/img-0063.jpg"];
     var swatchList = [{"label":"Maroon","imgIndex":0,"indices":[0,1,2],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Brown","imgIndex":3,"indices":[3,4,5],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]},{"label":"Black","imgIndex":6,"indices":[6,7,8],"variant":null,"variants":[{"size":"S","inStock":true},{"size":"M","inStock":true},{"size":"L","inStock":true},{"size":"XL","inStock":true}]}];
     var mainImg = document.getElementById('pdp-main-image');
     var imageLabel = document.getElementById('pdp-image-label');
@@ -1245,7 +1251,7 @@
       if (!inStock) return;
       var colorIdentity = selectedColor.variant ? (selectedColor.label + ' (' + selectedColor.variant + ')') : selectedColor.label;
       var name = "Drip Oversized T-Shirt" + ' — ' + colorIdentity + ' / ' + selectedSizeLocal;
-      var imgSrc = images[selectedColor.imgIndex];
+      var imgSrc = pdpThumbUrls[selectedColor.imgIndex];
       if (typeof addToCart === 'function') {
         addToCart("YoungLA", name, 4399, 2800, imgSrc);
         if (typeof openCart === 'function') openCart();
