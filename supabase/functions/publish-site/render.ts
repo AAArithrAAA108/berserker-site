@@ -856,7 +856,7 @@ export function renderPdpPage(product: CatalogProduct): string {
   .pdp-thumb:hover { opacity:.85; }
   .pdp-thumb.active { opacity:1; border-color:var(--accent); }
   .pdp-image-label { text-align:center; font-family:var(--font-mono); font-size:25px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--white); margin-top:14px; }
-  .pdp-insta-note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:14px; max-width:420px; }
+  .pdp-insta-note { font-size:14px; color:var(--muted); line-height:1.6; margin-top:14px; max-width:420px; }
   .pdp-title { font-family:var(--font-display); font-size:clamp(32px,3.5vw,48px); letter-spacing:.02em; line-height:1.05; color:var(--white); margin:10px 0 16px; }
   .pdp-price { font-family:var(--font-display); font-size:36px; color:var(--white); letter-spacing:.03em; }
   .pdp-cod { font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:6px; letter-spacing:.04em; }
