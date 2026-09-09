@@ -1,0 +1,12 @@
+-- order_creation_attempts was created with RLS left disabled entirely
+-- (20260819010000_order_rate_limit.sql), on the assumption that "no RLS
+-- policies" was enough protection since only create-verified-order's
+-- service-role client touches it. That assumption was wrong: a *disabled*
+-- table has no access restrictions at all via PostgREST, so the public
+-- anon key (embedded in the storefront's own client-side JS) could read,
+-- insert, or delete every row -- including every IP address logged
+-- against an order attempt. Enabling RLS with zero policies makes anon/
+-- authenticated access default-deny while the service-role client (which
+-- always bypasses RLS) keeps working exactly as before -- flagged as a
+-- CRITICAL "Table publicly accessible" issue by Supabase's own advisor.
+alter table order_creation_attempts enable row level security;
