@@ -46,7 +46,6 @@ insert into brands (name, folder_slug, is_primary) values
   ('Chrome Hearts', 'chromehearts', true),
   ('Cactus Jack', 'cactusjack', true),
   ('Skims', 'skims', true),
-  ('Lululemon', 'lululemon', true),
   ('Chrome Hearts × Mastermind', 'chromehearts', false),
   ('YoungLA × Batman', 'youngla', false),
   ('YoungLA × Superman', 'youngla', false),
@@ -97,7 +96,6 @@ insert into products (brand_id, name, slug, price, cod_advance, position, catego
 insert into products (brand_id, name, slug, price, cod_advance, position, category, sleeve_length) values ((select id from brands where name = 'Cactus Jack x Travis Scott x Playstation'), 'Oversized T-Shirt', 'cactusjack-playstation-oversized-tshirt', 4799, 3000, 38, 't-shirt', null) on conflict (slug) do update set brand_id=excluded.brand_id, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
 insert into products (brand_id, name, slug, price, cod_advance, position, category, sleeve_length) values ((select id from brands where name = 'Skims'), 'Cotton Jersey T-Shirt', 'skims-cotton-jersey-tshirt', 4399, 2600, 39, 't-shirt', null) on conflict (slug) do update set brand_id=excluded.brand_id, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
 insert into products (brand_id, name, slug, price, cod_advance, position, category, sleeve_length) values ((select id from brands where name = 'Skims'), 'Rhinestone Logo Pointelle Mini Slip Dress', 'skims-rhinestone-logo-mini-dress', 6499, 4900, 40, 'dress', null) on conflict (slug) do update set brand_id=excluded.brand_id, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
-insert into products (brand_id, name, slug, price, cod_advance, position, category, sleeve_length) values ((select id from brands where name = 'Lululemon'), 'Define Nulu Jacket + Align Yoga Pants Set', 'lululemon-define-nulu-align-yoga-set', 6499, 6000, 41, 'set', null) on conflict (slug) do update set brand_id=excluded.brand_id, name=excluded.name, price=excluded.price, cod_advance=excluded.cod_advance, category=excluded.category, sleeve_length=excluded.sleeve_length;
 
 -- Product colors (linked by slug lookup). The delete+reinsert pattern below
 -- only avoids duplicate rows in the fresh-database scenario the guard above
@@ -321,7 +319,3 @@ insert into product_colors (product_id, label, hex, color_group, created_at) sel
 insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'Black', '#141414', 'Black', timestamptz '2020-01-01 00:00:01+00' from products where slug = 'skims-rhinestone-logo-mini-dress';
 insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'Pink', '#e8a8cf', 'Pink', timestamptz '2020-01-01 00:00:02+00' from products where slug = 'skims-rhinestone-logo-mini-dress';
 insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'White', '#f0ede8', 'White', timestamptz '2020-01-01 00:00:03+00' from products where slug = 'skims-rhinestone-logo-mini-dress';
-insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'Blue', '#a8bcc8', 'Blue', timestamptz '2020-01-01 00:00:01+00' from products where slug = 'lululemon-define-nulu-align-yoga-set';
-insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'Mauve', '#c9a898', 'Grey', timestamptz '2020-01-01 00:00:02+00' from products where slug = 'lululemon-define-nulu-align-yoga-set';
-insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'Black', '#141414', 'Black', timestamptz '2020-01-01 00:00:03+00' from products where slug = 'lululemon-define-nulu-align-yoga-set';
-insert into product_colors (product_id, label, hex, color_group, created_at) select id, 'White', '#f0ede8', 'White', timestamptz '2020-01-01 00:00:04+00' from products where slug = 'lululemon-define-nulu-align-yoga-set';

@@ -1133,7 +1133,6 @@ ${opts.bodyContent}
         <li><a href="/youngla/">YoungLA</a></li>
         <li><a href="/breathedivinity/">Breathe Divinity</a></li>
         <li><a href="/chromehearts/">Chrome Hearts</a></li>
-        <li><a href="/lululemon/">Lululemon</a></li>
         <li><a href="/skims/">Skims</a></li>
         <li><a href="/cactusjack/">Cactus Jack</a></li>
       </ul>

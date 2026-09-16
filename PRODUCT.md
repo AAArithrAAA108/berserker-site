@@ -9,7 +9,7 @@ web
 ## Users
 
 Two roughly equal primary audiences, both in India:
-- Fitness-focused buyers seeking affordable, authentic-feeling international activewear (Gymshark, Lululemon, YoungLA, Skims) they can't easily or affordably import themselves.
+- Fitness-focused buyers seeking affordable, authentic-feeling international activewear (Gymshark, YoungLA, Skims) they can't easily or affordably import themselves.
 - Streetwear/hype buyers seeking sought-after international drops (Chrome Hearts, Cactus Jack × Travis Scott) for style and brand cachet, not workout use.
 
 ## Product Purpose
@@ -30,7 +30,7 @@ Affordability and access: bringing elite international drops and fitness-wear st
 
 ## Capabilities and Constraints
 
-- Catalog: 28 products across 7 brands — Gymshark, YoungLA, BreatheDivinity, Chrome Hearts, Cactus Jack × Travis Scott, Skims, Lululemon. Prices range ₹4,299–₹8,999.
+- Catalog: 28 products across 6 brands — Gymshark, YoungLA, BreatheDivinity, Chrome Hearts, Cactus Jack × Travis Scott, Skims. Prices range ₹4,299–₹8,999.
 - Legal: About page explicitly states BERSERKER is "not affiliated with, authorized by, or officially partnered with any of the brands featured" — an independent resale operation, not an authorized retailer.
 - Policy: strict no-return policy; damage/defect claims require an unedited unboxing video reported within 24 hours of delivery or are automatically denied; COD orders require a non-refundable advance amount (per-product, not yet wired into product data shown in the current catalog markup); order cancellation window is 12 hours; standard delivery window is stated as 35–45 days; shipping is free.
 - Undecided/not yet built: real checkout/payment flow, individual product detail pages, an actual backend for the cart/orders.

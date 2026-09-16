@@ -19,7 +19,7 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-const FOLDER_SLUGS = ["gymshark", "youngla", "breathedivinity", "chromehearts", "cactusjack", "skims", "lululemon"];
+const FOLDER_SLUGS = ["gymshark", "youngla", "breathedivinity", "chromehearts", "cactusjack", "skims"];
 
 for (const slug of FOLDER_SLUGS) {
   const localPath = `./brands/images/${slug}.jpg`;
